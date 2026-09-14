@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Log de navigation VFR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --navy-deep:#0E1A26;
+  --navy-panel:#16283A;
+  --navy-panel-2:#1D3348;
+  --amber:#E8A33D;
+  --amber-dim:#8A6529;
+  --cyan:#4FB0C6;
+  --ink:#EDEFF2;
+  --ink-dim:#9FB0BE;
+  --alert:#D6604A;
+  --rule:#2A4256;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--navy-deep);
+  color:var(--ink);
+  font-family:'Space Grotesk',sans-serif;
+  padding:28px 20px 60px;
+}
+
+.wrap{max-width:1180px;margin:0 auto;}
+
+header.app-head{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:22px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--rule);
+}
+header.app-head svg{flex:0 0 auto;}
+header.app-head h1{
+  font-size:22px;
+  font-weight:600;
+  margin:0;
+  letter-spacing:0.2px;
+}
+header.app-head p{
+  margin:2px 0 0;
+  color:var(--ink-dim);
+  font-size:13.5px;
+}
+.head-actions{margin-left:auto;display:flex;gap:10px;}
+button{
+  font-family:'Space Grotesk',sans-serif;
+  cursor:pointer;
+  border-radius:3px;
+}
+.btn-print{
+  background:var(--amber);
+  color:#22160A;
+  border:none;
+  font-weight:600;
+  font-size:14px;
+  padding:10px 18px;
+}
+.btn-print:hover{background:#f0af4c;}
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--rule);
+  color:var(--ink);
+  font-size:13px;
+  padding:9px 14px;
+}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+
+.layout{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:22px;
+}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;}
+}
+
+.panel{
+  background:var(--navy-panel);
+  border:1px solid var(--rule);
+}
+.panel-head{
+  font-size:11.5px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--amber);
+  padding:12px 16px;
+  border-bottom:1px solid var(--rule);
+  font-weight:600;
+}
+.panel-body{padding:16px;}
+
+.field{margin-bottom:12px;}
+.field label{
+  display:block;
+  font-size:12px;
+  color:var(--ink-dim);
+  margin-bottom:4px;
+}
+.field input, .field select{
+  width:100%;
+  background:var(--navy-deep);
+  border:1px solid var(--rule);
+  color:var(--ink);
+  padding:8px 9px;
+  font-size:13.5px;
+  font-family:'IBM Plex Mono',monospace;
+  border-radius:2px;
+}
+.field input:focus, .field select:focus{
+  outline:none;
+  border-color:var(--cyan);
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+.legs-block{margin-top:6px;}
+.leg-card{
+  border:1px solid var(--rule);
+  background:var(--navy-panel-2);
+  padding:12px;
+  margin-bottom:10px;
+  position:relative;
+}
+.leg-card .leg-num{
+  position:absolute;
+  top:-9px;
+  left:10px;
+  background:var(--amber);
+  color:#22160A;
+  font-size:11px;
+  font-weight:700;
+  padding:1px 7px;
+  border-radius:2px;
+}
+.leg-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:8px;
+}
+.leg-grid .full{grid-column:1/-1;}
+.leg-remove{
+  display:block;
+  margin-top:8px;
+  width:100%;
+  background:transparent;
+  border:1px dashed var(--alert);
+  color:var(--alert);
+  font-size:12px;
+  padding:6px;
+}
+.leg-remove:hover{background:rgba(214,96,74,0.12);}
+
+.add-leg{
+  width:100%;
+  background:transparent;
+  border:1px dashed var(--cyan);
+  color:var(--cyan);
+  font-size:13px;
+  padding:10px;
+  margin-top:4px;
+  font-weight:500;
+}
+.add-leg:hover{background:rgba(79,176,198,0.1);}
+
+/* ---- output / printable side ---- */
+.output-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border-bottom:1px solid var(--rule);
+}
+.sum-cell{
+  padding:10px 14px;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.sum-cell:nth-child(4n){border-right:none;}
+.sum-cell .k{
+  font-size:10.5px;
+  color:var(--ink-dim);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:3px;
+}
+.sum-cell .v{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;
+  color:var(--ink);
+  font-weight:500;
+}
+
+.table-scroll{overflow-x:auto;}
+table.navtable{
+  width:100%;
+  border-collapse:collapse;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12.5px;
+  min-width:920px;
+}
+table.navtable th{
+  background:var(--navy-panel-2);
+  color:var(--amber);
+  text-align:right;
+  font-weight:600;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  padding:9px 8px;
+  border:1px solid var(--rule);
+  white-space:nowrap;
+}
+table.navtable th:first-child, table.navtable td:first-child{text-align:left;}
+table.navtable td{
+  padding:8px 8px;
+  border:1px solid var(--rule);
+  text-align:right;
+  white-space:nowrap;
+}
+table.navtable tbody tr:nth-child(odd){background:rgba(255,255,255,0.02);}
+table.navtable tfoot td{
+  background:var(--navy-panel-2);
+  font-weight:600;
+  color:var(--amber);
+  border-top:2px solid var(--amber-dim);
+}
+.fuel-warning{color:var(--alert)!important;}
+
+.empty-hint{
+  padding:26px 16px;
+  color:var(--ink-dim);
+  font-size:13.5px;
+  text-align:center;
+}
+
+.footnote{
+  margin-top:10px;
+  font-size:11.5px;
+  color:var(--ink-dim);
+  padding:0 4px;
+}
+
+/* ---- terrains / VAC panel ---- */
+.terrain-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+@media (max-width:900px){ .terrain-grid{grid-template-columns:1fr 1fr;} }
+.terrain-cell label{
+  display:block;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  color:var(--ink-dim);
+  margin-bottom:5px;
+}
+.terrain-cell input{
+  width:100%;
+  background:var(--navy-deep);
+  border:1px solid var(--rule);
+  color:var(--ink);
+  padding:9px 10px;
+  font-size:16px;
+  font-family:'IBM Plex Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  border-radius:2px;
+}
+.terrain-cell input:focus{outline:none;border-color:var(--cyan);}
+.terrain-cell input.invalid{border-color:var(--alert);}
+.terrain-links{margin-top:7px;display:flex;flex-direction:column;gap:5px;}
+.terrain-links a{
+  font-size:11.5px;
+  color:var(--cyan);
+  text-decoration:none;
+  border-bottom:1px solid transparent;
+}
+.terrain-links a:hover{border-bottom-color:var(--cyan);}
+.terrain-hint{
+  font-size:10.5px;
+  color:var(--ink-dim);
+  margin-top:4px;
+  min-height:14px;
+}
+.ac-wrap{position:relative;}
+.ac-list{
+  display:none;
+  position:absolute;
+  top:calc(100% + 2px);
+  left:0;right:0;
+  background:var(--navy-panel-2);
+  border:1px solid var(--cyan);
+  max-height:220px;
+  overflow-y:auto;
+  z-index:20;
+}
+.ac-list.open{display:block;}
+.ac-item{
+  padding:9px 10px;
+  cursor:pointer;
+  border-bottom:1px solid var(--rule);
+  font-size:13px;
+}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover, .ac-item.active{background:rgba(79,176,198,0.18);}
+.ac-item .ac-code{
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--amber);
+  font-weight:600;
+  margin-right:8px;
+}
+.ac-item .ac-city{color:var(--ink-dim);font-size:11.5px;}
+.ac-item .ac-tag{
+  float:right;
+  font-size:9.5px;
+  text-transform:uppercase;
+  color:var(--ink-dim);
+  border:1px solid var(--rule);
+  padding:1px 5px;
+  border-radius:2px;
+}
+.ac-empty{padding:10px;color:var(--ink-dim);font-size:12px;}
+.terrain-selected{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--cyan);
+}
+.terrain-note{
+  margin-top:14px;
+  padding:10px 12px;
+  border:1px solid var(--rule);
+  background:var(--navy-panel-2);
+  font-size:12px;
+  color:var(--ink-dim);
+  line-height:1.5;
+}
+.ad-note{
+  margin-top:14px;
+  padding:10px 12px;
+  border:1px solid var(--cyan);
+  background:var(--navy-panel-2);
+  font-size:12.5px;
+  line-height:1.6;
+}
+.ad-note #adNoteTitle{
+  color:var(--amber);
+  font-weight:600;
+  margin-right:8px;
+}
+.ad-note #adNoteBody{color:var(--ink-dim);}
+
+.vac-preview{
+  margin-top:14px;
+  border:1px solid var(--cyan);
+  background:var(--navy-panel-2);
+}
+.vac-preview-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:9px 12px;
+  border-bottom:1px solid var(--rule);
+  font-size:12.5px;
+}
+.vac-preview-head #vacPreviewLabel{color:var(--amber);font-weight:600;}
+.vac-preview-openlink{color:var(--cyan);font-size:12px;text-decoration:none;margin-left:auto;}
+.vac-preview-openlink:hover{text-decoration:underline;}
+.vac-preview-close{
+  background:transparent;
+  border:1px solid var(--rule);
+  color:var(--ink-dim);
+  font-size:11px;
+  padding:4px 9px;
+}
+.vac-preview-close:hover{border-color:var(--alert);color:var(--alert);}
+.vac-preview-note{
+  margin:0;
+  padding:8px 12px;
+  font-size:11.5px;
+  color:var(--ink-dim);
+  border-bottom:1px solid var(--rule);
+}
+.vac-preview-frame{
+  width:100%;
+  height:520px;
+  border:none;
+  display:block;
+  background:#fff;
+}
+.btn-visualize{
+  background:transparent;
+  border:1px solid var(--amber);
+  color:var(--amber);
+  font-size:11.5px;
+  padding:4px 9px;
+  margin-top:2px;
+  cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+}
+.btn-visualize:hover{background:rgba(232,163,61,0.12);}
+.freq-picker{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  margin-bottom:6px;
+}
+.freq-select{
+  flex:1;
+  background:var(--navy-deep);
+  border:1px solid var(--rule);
+  color:var(--ink);
+  font-size:11.5px;
+  padding:4px 6px;
+  font-family:'Space Grotesk',sans-serif;
+}
+.freq-select:focus{outline:none;border-color:var(--cyan);}
+
+/* ================= PRINT ================= */
+@media print{
+  @page{ size:A5 landscape; margin:6mm; }
+  body{background:#fff;color:#111;padding:0;font-family:'IBM Plex Mono',monospace;font-size:10px;}
+  .no-print{display:none!important;}
+  .layout{display:block;}
+  .panel{border:none;}
+  .panel-head{display:none;}
+  .panel-body{padding:0;}
+  .output-summary{
+    grid-template-columns:repeat(4,1fr);
+    border:1px solid #111;
+    margin-bottom:6px;
+  }
+  .sum-cell{border-color:#111; padding:5px 6px;}
+  .sum-cell .k{color:#555; font-size:8px;}
+  .sum-cell .v{color:#111; font-size:10px;}
+  .table-scroll{overflow:visible;}
+  table.navtable{min-width:0; width:100%; font-size:7.5px;}
+  table.navtable th{background:#eee;color:#111;border-color:#111; padding:3px 3px; font-size:7px;}
+  table.navtable td{border-color:#111;color:#111; padding:3px 3px;}
+  table.navtable tbody tr:nth-child(odd){background:#f6f6f6;}
+  table.navtable tfoot td{background:#eee;color:#111;border-top:2px solid #111;}
+  .print-title{
+    display:block!important;
+    font-size:13px;font-weight:700;margin-bottom:3px;
+  }
+  .footnote{font-size:7px;margin-top:6px;}
+  .fuel-warning{color:#111!important;font-weight:700;text-decoration:underline;}
+}
+.print-title{display:none;}
+
+/* ---- onboarding modal ---- */
+.modal-overlay{
+  position:fixed; inset:0;
+  background:rgba(6,12,18,0.72);
+  display:flex; align-items:center; justify-content:center;
+  z-index:100;
+  padding:20px;
+}
+.modal-box{
+  background:var(--navy-panel);
+  border:1px solid var(--rule);
+  max-width:480px;
+  width:100%;
+  max-height:90vh;
+  overflow-y:auto;
+  padding:24px;
+}
+.modal-box h2{
+  margin:0 0 6px;
+  font-size:19px;
+  color:var(--amber);
+  font-weight:600;
+}
+.modal-box p.modal-sub{
+  margin:0 0 18px;
+  color:var(--ink-dim);
+  font-size:13px;
+  line-height:1.5;
+}
+.modal-box .field{margin-bottom:12px;}
+.modal-actions{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+  justify-content:flex-end;
+}
+.modal-skip{
+  background:transparent;
+  border:none;
+  color:var(--ink-dim);
+  font-size:12.5px;
+  text-decoration:underline;
+  cursor:pointer;
+  padding:10px 4px;
+}
+
+/* ---- hangar / saved logs panels ---- */
+.hangar-card, .savedlog-card{
+  border:1px solid var(--rule);
+  background:var(--navy-panel-2);
+  padding:12px 14px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.hangar-card .hc-info, .savedlog-card .sc-info{flex:1; min-width:180px;}
+.hangar-card .hc-title, .savedlog-card .sc-title{
+  color:var(--amber);
+  font-weight:600;
+  font-size:13.5px;
+}
+.hangar-card .hc-sub, .savedlog-card .sc-sub{
+  color:var(--ink-dim);
+  font-size:11.5px;
+  font-family:'IBM Plex Mono',monospace;
+  margin-top:2px;
+}
+.hangar-card .hc-actions, .savedlog-card .sc-actions{
+  display:flex; gap:8px;
+}
+.btn-mini{
+  background:transparent;
+  border:1px solid var(--cyan);
+  color:var(--cyan);
+  font-size:11.5px;
+  padding:6px 10px;
+  cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+}
+.btn-mini:hover{background:rgba(79,176,198,0.12);}
+.btn-mini-del{
+  background:transparent;
+  border:1px solid var(--alert);
+  color:var(--alert);
+  font-size:11.5px;
+  padding:6px 10px;
+  cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+}
+.btn-mini-del:hover{background:rgba(214,96,74,0.12);}
+.hangar-empty, .savedlog-empty{
+  color:var(--ink-dim);
+  font-size:12.5px;
+  padding:10px 2px;
+}
+.add-aircraft-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px dashed var(--rule);
+}
+.add-aircraft-grid .full{grid-column:1/-1;}
+.tab-bar{
+  display:flex;
+  gap:0;
+  margin-bottom:20px;
+  border-bottom:2px solid var(--rule);
+}
+.tab-btn{
+  background:transparent;
+  border:none;
+  border-bottom:3px solid transparent;
+  color:var(--ink-dim);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:13.5px;
+  font-weight:500;
+  padding:12px 20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.tab-btn:hover{color:var(--ink);}
+.tab-btn.active{
+  color:var(--amber);
+  border-bottom-color:var(--amber);
+}
+.tab-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--rule);
+  display:inline-block;
+  flex:0 0 auto;
+}
+.tab-dot.valid{background:var(--grass, #3FA772);}
+.storage-status{
+  font-size:11px;
+  color:var(--ink-dim);
+  margin-top:8px;
+  min-height:14px;
+}
+.btn-collapse{
+  background:transparent;
+  border:1px solid var(--rule);
+  color:var(--ink-dim);
+  font-size:11.5px;
+  padding:6px 12px;
+}
+.btn-collapse:hover{border-color:var(--amber); color:var(--amber);}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="app-head">
+    <svg width="34" height="34" viewBox="0 0 34 34" class="no-print">
+      <circle cx="17" cy="17" r="15.5" fill="none" stroke="#E8A33D" stroke-width="1.4"/>
+      <line x1="17" y1="3" x2="17" y2="9" stroke="#E8A33D" stroke-width="1.4"/>
+      <line x1="17" y1="25" x2="17" y2="31" stroke="#4FB0C6" stroke-width="1.4"/>
+      <line x1="3" y1="17" x2="9" y2="17" stroke="#4FB0C6" stroke-width="1.4"/>
+      <line x1="25" y1="17" x2="31" y2="17" stroke="#4FB0C6" stroke-width="1.4"/>
+      <path d="M17 8 L20.5 18 L17 15.5 L13.5 18 Z" fill="#EDEFF2"/>
+    </svg>
+    <div>
+      <h1>Log de navigation VFR</h1>
+      <p>Saisis ta préparation, la table se calcule et s'imprime au format paysage</p>
+    </div>
+    <div class="head-actions no-print">
+      <button class="btn-ghost" id="btnHangar">🏠 Hangar</button>
+      <button class="btn-ghost" id="btnSavedLogs">📁 Mes vols</button>
+      <button class="btn-ghost" id="btnSaveLog">💾 Enregistrer</button>
+      <button class="btn-ghost" id="btnReset">Réinitialiser</button>
+      <button class="btn-print" id="btnPrint">Imprimer / PDF</button>
+    </div>
+  </header>
+
+  <div class="print-title" id="printTitle"></div>
+
+  <!-- ===== ONBOARDING MODAL ===== -->
+  <div class="modal-overlay no-print" id="onboardModal" style="display:none;">
+    <div class="modal-box">
+      <h2>Bienvenue 👋</h2>
+      <p class="modal-sub">Deux ou trois infos pour démarrer — tu pourras toujours les changer plus tard.</p>
+      <div class="field">
+        <label>Ton prénom / pseudo</label>
+        <input type="text" id="ob_name" placeholder="Ex. Maël">
+      </div>
+      <div class="field">
+        <label>Terrain de rattachement (optionnel)</label>
+        <input type="text" id="ob_home" placeholder="Ex. LFPN">
+      </div>
+      <p class="modal-sub" style="margin-bottom:6px;">Envie d'ajouter ton premier avion tout de suite ? (facultatif)</p>
+      <div class="field-row">
+        <div class="field"><label>Immatriculation</label><input type="text" id="ob_immat" placeholder="F-GABC"></div>
+        <div class="field"><label>Type</label><input type="text" id="ob_type" placeholder="DR400"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Vp / TAS (kt)</label><input type="number" id="ob_vp" placeholder="100"></div>
+        <div class="field"><label>Conso (L/h)</label><input type="number" id="ob_conso" placeholder="30"></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-skip" id="obSkip">Passer</button>
+        <button type="button" class="btn-print" id="obStart">Commencer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HANGAR ===== -->
+  <div class="panel no-print" id="hangarPanel" style="margin-bottom:22px; display:none;">
+    <div class="panel-head">🏠 Hangar — avions du club <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
+    <div class="panel-body">
+      <div id="hangarList"></div>
+      <div class="add-aircraft-grid">
+        <div class="field"><label>Immatriculation</label><input type="text" id="hg_immat" placeholder="F-GABC"></div>
+        <div class="field"><label>Type</label><input type="text" id="hg_type" placeholder="DR400"></div>
+        <div class="field"><label>Vp / TAS (kt)</label><input type="number" id="hg_vp" placeholder="100"></div>
+        <div class="field"><label>Conso (L/h)</label><input type="number" id="hg_conso" placeholder="30"></div>
+        <div class="field full"><label>Note (optionnel)</label><input type="text" id="hg_note" placeholder="Ex. basé à LFPN, carbu 100LL"></div>
+
+        <details class="full" style="grid-column:1/-1;">
+          <summary style="cursor:pointer;color:var(--amber);font-size:12.5px;font-weight:600;margin:4px 0 10px;">⚖️ Données masse et centrage (optionnel — active le module M&C pour cet avion)</summary>
+          <div class="add-aircraft-grid" style="border:none;padding:0;margin:0;">
+            <div class="field"><label>Masse à vide (kg)</label><input type="number" id="hg_emptyMass" placeholder="700"></div>
+            <div class="field"><label>Bras à vide (m)</label><input type="number" step="0.001" id="hg_emptyArm" placeholder="1.150"></div>
+            <div class="field"><label>Masse max décollage — MTOW (kg)</label><input type="number" id="hg_mtow" placeholder="1100"></div>
+            <div class="field"><label>Densité carburant (kg/L)</label><input type="number" step="0.01" id="hg_fuelDensity" placeholder="0.72"></div>
+            <div class="field"><label>Bras places avant (m)</label><input type="number" step="0.001" id="hg_armFront" placeholder="1.000"></div>
+            <div class="field"><label>Bras places arrière (m)</label><input type="number" step="0.001" id="hg_armRear" placeholder="1.800"></div>
+            <div class="field"><label>Bras soute/bagages (m)</label><input type="number" step="0.001" id="hg_armBag" placeholder="2.400"></div>
+            <div class="field"><label>Bras réservoir carburant (m)</label><input type="number" step="0.001" id="hg_armFuel" placeholder="1.200"></div>
+            <div class="field"><label>Centrage limite avant à MTOW (m)</label><input type="number" step="0.001" id="hg_cgMin" placeholder="1.050"></div>
+            <div class="field"><label>Centrage limite arrière (m, constante)</label><input type="number" step="0.001" id="hg_cgMax" placeholder="1.250"></div>
+            <div class="field"><label>Limite avant à charge réduite — masse (kg) (optionnel)</label><input type="number" id="hg_cgFwdLowMass" placeholder="Ex. 750"></div>
+            <div class="field"><label>Limite avant à charge réduite — centrage (m) (optionnel)</label><input type="number" step="0.001" id="hg_cgFwdLowArm" placeholder="Ex. 0.205"></div>
+          </div>
+          <p style="font-size:11px;color:var(--ink-dim);margin:8px 0 0;">Ces valeurs viennent de la fiche de pesée / manuel de vol de CET avion précis (elles varient d'un exemplaire à l'autre du même type). Si la limite avant change avec la masse (cas fréquent, ex. DR400), renseigne aussi les 2 derniers champs : le module interpolera entre charge réduite et MTOW. Sinon la limite avant reste fixe. Le vrai graphique du manuel de vol reste la référence finale.</p>
+        </details>
+
+        <div class="field full"><button type="button" class="add-leg" id="hg_add">+ Ajouter cet avion au hangar</button></div>
+      </div>
+      <div class="storage-status" id="hangarStatus"></div>
+    </div>
+  </div>
+
+  <!-- ===== VOLS ENREGISTRÉS ===== -->
+  <div class="panel no-print" id="savedLogsPanel" style="margin-bottom:22px; display:none;">
+    <div class="panel-head">📁 Mes vols enregistrés <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
+    <div class="panel-body">
+      <div id="savedLogsList"></div>
+      <div class="storage-status" id="savedLogsStatus"></div>
+    </div>
+  </div>
+
+  <!-- ===== ONGLETS ===== -->
+  <div class="tab-bar no-print">
+    <button type="button" class="tab-btn active" id="tabBtn1" data-tab="1">
+      <span class="tab-dot" id="tabDot1"></span> 1 · Préparation
+    </button>
+    <button type="button" class="tab-btn" id="tabBtn2" data-tab="2">
+      <span class="tab-dot" id="tabDot2"></span> 2 · Log de navigation
+    </button>
+    <button type="button" class="tab-btn" id="tabBtn3" data-tab="3">
+      <span class="tab-dot" id="tabDot3"></span> 3 · Masse &amp; carburant
+    </button>
+  </div>
+
+  <div id="tabPanel1">
+
+  <div class="panel no-print" style="margin-bottom:22px;">
+    <div class="panel-head">Terrains du vol — vérifier les cartes VAC</div>
+    <div class="panel-body">
+      <div class="terrain-grid">
+        <div class="terrain-cell" data-cell="dep">
+          <label>Départ — code OACI ou nom</label>
+          <div class="ac-wrap">
+            <input type="text" id="t_dep" autocomplete="off" placeholder="Ex. Toussus, ou LFPN">
+            <div class="ac-list" id="ac_dep"></div>
+          </div>
+          <div class="terrain-hint" id="hint_dep"></div>
+          <div class="terrain-links" id="links_dep"></div>
+        </div>
+        <div class="terrain-cell" data-cell="arr">
+          <label>Arrivée — code OACI ou nom</label>
+          <div class="ac-wrap">
+            <input type="text" id="t_arr" autocomplete="off" placeholder="Ex. Deauville, ou LFRG">
+            <div class="ac-list" id="ac_arr"></div>
+          </div>
+          <div class="terrain-hint" id="hint_arr"></div>
+          <div class="terrain-links" id="links_arr"></div>
+        </div>
+        <div class="terrain-cell" data-cell="deg1">
+          <label>Dégagement 1 — code ou nom</label>
+          <div class="ac-wrap">
+            <input type="text" id="t_deg1" autocomplete="off" placeholder="Ex. Rouen, ou LFOP">
+            <div class="ac-list" id="ac_deg1"></div>
+          </div>
+          <div class="terrain-hint" id="hint_deg1"></div>
+          <div class="terrain-links" id="links_deg1"></div>
+        </div>
+        <div class="terrain-cell" data-cell="deg2">
+          <label>Dégagement 2 (optionnel)</label>
+          <div class="ac-wrap">
+            <input type="text" id="t_deg2" autocomplete="off" placeholder="Ex. Le Havre, ou LFOH">
+            <div class="ac-list" id="ac_deg2"></div>
+          </div>
+          <div class="terrain-hint" id="hint_deg2"></div>
+          <div class="terrain-links" id="links_deg2"></div>
+        </div>
+      </div>
+
+      <div class="ad-note" id="adNote" style="display:none;">
+        <span id="adNoteTitle"></span>
+        <span id="adNoteBody"></span>
+      </div>
+
+      <div class="ad-note" id="routeNote" style="display:none; border-color:var(--cyan);">
+        <span id="routeNoteBody"></span>
+      </div>
+
+      <div class="terrain-note" id="notamNote" style="display:none;">
+        <strong style="color:var(--amber);">🛰️ NOTAM du vol</strong> — terrains à saisir dans SOFIA Briefing :
+        <span id="notamCodesList" style="font-family:'IBM Plex Mono',monospace;color:var(--cyan);"></span>
+        <button type="button" class="btn-mini" id="btnCopyNotamCodes" style="margin-left:8px;">Copier les codes</button>
+        <a href="https://sofia-briefing.aviation-civile.gouv.fr/sofia/pages/notamform.html" target="_blank" rel="noopener" style="margin-left:8px;color:var(--cyan);">Ouvrir SOFIA Briefing ↗</a>
+        <div style="margin-top:6px;font-size:11px;color:var(--ink-dim);">Compte SOFIA requis pour la méthode manuelle. Les NOTAM changent en continu — cette appli n'en stocke jamais, va toujours chercher la version du moment sur SOFIA. (Récupération automatique testée et abandonnée : le site utilise un mécanisme de session à plusieurs étapes que notre appli ne peut pas reproduire de l'extérieur.)</div>
+      </div>
+
+      <div class="terrain-note">
+        Tape un nom de ville, un nom d'aérodrome ou un code OACI : la liste te propose les terrains français qui correspondent, clique dessus pour le sélectionner. Les liens ouvrent ensuite la consultation officielle du SIA — jamais une copie enregistrée ici, pour ne pas préparer un vol avec une carte VAC périmée (elles changent tous les 28 jours, à chaque cycle AIRAC). Terrain introuvable dans la liste ? Tu peux quand même taper son code OACI à la main.
+      </div>
+    </div>
+  </div>
+
+  <div class="panel no-print">
+    <div class="panel-head">Informations vol</div>
+    <div class="panel-body">
+      <div class="field-row">
+        <div class="field"><label>Date</label><input type="date" id="f_date"></div>
+        <div class="field"><label>Immatriculation</label><input type="text" id="f_immat" placeholder="F-GABC"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Type avion</label><input type="text" id="f_type" placeholder="DR400"></div>
+        <div class="field"><label>Pilote</label><input type="text" id="f_pilote" placeholder="Nom"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Heure départ prévue (EOBT)</label><input type="time" id="f_eobt"></div>
+        <div class="field"><label>Niveau / Altitude croisière</label><input type="text" id="f_alt" placeholder="2500 ft / FL045"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Vp / TAS (kt)</label><input type="number" id="f_vp" value="100" step="1"></div>
+        <div class="field"><label>Conso (L/h)</label><input type="number" id="f_conso" value="30" step="0.5"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Variation magnétique (° Est +/Ouest -)</label><input type="number" id="f_var" value="0" step="0.5"></div>
+        <div class="field"><label>Carburant emporté (L)</label><input type="number" id="f_fuel" placeholder="optionnel" step="1"></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /tabPanel1 -->
+
+  <div id="tabPanel2" style="display:none;">
+
+  <div class="panel">
+    <div class="panel-head no-print">Table de navigation</div>
+    <div class="panel-body">
+      <div class="output-summary" id="summaryBox"></div>
+      <div class="table-scroll">
+        <table class="navtable" id="navTable">
+          <thead>
+            <tr>
+              <th>Étape</th><th>Rv°</th><th>Dist NM</th><th>Vent</th>
+              <th>Dérive°</th><th>Cv°</th><th>Cm°</th><th>Vs kt</th>
+              <th>t étape</th><th>t cumulé</th><th>Fuel étape</th><th>Fuel cumulé</th>
+              <th>Heure est.</th><th>Alt/Fréq</th>
+            </tr>
+          </thead>
+          <tbody id="navBody"></tbody>
+          <tfoot id="navFoot"></tfoot>
+        </table>
+      </div>
+      <p class="footnote">Cap magnétique = cap vrai − variation (Est positif). Déviation compas non appliquée — à ajouter localement si besoin. Vérifie toujours ces calculs avant le vol : cet outil est une aide à la préparation, pas une source certifiée.</p>
+    </div>
+  </div>
+
+  <!-- ===== SAISIE DES ÉTAPES ===== -->
+  <div class="panel no-print" style="margin-top:22px;">
+    <div class="panel-head">Étapes de la navigation</div>
+    <div class="panel-body legs-block" id="legsContainer"></div>
+    <div class="panel-body" style="padding-top:0;">
+      <button class="add-leg" id="btnAddLeg">+ Ajouter une étape</button>
+    </div>
+  </div>
+
+  </div><!-- /tabPanel2 -->
+
+  <div id="tabPanel3" style="display:none;">
+
+  <div class="panel no-print">
+    <div class="panel-head">⚖️ Masse et centrage · ⛽ Bilan carburant réglementaire</div>
+    <div class="panel-body">
+      <div class="field">
+        <label>Avion (depuis le hangar)</label>
+        <select id="wb_aircraft"></select>
+      </div>
+      <div id="wbNoData" style="display:none; color:var(--ink-dim); font-size:12.5px; padding:8px 0;">
+        Cet avion n'a pas de données masse et centrage enregistrées — ajoute-les depuis le Hangar (section "⚖️ Données masse et centrage").
+      </div>
+      <div id="wbForm" style="display:none;">
+        <div class="field-row">
+          <div class="field"><label>Pilote + copilote / places avant (kg)</label><input type="number" id="wb_front" placeholder="150"></div>
+          <div class="field"><label>Passagers places arrière (kg)</label><input type="number" id="wb_rear" placeholder="0"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Bagages / soute (kg)</label><input type="number" id="wb_bag" placeholder="0"></div>
+          <div class="field"><label>Carburant embarqué (L)</label><input type="number" id="wb_fuelL" placeholder="Depuis le champ carburant emporté"></div>
+        </div>
+        <div class="output-summary" id="wbSummary" style="margin-top:10px;border:1px solid var(--rule);"></div>
+
+        <div class="terrain-note" style="margin-top:16px;">
+          <strong style="color:var(--amber);">⛽ Bilan carburant réglementaire (Part-NCO OP.125)</strong>
+        </div>
+        <div class="field-row" style="margin-top:10px;">
+          <div class="field">
+            <label>Type de vol</label>
+            <select id="fuel_type">
+              <option value="30">VFR jour — navigation (hors vue), réserve 30 min</option>
+              <option value="10">VFR jour — local en vue de l'aérodrome, réserve 10 min</option>
+              <option value="45">VFR nuit, réserve 45 min</option>
+            </select>
+          </div>
+          <div class="field"><label>Forfait roulage (min)</label><input type="number" id="fuel_taxi" value="10"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Temps de vol vers dégagement (min, optionnel)</label><input type="number" id="fuel_altTime" placeholder="0"></div>
+          <div class="field"><label>Marge personnelle (min, optionnel)</label><input type="number" id="fuel_margin" placeholder="0"></div>
+        </div>
+        <div class="output-summary" id="fuelSummary" style="border:1px solid var(--rule);"></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /tabPanel3 -->
+
+</div><!-- /wrap -->
+
+<script>
+let legs = [];
+let legId = 0;
+
+function newLeg(name){
+  legId++;
+  return {id:legId, point:name||'', rv:'', dist:'', wdir:'', wspd:'', alt:'', freq:''};
+}
+
+function addLeg(){
+  legs.push(newLeg(legs.length===0 ? '' : ''));
+  renderLegsInputs();
+  recompute();
+}
+function removeLeg(id){
+  legs = legs.filter(l=>l.id!==id);
+  renderLegsInputs();
+  recompute();
+}
+
+function renderLegsInputs(){
+  const c = document.getElementById('legsContainer');
+  c.innerHTML='';
+  legs.forEach((leg, idx)=>{
+    const card = document.createElement('div');
+    card.className='leg-card';
+    card.innerHTML = `
+      <span class="leg-num">Étape ${idx+1}</span>
+      <div class="field">
+        <label>Point (nom du repère / arrivée de l'étape)</label>
+        <input type="text" data-id="${leg.id}" data-field="point" value="${leg.point}" placeholder="Repère ${idx+1}">
+      </div>
+      <div class="leg-grid">
+        <div class="field"><label>Route vraie Rv (°)</label><input type="number" data-id="${leg.id}" data-field="rv" value="${leg.rv}"></div>
+        <div class="field"><label>Distance (NM)</label><input type="number" data-id="${leg.id}" data-field="dist" value="${leg.dist}"></div>
+        <div class="field"><label>Vent direction (°)</label><input type="number" data-id="${leg.id}" data-field="wdir" value="${leg.wdir}"></div>
+        <div class="field"><label>Vent vitesse (kt)</label><input type="number" data-id="${leg.id}" data-field="wspd" value="${leg.wspd}"></div>
+        <div class="field"><label>Alt/FL (optionnel)</label><input type="text" data-id="${leg.id}" data-field="alt" value="${leg.alt}"></div>
+        <div class="field"><label>Fréquence (optionnel)</label><input type="text" data-id="${leg.id}" data-field="freq" value="${leg.freq}"></div>
+      </div>
+      <button class="leg-remove" data-remove="${leg.id}">Supprimer l'étape</button>
+    `;
+    c.appendChild(card);
+  });
+
+  c.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const id = Number(e.target.dataset.id);
+      const field = e.target.dataset.field;
+      const leg = legs.find(l=>l.id===id);
+      leg[field] = e.target.value;
+      recompute();
+    });
+  });
+  c.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      removeLeg(Number(e.target.dataset.remove));
+    });
+  });
+}
+
+function toRad(d){return d*Math.PI/180;}
+function toDeg(r){return r*180/Math.PI;}
+function norm360(d){return ((d%360)+360)%360;}
+
+function computeWind(rv, dist, wdir, wspd, tas){
+  if(rv===''||dist===''||tas===''||isNaN(tas)||tas<=0) return null;
+  rv = Number(rv); dist=Number(dist);
+  wdir = wdir===''?0:Number(wdir);
+  wspd = wspd===''?0:Number(wspd);
+  const diff = norm360(wdir - rv);
+  const diffRad = toRad(diff);
+  const ratio = tas>0 ? (wspd*Math.sin(diffRad))/tas : 0;
+  const clamped = Math.max(-1,Math.min(1,ratio));
+  const wcaRad = Math.asin(clamped);
+  const wca = toDeg(wcaRad);
+  const heading = norm360(rv+wca);
+  const gs = tas*Math.cos(wcaRad) - wspd*Math.cos(diffRad);
+  const timeMin = gs>0 ? (dist/gs)*60 : null;
+  return {wca, heading, gs, timeMin, dist};
+}
+
+function fmtHM(totalMinFromMidnight){
+  if(totalMinFromMidnight===null || isNaN(totalMinFromMidnight)) return '—';
+  let m = Math.round(totalMinFromMidnight) % (24*60);
+  if(m<0) m+=24*60;
+  const hh = String(Math.floor(m/60)).padStart(2,'0');
+  const mm = String(m%60).padStart(2,'0');
+  return hh+':'+mm;
+}
+function fmtMin(m){
+  if(m===null||isNaN(m)) return '—';
+  const mm = Math.round(m);
+  return mm+' min';
+}
+function fmtNum(n, d=1){
+  if(n===null||n===undefined||isNaN(n)) return '—';
+  return Number(n).toFixed(d);
+}
+
+function eobtToMinutes(){
+  const v = document.getElementById('f_eobt').value;
+  if(!v) return null;
+  const [h,m] = v.split(':').map(Number);
+  return h*60+m;
+}
+
+function recompute(){
+  const tas = Number(document.getElementById('f_vp').value)||0;
+  const conso = Number(document.getElementById('f_conso').value)||0;
+  const variation = Number(document.getElementById('f_var').value)||0;
+  const fuelOnboard = document.getElementById('f_fuel').value;
+  const eobt = eobtToMinutes();
+
+  const dep = document.getElementById('t_dep').value || 'Départ';
+
+  let cumDist=0, cumTime=0, cumFuel=0;
+  const rows = [];
+  let prevPoint = dep;
+
+  legs.forEach((leg, idx)=>{
+    const w = computeWind(leg.rv, leg.dist, leg.wdir, leg.wspd, tas);
+    let cm=null, timeMin=null, fuel=null, gs=null, wca=null, hv=null;
+    if(w){
+      wca = w.wca; hv = w.heading; gs = w.gs; timeMin = w.timeMin;
+      cm = norm360(hv - variation);
+      fuel = timeMin!==null ? (timeMin/60)*conso : null;
+    }
+    if(timeMin!==null) cumTime += timeMin;
+    if(leg.dist!=='' && !isNaN(Number(leg.dist))) cumDist += Number(leg.dist);
+    if(fuel!==null) cumFuel += fuel;
+
+    const label = (leg.point ? (prevPoint+' → '+leg.point) : (prevPoint+' → étape '+(idx+1)));
+    prevPoint = leg.point || prevPoint;
+
+    rows.push({
+      label,
+      rv: leg.rv,
+      dist: leg.dist,
+      wind: (leg.wdir!==''||leg.wspd!=='') ? `${leg.wdir||0}°/${leg.wspd||0}kt` : '—',
+      wca, cv:hv, cm, gs,
+      timeMin, cumTime: timeMin!==null? cumTime: null,
+      fuel, cumFuel: fuel!==null? cumFuel: null,
+      eta: (eobt!==null && timeMin!==null) ? eobt+cumTime : null,
+      altfreq: [leg.alt, leg.freq].filter(Boolean).join(' / ')
+    });
+  });
+
+  renderOutput(rows, {cumDist, cumTime, cumFuel, fuelOnboard, dep, eobt});
+  updateTabValidation();
+}
+
+function renderOutput(rows, totals){
+  const arr = document.getElementById('t_arr').value || 'Arrivée';
+  const immat = document.getElementById('f_immat').value;
+  const pilote = document.getElementById('f_pilote').value;
+  const date = document.getElementById('f_date').value;
+  const deg = [document.getElementById('t_deg1').value, document.getElementById('t_deg2').value].filter(Boolean).join(' / ');
+  const alt = document.getElementById('f_alt').value;
+  const type = document.getElementById('f_type').value;
+
+  document.getElementById('printTitle').textContent =
+    `Log de navigation VFR — ${totals.dep||''} → ${arr}` + (date? ' — '+date : '');
+
+  const summary = document.getElementById('summaryBox');
+  const cells = [
+    ['Date', date||'—'], ['Immat.', immat||'—'], ['Type', type||'—'], ['Pilote', pilote||'—'],
+    ['Départ', totals.dep||'—'], ['Arrivée', arr||'—'], ['Dégagement', deg||'—'], ['EOBT', totals.eobt!==null?fmtHM(totals.eobt):'—'],
+    ['Vp / TAS', document.getElementById('f_vp').value+' kt'], ['Conso', document.getElementById('f_conso').value+' L/h'],
+    ['Variation', document.getElementById('f_var').value+'°'], ['Alt. croisière', alt||'—']
+  ];
+  summary.innerHTML = cells.map(([k,v])=>`<div class="sum-cell"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+  const body = document.getElementById('navBody');
+  if(rows.length===0){
+    body.innerHTML = `<tr><td colspan="14" class="empty-hint" style="text-align:center;">Ajoute une étape ci-dessous pour générer la table</td></tr>`;
+  } else {
+    body.innerHTML = rows.map(r=>`
+      <tr>
+        <td>${r.label}</td>
+        <td>${r.rv!==''?fmtNum(r.rv,0):'—'}</td>
+        <td>${r.dist!==''?fmtNum(r.dist,1):'—'}</td>
+        <td>${r.wind}</td>
+        <td>${r.wca!==null?fmtNum(r.wca,1):'—'}</td>
+        <td>${r.cv!==null?fmtNum(r.cv,0):'—'}</td>
+        <td>${r.cm!==null?fmtNum(r.cm,0):'—'}</td>
+        <td>${r.gs!==null?fmtNum(r.gs,0):'—'}</td>
+        <td>${fmtMin(r.timeMin)}</td>
+        <td>${fmtMin(r.cumTime)}</td>
+        <td>${r.fuel!==null?fmtNum(r.fuel,1)+' L':'—'}</td>
+        <td>${r.cumFuel!==null?fmtNum(r.cumFuel,1)+' L':'—'}</td>
+        <td>${r.eta!==null?fmtHM(r.eta):'—'}</td>
+        <td>${r.altfreq||'—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  const fuelOnboard = totals.fuelOnboard;
+  let fuelNote = '';
+  let warnClass = '';
+  if(fuelOnboard && !isNaN(Number(fuelOnboard))){
+    const margin = Number(fuelOnboard) - totals.cumFuel;
+    fuelNote = ` / restant estimé: ${fmtNum(margin,1)} L`;
+    if(margin < 0) warnClass = 'fuel-warning';
+  }
+
+  document.getElementById('navFoot').innerHTML = `
+    <tr>
+      <td>TOTAUX</td><td></td>
+      <td>${fmtNum(totals.cumDist,1)}</td><td></td><td></td><td></td><td></td><td></td>
+      <td>${fmtMin(totals.cumTime)}</td><td></td>
+      <td class="${warnClass}">${fmtNum(totals.cumFuel,1)} L${fuelNote}</td><td></td><td></td><td></td>
+    </tr>
+  `;
+}
+
+document.querySelectorAll('#f_date,#f_immat,#f_type,#f_pilote,#f_eobt,#f_alt,#f_vp,#f_conso,#f_var,#f_fuel')
+  .forEach(el=>el.addEventListener('input', recompute));
+document.getElementById('f_vp').addEventListener('input', updateRouteNote);
+
+// ---- Terrains / cartes VAC ----
+
+// Base des aérodromes français (OACI + nom + ville). Référence : Wikipédia
+// "Liste des aérodromes et aéroports en France" / SIA. À vérifier/actualiser
+// ponctuellement — un aérodrome absent reste saisissable à la main via son code OACI.
+const AIRPORTS = [{"icao":"LFXA","name":"Ambérieu-en-Bugey Air Base (BA 278)","city":"Ambérieu-en-Bugey","usage":"Public/mil."},{"icao":"LFHN","name":"Bellegarde - Vouvray Aerodrome","city":"Bellegarde-sur-Valserine / Vouvray","usage":"Public"},{"icao":"LFKY","name":"Belley - Peyrieu Aerodrome","city":"Belley / Peyrieu","usage":"Restricted"},{"icao":"LFHS","name":"Bourg – Ceyzériat Airport","city":"Bourg-en-Bresse / Ceyzériat","usage":"Public"},{"icao":"LFJD","name":"Corlier Aerodrome","city":"Corlier","usage":"Restricted"},{"icao":"LFLK","name":"Oyonnax - Arbent Aerodrome","city":"Oyonnax / Arbent","usage":"Public"},{"icao":"LFHC","name":"Pérouges - Meximieux Aerodrome","city":"Pérouges / Meximieux","usage":"Public"},{"icao":"LFFH","name":"Château-Thierry – Belleau Aerodrome","city":"Château-Thierry / Belleau","usage":"Restricted"},{"icao":"LFAF","name":"Laon - Chambry Airport","city":"Laon / Chambry","usage":"Public"},{"icao":"LFOW","name":"Saint-Quentin - Roupy Airport","city":"Saint-Quentin / Roupy","usage":"Public"},{"icao":"LFYT","name":"Saint-Simon – Clastres Air Base","city":"Saint-Simon / Clastres","usage":"Military"},{"icao":"LFJS","name":"Soissons - Courmelles Airport","city":"Soissons / Courmelles","usage":"Public"},{"icao":"LFHX","name":"Lapalisse - Périgny Airport","city":"Lapalisse / Périgny","usage":"Public"},{"icao":"LFJU","name":"Lurcy-Lévis Aerodrome","city":"Lurcy-Lévis","usage":"Restricted"},{"icao":"LFLT","name":"Montluçon - Domérat Aerodrome","city":"Montluçon / Domérat","usage":"Restricted"},{"icao":"LFHY","name":"Moulins – Montbeugny Airport","city":"Moulins / Montbeugny","usage":"Public"},{"icao":"LFLV","name":"Vichy−Charmeil Airport","city":"Vichy / Charmeil","usage":"Public"},{"icao":"LFMR","name":"Barcelonnette – Saint-Pons Airfield","city":"Barcelonnette / Saint-Pons","usage":"Public"},{"icao":"LFMX","name":"Château-Arnoux-Saint-Auban Airport","city":"Château-Arnoux-Saint-Auban","usage":"Public"},{"icao":"LFTP","name":"Puimoisson Aerodrome","city":"Puimoisson","usage":"Restricted"},{"icao":"LFNS","name":"Sisteron - Thèze Aerodrome","city":"Sisteron / Thèze","usage":"Restricted"},{"icao":"LFNJ","name":"Aspres-sur-Buëch Aerodrome","city":"Aspres-sur-Buëch","usage":"Restricted"},{"icao":"LFNA","name":"Gap–Tallard Airport","city":"Gap / Tallard","usage":"Public"},{"icao":"LFNC","name":"Mont-Dauphin - Saint-Crépin Airport","city":"Mont-Dauphin / Saint-Crépin","usage":"Public"},{"icao":"LFTM","name":"Serres - La Bâtie-Montsaléon Aerodrome","city":"Serres / La Bâtie-Montsaléon","usage":"Restricted"},{"icao":"LFMD","name":"Cannes–Mandelieu Airport","city":"Cannes / Mandelieu-la-Napoule","usage":"Public"},{"icao":"LFMN","name":"Nice Côte d'Azur Airport","city":"Nice / Côte d'Azur","usage":"Public"},{"icao":"LFHO","name":"Aubenas Aerodrome","city":"Aubenas / Ardèche Méridional","usage":"Public"},{"icao":"LFHL","name":"Langogne - Lespéron Airport","city":"Langogne / Lespéron","usage":"Public"},{"icao":"LFHF","name":"Ruoms Aerodrome","city":"Ruoms","usage":"Restricted"},{"icao":"LFQV","name":"Charleville-Mézières Aerodrome","city":"Charleville-Mézières","usage":"Public"},{"icao":"LFAP","name":"Rethel - Perthes Aerodrome","city":"Rethel / Perthes","usage":"Restricted"},{"icao":"LFSJ","name":"Sedan - Douzy Airport","city":"Sedan / Douzy","usage":"Public"},{"icao":"LFDJ","name":"Pamiers - Les Pujols Airport","city":"Pamiers / Les Pujols","usage":"Public"},{"icao":"LFCG","name":"Saint-Girons - Antichan Airport","city":"Saint-Girons / Antichan","usage":"Public"},{"icao":"LFFR","name":"Bar-sur-Seine Aerodrome","city":"Bar-sur-Seine","usage":"Restricted"},{"icao":"LFFN","name":"Brienne-le-Château Airport","city":"Brienne-le-Château","usage":"Public"},{"icao":"LFQX","name":"Juvancourt Aerodrome","city":"Juvancourt","usage":"Restricted"},{"icao":"LFQR","name":"Romilly-sur-Seine Airport","city":"Romilly-sur-Seine","usage":"Public"},{"icao":"LFQB","name":"Troyes – Barberey Airport","city":"Troyes / Barberey-Saint-Sulpice","usage":"Public"},{"icao":"LFMK","name":"Carcassonne Airport","city":"Carcassonne / Salvaza","usage":"Public"},{"icao":"LFMW","name":"Castelnaudary – Villeneuve Airport","city":"Castelnaudary / Villeneuve-la-Comptal","usage":"Public"},{"icao":"LFMZ","name":"Lézignan-Corbières Airport","city":"Lézignan-Corbières","usage":"Public"},{"icao":"LFNW","name":"Puivert Aerodrome","city":"Puivert","usage":"Restricted"},{"icao":"LFIG","name":"Cassagnes-Bégonhès Airport","city":"Cassagnes-Bégonhès","usage":"Public"},{"icao":"LFCM","name":"Millau - Larzac Airport","city":"Millau / Larzac","usage":"Public"},{"icao":"LFCR","name":"Rodez–Aveyron Airport","city":"Rodez / Marcillac-Vallon","usage":"Public"},{"icao":"LFIF","name":"Saint-Affrique - Belmont Aerodrome","city":"Saint-Affrique / Belmont-sur-Rance","usage":"Restricted"},{"icao":"LFCV","name":"Villefranche-de-Rouergue Airport","city":"Villefranche-de-Rouergue","usage":"Public"},{"icao":"LFMA","name":"Aix-en-Provence Aerodrome","city":"Aix-en-Provence / Les Milles","usage":"Public/mil."},{"icao":"LFNR","name":"Berre - La Fare Aerodrome","city":"Berre-l'Étang / La Fare-les-Oliviers","usage":"Restricted"},{"icao":"LFMI","name":"Istres-Le Tubé Air Base","city":"Istres / Le Tubé","usage":"Public/mil."},{"icao":"LFNZ","name":"Le Mazet-de-Romanin Aerodrome","city":"Le Mazet-de-Romanin","usage":"Restricted"},{"icao":"LFML","name":"Marseille Provence Airport","city":"Marseille / Marignane","usage":"Public"},{"icao":"LFMY","name":"Salon-de-Provence Air Base","city":"Salon-de-Provence","usage":"Military"},{"icao":"LFNE","name":"Salon - Eyguières Airport","city":"Salon-de-Provence / Eyguières","usage":"Public"},{"icao":"LFRK","name":"Caen – Carpiquet Airport","city":"Caen / Carpiquet","usage":"Public"},{"icao":"LFRG","name":"Deauville – Normandie Airport","city":"Deauville / Normandie","usage":"Public"},{"icao":"LFAS","name":"Falaise - Monts d'Eraines Aerodrome","city":"Falaise / Damblainville","usage":"Restricted"},{"icao":"LFLW","name":"Aurillac – Tronquières Airport","city":"Aurillac","usage":"Public"},{"icao":"LFHQ","name":"Saint-Flour - Coltines Airport","city":"Saint-Flour / Coltines","usage":"Public"},{"icao":"LFBU","name":"Angoulême – Cognac International Airport","city":"Angoulême / Brie / Champniers","usage":"Public"},{"icao":"LFIH","name":"Chalais Airport","city":"Chalais","usage":"Public"},{"icao":"LFBG","name":"Cognac – Châteaubernard Air Base","city":"Cognac / Châteaubernard","usage":"Military"},{"icao":"LFCJ","name":"Jonzac - Neulles Airport","city":"Jonzac / Neulles","usage":"Public"},{"icao":"LFBH","name":"La Rochelle – Île de Ré Airport","city":"La Rochelle / Île de Ré","usage":"Public"},{"icao":"LFJI","name":"Marennes Aerodrome","city":"Marennes","usage":"Restricted"},{"icao":"LFCP","name":"Pons - Avy Airport","city":"Pons / Avy","usage":"Public"},{"icao":"LFDN","name":"Rochefort – Saint-Agnant Airport","city":"Rochefort / Saint-Agnant","usage":"Public/mil."},{"icao":"LFXR","name":"Rochefort - Soubise Airport","city":"Rochefort / Soubise","usage":"Public"},{"icao":"LFCY","name":"Royan – Médis Aerodrome","city":"Royan / Médis","usage":"Public"},{"icao":"LFIY","name":"Saint-Jean-d'Angély - Saint-Denis-du-Pin Aerodrome","city":"Saint-Jean-d'Angély / Saint-Denis-du-Pin","usage":"Restricted"},{"icao":"LFDP","name":"Saint-Pierre-d'Oléron Airport","city":"Saint-Pierre-d'Oléron","usage":"Public"},{"icao":"LFXB","name":"Saintes - Thénac Airport","city":"Saintes / Thénac","usage":"Public/mil."},{"icao":"LFEH","name":"Aubigny-sur-Nère Airport","city":"Aubigny-sur-Nère","usage":"Public"},{"icao":"LFOA","name":"Avord Air Base","city":"Avord","usage":"Military"},{"icao":"LFLD","name":"Bourges Airport","city":"Bourges","usage":"Public"},{"icao":"LFFU","name":"Châteauneuf-sur-Cher Airport","city":"Châteauneuf-sur-Cher","usage":"Public"},{"icao":"LFFV","name":"Vierzon - Méreau Aerodrome","city":"Vierzon / Méreau","usage":"Restricted"},{"icao":"LFSL","name":"Brive–Souillac Airport","city":"Brive-la-Gaillarde / Souillac","usage":"Public"},{"icao":"LFBV","name":"Brive–Laroche Airport","city":"Brive-la-Gaillarde / La Roche","usage":"Public"},{"icao":"LFDE","name":"Égletons Airport","city":"Égletons","usage":"Public"},{"icao":"LFCU","name":"Ussel - Thalamy Airport","city":"Ussel / Thalamy","usage":"Public"},{"icao":"LFKJ","name":"Ajaccio Napoleon Bonaparte Airport","city":"Ajaccio / Campo dell'Oro","usage":"Public"},{"icao":"LFKF","name":"Figari–Sud Corse Airport","city":"Figari Corse-du-Sud","usage":"Public"},{"icao":"LFKO","name":"Propriano Airport","city":"Propriano","usage":"Public"},{"icao":"LFKS","name":"Solenzara Air Base","city":"Sari-Solenzara","usage":"Military"},{"icao":"LFKB","name":"Bastia – Poretta Airport","city":"Bastia / Poretta","usage":"Public"},{"icao":"LFKC","name":"Calvi – Sainte-Catherine Airport","city":"Calvi / Sainte-Catherine","usage":"Public"},{"icao":"LFKT","name":"Corte Airport","city":"Corte","usage":"Public"},{"icao":"LFKG","name":"Ghisonaccia Alzitone Airport","city":"Ghisonaccia / Alzitone","usage":"Restricted"},{"icao":"LFGF","name":"Beaune - Challanges Airport","city":"Beaune / Challanges","usage":"Public"},{"icao":"LFSY","name":"Cessey Airport","city":"Cessey / Baigneux-les-Juifs","usage":"Private"},{"icao":"LFQH","name":"Châtillon-sur-Seine Airport","city":"Châtillon-sur-Seine","usage":"Public"},{"icao":"LFGI","name":"Dijon - Darois Airport","city":"Dijon / Darois","usage":"Public"},{"icao":"LFSD","name":"Dijon–Bourgogne Airport","city":"Dijon / Longvic","usage":"Public/mil."},{"icao":"LFGZ","name":"Nuits-Saint-Georges Aerodrome","city":"Nuits-Saint-Georges","usage":"Restricted"},{"icao":"LFEP","name":"Pouilly - Maconge Aerodrome","city":"Pouilly-en-Auxois / Maconge","usage":"Restricted"},{"icao":"LFEW","name":"Saulieu - Liernais Airport","city":"Saulieu / Liernais","usage":"Public"},{"icao":"LFGQ","name":"Semur-en-Auxois Airport","city":"Semur-en-Auxois","usage":"Public"},{"icao":"LFET","name":"Til-Châtel Airport","city":"Til-Châtel","usage":"Public"},{"icao":"LFEB","name":"Dinan - Trélivan Airport","city":"Dinan / Trélivan","usage":"Public"},{"icao":"LFRO","name":"Lannion – Côte de Granit Airport","city":"Lannion","usage":"Public"},{"icao":"LFRT","name":"Saint-Brieuc – Armor Airport","city":"Saint-Brieuc / Côtes-d'Armor","usage":"Public"},{"icao":"LFCE","name":"Guéret - Saint-Laurent Airport","city":"Guéret / Saint-Laurent","usage":"Public"},{"icao":"LFBK","name":"Montluçon – Guéret Airport","city":"Montluçon / Guéret","usage":"Public"},{"icao":"LFIB","name":"Belvès - Saint-Pardoux Aerodrome","city":"Belvès / Saint-Pardoux-et-Vielvic","usage":"Restricted"},{"icao":"LFBE","name":"Bergerac Dordogne Périgord Airport","city":"Bergerac / Roumanière","usage":"Public"},{"icao":"LFBX","name":"Périgueux Bassillac Airport","city":"Périgueux / Bassillac","usage":"Public"},{"icao":"LFIK","name":"Ribérac - Saint-Aulaye Aerodrome","city":"Ribérac / Saint-Aulaye","usage":"Restricted"},{"icao":"LFDF","name":"Sainte-Foy-la-Grande Airport","city":"Sainte-Foy-la-Grande","usage":"Public"},{"icao":"LFDS","name":"Sarlat - Domme Airport","city":"Sarlat-la-Canéda / Domme","usage":"Public"},{"icao":"LFQM","name":"Besançon – La Vèze Aerodrome","city":"Besançon / La Vèze","usage":"Public"},{"icao":"LFSA","name":"Besançon - Thise Airport","city":"Besançon / Thise","usage":"Public"},{"icao":"LFSM","name":"Montbéliard – Courcelles Aerodrome","city":"Montbéliard / Courcelles-lès-Montbéliard","usage":"Public"},{"icao":"LFSP","name":"Pontarlier Airport","city":"Pontarlier","usage":"Public"},{"icao":"LFXH","name":"Valdahon Air Base","city":"Valdahon","usage":"Military"},{"icao":"LFJF","name":"Aubenasson Aerodrome","city":"Aubenasson","usage":"Restricted"},{"icao":"LFJE","name":"La Motte-Chalancon Aerodrome","city":"La Motte-Chalancon","usage":"Restricted"},{"icao":"LFLQ","name":"Montélimar - Ancône Airport","city":"Montélimar / Ancône","usage":"Public"},{"icao":"LFHD","name":"Pierrelate Airport","city":"Pierrelatte","usage":"Public"},{"icao":"LFHE","name":"Romans - Saint-Paul Airport","city":"Romans-sur-Isère / Saint-Paul-lès-Romans","usage":"Public"},{"icao":"LFKE","name":"Saint-Jean-en-Royans Aerodrome","city":"Saint-Jean-en-Royans","usage":"Restricted"},{"icao":"LFLR","name":"Saint-Rambert-d'Albon Airport","city":"Saint-Rambert-d'Albon","usage":"Public"},{"icao":"LFLU","name":"Valence-Chabeuil Airport","city":"Valence / Chabeuil","usage":"Public"},{"icao":"LFPD","name":"Bernay–St Martin Airport","city":"Bernay / Saint-Martin-du-Tilleul","usage":"Public"},{"icao":"LFFY","name":"Étrépagny Aerodrome","city":"Étrépagny","usage":"Restricted"},{"icao":"LFOE","name":"Évreux-Fauville Air Base","city":"Évreux / Fauville","usage":"Military"},{"icao":"LFFD","name":"Saint-André-de-l'Eure Airport","city":"Saint-André-de-l'Eure","usage":"Restricted"},{"icao":"LFFL","name":"Bailleau-Armenonville Aerodrome","city":"Bailleau-Armenonville","usage":"Restricted"},{"icao":"LFOR","name":"Chartres – Champhol Aerodrome","city":"Chartres / Champhol","usage":"Public"},{"icao":"LFOC","name":"Châteaudun Airport","city":"Châteaudun","usage":"Public/mil."},{"icao":"LFON","name":"Vernouillet Airport","city":"Dreux / Vernouillet","usage":"Public"},{"icao":"LFRB","name":"Brest Bretagne Airport","city":"Brest / Guipavas","usage":"Public"},{"icao":"LFRJ","name":"Landivisiau Air Base","city":"Landivisiau","usage":"Military"},{"icao":"LFRL","name":"Lanvéoc - Poulmic Air Base","city":"Lanvéoc / Poulmic","usage":"Military"},{"icao":"LFRU","name":"Morlaix – Ploujean Airport","city":"Morlaix / Ploujean","usage":"Public"},{"icao":"LFEC","name":"Ushant Airport","city":"Ushant","usage":"Public"},{"icao":"LFRQ","name":"Quimper–Cornouaille Airport","city":"Quimper / Pluguffan","usage":"Public"},{"icao":"LFMS","name":"Alès - Deaux Airport","city":"Alès / Deaux","usage":"Public"},{"icao":"LFNT","name":"Avignon - Pujaut Aerodrome","city":"Avignon / Pujaut","usage":"Restricted"},{"icao":"LFTN","name":"La Grand-Combe Aerodrome","city":"La Grand-Combe","usage":"Restricted"},{"icao":"LFME","name":"Nîmes - Courbessac Airport","city":"Nîmes / Courbessac","usage":"Public"},{"icao":"LFTW","name":"Nîmes–Alès–Camargue–Cévennes Airport","city":"Nîmes / Garons","usage":"Public"},{"icao":"LFNU","name":"Uzès Aerodrome","city":"Uzès","usage":"Restricted"},{"icao":"LFCB","name":"Bagnères-de-Luchon Airport","city":"Bagnères-de-Luchon","usage":"Public"},{"icao":"LFJH","name":"Cazères - Palaminy Aerodrome","city":"Cazères / Palaminy","usage":"Restricted"},{"icao":"LFIT","name":"Toulouse - Bourg-Saint-Bernard Aerodrome","city":"Toulouse / Bourg-Saint-Bernard","usage":"Restricted"},{"icao":"LFIO","name":"Toulouse - Montaudran Airport","city":"Toulouse / Montaudran","usage":"Public"},{"icao":"LFBR","name":"Muret – Lherm Aerodrome","city":"Muret / Lherm","usage":"Public"},{"icao":"LFMG","name":"Montagne Noire Aerodrome","city":"Montagne Noire / Revel","usage":"Restricted"},{"icao":"LFIR","name":"Revel - Montgey Aerodrome","city":"Revel / Montgey","usage":"Restricted"},{"icao":"LFIM","name":"Saint-Gaudens - Montréjeau Airport","city":"Saint-Gaudens / Montréjeau","usage":"Public"},{"icao":"LFBO","name":"Toulouse–Blagnac Airport","city":"Toulouse / Blagnac","usage":"Public"},{"icao":"LFBF","name":"Toulouse - Francazal Air Base","city":"Toulouse / Francazal","usage":"Military"},{"icao":"LFCL","name":"Toulouse – Lasbordes Airport","city":"Toulouse / Balma","usage":"Public"},{"icao":"LFDH","name":"Auch - Lamothe Airport","city":"Auch / Lamothe-Goas","usage":"Public"},{"icao":"LFID","name":"Condom - Valence-sur-Baïse Airport","city":"Condom / Valence-sur-Baïse","usage":"Public"},{"icao":"LFCN","name":"Nogaro Airport","city":"Nogaro","usage":"Public"},{"icao":"LFCD","name":"Andernos-les-Bains Airport","city":"Andernos-les-Bains","usage":"Public"},{"icao":"LFCH","name":"Arcachon – La Teste-de-Buch Airport","city":"Arcachon / La Teste-de-Buch","usage":"Public"},{"icao":"LFCS","name":"Bordeaux - Leognan - Saucats Airport","city":"Bordeaux / Léognan / Saucats","usage":"Public"},{"icao":"LFBD","name":"Bordeaux–Mérignac Airport","city":"Bordeaux / Mérignac","usage":"Public/mil."},{"icao":"LFDO","name":"Bordeaux - Souge Aerodrome","city":"Bordeaux / Souge","usage":"Public"},{"icao":"LFDY","name":"Bordeaux - Yvrac Aerodrome","city":"Bordeaux / Yvrac","usage":"Restricted"},{"icao":"LFDR","name":"La Réole - Floudès Airport","city":"La Réole / Floudès","usage":"Public"},{"icao":"LFBC","name":"Cazaux Air Base","city":"Cazaux / La Teste-de-Buch","usage":"Military"},{"icao":"LFDU","name":"Lesparre - Saint-Laurent-de-Médoc Airport","city":"Lesparre-Médoc / Saint-Laurent-Médoc","usage":"Public"},{"icao":"LFDI","name":"Libourne - Artigues-de-Lussac Airport","city":"Libourne / Les Artigues-de-Lussac","usage":"Public"},{"icao":"LFDC","name":"Montendre - Marcillac Airport","city":"Montendre / Marcillac","usage":"Public"},{"icao":"LFDK","name":"Soulac-sur-Mer Airport","city":"Soulac-sur-Mer","usage":"Public"},{"icao":"LFIV","name":"Vendays-Montalivet Aerodrome","city":"Vendays-Montalivet","usage":"Restricted"},{"icao":"LFNX","name":"Bédarieux - La Tour-sur-Orb Aerodrome","city":"Bédarieux / La Tour-sur-Orb","usage":"Restricted"},{"icao":"LFMU","name":"Béziers Cap d'Agde Airport","city":"Béziers / Vias","usage":"Public"},{"icao":"LFNG","name":"Montpellier - Candillargues Airport","city":"Montpellier / Candillargues","usage":"Public"},{"icao":"LFMT","name":"Montpellier–Méditerranée Airport","city":"Montpellier / Mauguio","usage":"Public"},{"icao":"LFNP","name":"Pézenas - Nizas Aerodrome","city":"Pézenas / Nizas","usage":"Restricted"},{"icao":"LFNL","name":"Saint-Martin-de-Londres Aerodrome","city":"Saint-Martin-de-Londres","usage":"Restricted"},{"icao":"LFRD","name":"Dinard–Pleurtuit–Saint-Malo Airport","city":"Dinard / Pleurtuit / Saint-Malo","usage":"Public"},{"icao":"LFER","name":"Redon - Bains-sur-Oust Aerodrome","city":"Redon / Bains-sur-Oust","usage":"Public"},{"icao":"LFRN","name":"Rennes–Saint-Jacques Airport","city":"Rennes / Saint-Jacques-de-la-Lande","usage":"Public"},{"icao":"LFEO","name":"Saint-Servan Airport","city":"Saint-Servan / Saint-Malo","usage":"Public"},{"icao":"LFEG","name":"Argenton-sur-Creuse Airport","city":"Argenton-sur-Creuse","usage":"Public"},{"icao":"LFLX","name":"Châteauroux-Centre Marcel Dassault Airport","city":"Châteauroux / Déols","usage":"Public"},{"icao":"LFEJ","name":"Châteauroux - Villers Airport","city":"Châteauroux / Villers-les-Ormes","usage":"Public"},{"icao":"LFEK","name":"Issoudun - Le Fay Airport","city":"Issoudun / Le Fay","usage":"Public"},{"icao":"LFEL","name":"Le Blanc Airport","city":"Le Blanc","usage":"Public"},{"icao":"LFEF","name":"Amboise - Dierre Airport","city":"Amboise / Dierre","usage":"Public"},{"icao":"LFJT","name":"Tours - Le Louroux Aerodrome","city":"Tours / Le Louroux","usage":"Restricted"},{"icao":"LFEN","name":"Tours - Sorigny Airport","city":"Tours / Sorigny","usage":"Public"},{"icao":"LFOT","name":"Tours Val de Loire Airport","city":"Tours / Loire Valley","usage":"Public"},{"icao":"LFLG","name":"Grenoble – Le Versoud Aerodrome","city":"Grenoble / Le Versoud","usage":"Public"},{"icao":"LFLS","name":"Alpes–Isère Airport","city":"Grenoble / Saint-Étienne-de-Saint-Geoirs","usage":"Public"},{"icao":"LFHU","name":"Alpe d'Huez Airport","city":"Alpe d'Huez","usage":"Public"},{"icao":"LFKP","name":"La Tour-du-Pin - Cessieu Aerodrome","city":"La Tour-du-Pin / Cessieu","usage":"Restricted"},{"icao":"LFHI","name":"Morestel Aerodrome","city":"Morestel","usage":"Public"},{"icao":"LFKH","name":"Saint-Jean-d'Avelanne Aerodrome","city":"Saint-Jean-d'Avelanne","usage":"Restricted"},{"icao":"LFHH","name":"Vienne - Reventin Airport","city":"Vienne / Reventin-Vaugris","usage":"Public"},{"icao":"LFGD","name":"Arbois Aerodrome","city":"Arbois","usage":"Restricted"},{"icao":"LFGX","name":"Champagnole - Crotenay Aerodrome","city":"Champagnole / Crotenay","usage":"Restricted"},{"icao":"LFGJ","name":"Dole–Jura Airport","city":"Dole / Tavaux","usage":"Public"},{"icao":"LFGL","name":"Lons-le-Saunier - Courlaoux Airport","city":"Lons-le-Saunier / Courlaoux","usage":"Public"},{"icao":"LFKZ","name":"Saint-Claude - Pratz Aerodrome","city":"Saint-Claude / Pratz","usage":"Restricted"},{"icao":"LFDA","name":"Aire-sur-l'Adour Airport","city":"Aire-sur-l'Adour","usage":"Public"},{"icao":"LFBS","name":"Biscarrosse – Parentis Airport","city":"Biscarrosse / Parentis-en-Born","usage":"Public"},{"icao":"LFBY","name":"Dax - Seyresse Airport","city":"Dax / Seyresse","usage":"Public"},{"icao":"LFCZ","name":"Mimizan Airport","city":"Mimizan","usage":"Public"},{"icao":"LFBM","name":"Mont-de-Marsan Air Base","city":"Mont-de-Marsan","usage":"Military"},{"icao":"LFIL","name":"Rion-des-Landes Aerodrome","city":"Rion-des-Landes","usage":"Public"},{"icao":"LFOQ","name":"Blois - Le Breuil Airport","city":"Blois / Le Breuil","usage":"Public"},{"icao":"LFFM","name":"Lamotte-Beuvron Aerodrome","city":"Lamotte-Beuvron","usage":"Restricted"},{"icao":"LFYR","name":"Romorantin - Pruniers Airport","city":"Romorantin-Lanthenay / Pruniers","usage":"Public/mil."},{"icao":"LFLZ","name":"Feurs - Chambéon Airport","city":"Feurs / Chambéon","usage":"Public"},{"icao":"LFLO","name":"Roanne Renaison Airport","city":"Roanne / Renaison","usage":"Public"},{"icao":"LFHG","name":"Saint-Chamond - L'Horme Airport","city":"Saint-Chamond / L'Horme","usage":"Public"},{"icao":"LFMH","name":"Saint-Étienne–Bouthéon Airport","city":"Saint-Étienne / Andrézieux-Bouthéon","usage":"Public"},{"icao":"LFKM","name":"Saint-Galmier Aerodrome","city":"Saint-Galmier","usage":"Restricted"},{"icao":"LFHR","name":"Brioude - Beaumont Airport","city":"Brioude / Beaumont","usage":"Public"},{"icao":"LFHP","name":"Le Puy – Loudes Airport","city":"Le Puy-en-Velay / Loudes","usage":"Public"},{"icao":"LFFI","name":"Ancenis Aerodrome","city":"Ancenis","usage":"Public"},{"icao":"LFRE","name":"La Baule - Pornichet - Le Pouliguen Airport","city":"La Baule-Escoublac","usage":"Public"},{"icao":"LFRS","name":"Nantes Atlantique Airport","city":"Nantes / Bouguenais","usage":"Public"},{"icao":"LFRZ","name":"Saint-Nazaire Montoir Airport","city":"Saint-Nazaire / Montoir-de-Bretagne","usage":"Public"},{"icao":"LFEI","name":"Briare - Châtillon Airport","city":"Briare / Châtillon-sur-Loire","usage":"Public"},{"icao":"LFEM","name":"Montargis - Vimory Airport","city":"Montargis / Vimory","usage":"Public"},{"icao":"LFOJ","name":"Orléans – Bricy Air Base","city":"Orléans / Bricy","usage":"Military"},{"icao":"LFOZ","name":"Orléans – Saint-Denis-de-l'Hôtel Airport","city":"Orléans / Saint-Denis-de-l'Hôtel","usage":"Public"},{"icao":"LFFP","name":"Pithiviers Aerodrome","city":"Pithiviers","usage":"Restricted"},{"icao":"LFCC","name":"Cahors - Lalbenque Airport","city":"Cahors / Lalbenque","usage":"Public"},{"icao":"LFCF","name":"Figeac - Livernon Airport","city":"Figeac / Livernon","usage":"Public"},{"icao":"LFBA","name":"Agen La Garenne Airport","city":"Agen / La Garenne","usage":"Public"},{"icao":"LFDX","name":"Fumel - Montayral Airport","city":"Fumel / Montayral","usage":"Public"},{"icao":"LFDM","name":"Marmande – Virazeil Airport","city":"Marmande / Virazeil","usage":"Public"},{"icao":"LFCW","name":"Villeneuve-sur-Lot Airport","city":"Villeneuve-sur-Lot","usage":"Public"},{"icao":"LFNB","name":"Mende - Brenoux Airport","city":"Mende / Brenoux","usage":"Public"},{"icao":"LFNO","name":"Florac - Sainte-Enimie Aerodrome","city":"Florac / Sainte-Enimie","usage":"Restricted"},{"icao":"LFRA","name":"Angers – Avrillé Airport","city":"Angers / Avrillé","usage":"Public"},{"icao":"LFJR","name":"Angers – Loire Airport","city":"Angers / Marcé","usage":"Public"},{"icao":"LFTQ","name":"Châteaubriant - Pouancé Aerodrome","city":"Châteaubriant / Pouancé","usage":"Restricted"},{"icao":"LFOU","name":"Cholet - Le Pontreau Aerodrome","city":"Cholet / Le Pontreau","usage":"Public"},{"icao":"LFOD","name":"Saumur - Saint-Hilaire - Saint-Florent Aerodrome","city":"Saumur / Saint-Florent-le-Vieil","usage":"Public"},{"icao":"LFRW","name":"Avranches - Le Val-Saint-Père Aerodrome","city":"Avranches / Le Val-Saint-Père","usage":"Restricted"},{"icao":"LFRC","name":"Cherbourg – Maupertus Airport","city":"Cherbourg-Octeville / Maupertus-sur-Mer","usage":"Public"},{"icao":"LFRF","name":"Granville - Mont Saint-Michel Aerodrome","city":"Granville / Mont-Saint-Michel","usage":"Public"},{"icao":"LFOM","name":"Lessay Airport","city":"Lessay","usage":"Public"},{"icao":"LFAU","name":"Vauville Aerodrome","city":"Vauville","usage":"Restricted"},{"icao":"LFQK","name":"Châlons - Écury-sur-Coole Airport","city":"Châlons-en-Champagne / Écury-sur-Coole","usage":"Public"},{"icao":"LFOK","name":"Châlons Vatry Airport","city":"Châlons-en-Champagne / Vatry","usage":"Public"},{"icao":"LFSW","name":"Épernay - Plivot Airport","city":"Épernay / Plivot","usage":"Public"},{"icao":"LFYM","name":"Marigny - Le Grand Airport","city":"Marigny / Le Grand","usage":"Public"},{"icao":"LFXM","name":"Mourmelon Aerodrome","city":"Mourmelon-le-Grand","usage":"Public"},{"icao":"LFSR","name":"Reims - Champagne Aerodrome","city":"Reims / Champagne-Ardenne","usage":"Public"},{"icao":"LFQA","name":"Reims – Prunay Aerodrome","city":"Reims / Prunay","usage":"Public"},{"icao":"LFFZ","name":"Sézanne - Saint-Remy Airport","city":"Sézanne / Saint-Remy-sous-Broyes","usage":"Public"},{"icao":"LFSK","name":"Vitry-le-François - Vauclerc Airport","city":"Vitry-le-François / Vauclerc","usage":"Public"},{"icao":"LFJA","name":"Quartier Général d'Aboville","city":"Chaumont / Semoutiers","usage":"Government/mil."},{"icao":"LFFJ","name":"Joinville - Mussey Aerodrome","city":"Joinville / Val-d'Ornain","usage":"Restricted"},{"icao":"LFSU","name":"Langres - Rolampont Airport","city":"Langres / Rolampont","usage":"Public"},{"icao":"LFSI","name":"Saint-Dizier – Robinson Air Base","city":"Saint-Dizier","usage":"Military"},{"icao":"LFOV","name":"Laval - Entrammes Airport","city":"Laval / Entrammes","usage":"Public"},{"icao":"LFGR","name":"Doncourt-lès-Conflans Airport","city":"Doncourt-lès-Conflans","usage":"Public"},{"icao":"LFGS","name":"Longuyon - Villette Airport","city":"Longuyon / Villette","usage":"Public"},{"icao":"LFQC","name":"Lunéville-Croismare Airport","city":"Lunéville / Croismare","usage":"Public"},{"icao":"LFEX","name":"Nancy - Azelot Aerodrome","city":"Nancy / Azelot","usage":"Restricted"},{"icao":"LFSN","name":"Nancy-Essey Airport","city":"Nancy / Tomblaine","usage":"Public"},{"icao":"LFEZ","name":"Nancy - Malzéville Aerodrome","city":"Nancy / Malzéville","usage":"Restricted"},{"icao":"LFSO","name":"Nancy – Ochey Air Base","city":"Nancy / Ochey","usage":"Military"},{"icao":"LFSV","name":"Pont-Saint-Vincent Aerodrome","city":"Pont-Saint-Vincent","usage":"Restricted"},{"icao":"LFSL","name":"Toul-Rosières Air Base","city":"Toul / Rosières-en-Haye","usage":"Military"},{"icao":"LFAW","name":"Villerupt Aerodrome","city":"Villerupt","usage":"Restricted"},{"icao":"LFEU","name":"Bar-le-Duc - Les Hauts-de-Chée Airport","city":"Bar-le-Duc / Les Hauts-de-Chée","usage":"Public"},{"icao":"LFQE","name":"Étain - Rouvres Air Base","city":"Étain / Rouvres-en-Woëvre","usage":"Public"},{"icao":"LFYK","name":"Montmédy - Marville Airport","city":"Montmédy / Marville","usage":"Public"},{"icao":"LFGW","name":"Verdun-Le-Rozelier Airport","city":"Verdun / Le Rozelier","usage":"Public"},{"icao":"LFEA","name":"Belle-Île Aerodrome","city":"Belle Île / Le Palais","usage":"Public"},{"icao":"LFXQ","name":"Coëtquidan Air Base","city":"Coëtquidan / Guer","usage":"Military"},{"icao":"LFES","name":"Guiscriff Scaer Airport","city":"Guiscriff","usage":"Public"},{"icao":"LFRH","name":"Lorient South Brittany Airport","city":"Lorient / Lann / Bihoué","usage":"Government"},{"icao":"LFRP","name":"Ploërmel - Loyat Airport","city":"Ploërmel / Loyat","usage":"Public"},{"icao":"LFED","name":"Pontivy Airport","city":"Pontivy","usage":"Public"},{"icao":"LFEQ","name":"Quiberon Aerodrome","city":"Quiberon","usage":"Public"},{"icao":"LFRV","name":"Vannes Airport","city":"Vannes / Meucon","usage":"Public"},{"icao":"LFQZ","name":"Dieuze - Gueblange Aerodrome","city":"Dieuze / Guéblange","usage":"Restricted"},{"icao":"LFSF","name":"Metz-Frescaty Air Base","city":"Metz / Frescaty","usage":"Military"},{"icao":"LFJL","name":"Metz–Nancy–Lorraine Airport","city":"Metz / Nancy","usage":"Public"},{"icao":"LFQP","name":"Quartier La Horie","city":"Phalsbourg / Bourscheid","usage":"Military"},{"icao":"LFGT","name":"Sarrebourg - Buhl Airport","city":"Sarrebourg / Buhl","usage":"Public"},{"icao":"LFGU","name":"Sarreguemines - Neunkirch Airport","city":"Sarreguemines / Neunkirch","usage":"Public"},{"icao":"LFGV","name":"Thionville - Yutz Airport","city":"Thionville / Yutz","usage":"Public"},{"icao":"LFJC","name":"Clamecy Airport","city":"Clamecy","usage":"Public"},{"icao":"LFGH","name":"Cosne-sur-Loire Airport","city":"Cosne-Cours-sur-Loire","usage":"Public"},{"icao":"LFQG","name":"Nevers - Fourchambault Airport","city":"Nevers / Fourchambault","usage":"Public"},{"icao":"LFQI","name":"Cambrai - Épinoy Air Base","city":"Cambrai / Épinoy","usage":"Military"},{"icao":"LFYG","name":"Cambrai-Niergnies Airport","city":"Cambrai / Niergnies","usage":"Public"},{"icao":"LFAK","name":"Dunkerque – Les Moëres Airport","city":"Dunkirk / Les Moëres","usage":"Restricted"},{"icao":"LFQQ","name":"Lille Airport","city":"Lille / Lesquin","usage":"Public"},{"icao":"LFQO","name":"Lille - Marcq-en-Baroeul Airport","city":"Lille / Marcq-en-Barœul","usage":"Public"},{"icao":"LFQJ","name":"Maubeuge Aerodrome","city":"Maubeuge / Élesmes","usage":"Public"},{"icao":"LFQT","name":"Merville–Calonne Airport","city":"Merville / Calonne-sur-la-Lys","usage":"Public"},{"icao":"LFAV","name":"Valenciennes-Denain Airport","city":"Valenciennes / Denain","usage":"Public"},{"icao":"LFOB","name":"Beauvais–Tillé Airport","city":"Beauvais / Tillé","usage":"Public"},{"icao":"LFAD","name":"Compiègne - Margny Airport","city":"Compiègne / Margny-lès-Compiègne","usage":"Public"},{"icao":"LFPC","name":"Creil Air Base","city":"Creil","usage":"Military"},{"icao":"LFPP","name":"Plessis-Belleville Airport","city":"Le Plessis-Belleville","usage":"Public"},{"icao":"LFOF","name":"Alençon - Valframbert Aerodrome","city":"Alençon / Valframbert","usage":"Public"},{"icao":"LFAJ","name":"Argentan Aerodrome","city":"Argentan","usage":"Public"},{"icao":"LFAO","name":"Bagnoles-de-l'Orne - Couterne Airport","city":"Bagnoles-de-l'Orne / Rives d'Andaine","usage":"Public"},{"icao":"LFOG","name":"Flers - Saint-Paul Aerodrome","city":"Flers / La Lande-Patry","usage":"Public"},{"icao":"LFOL","name":"L'Aigle - Saint-Michel Airport","city":"L'Aigle / Saint-Sulpice-sur-Risle","usage":"Public"},{"icao":"LFAX","name":"Mortagne Aerodrome","city":"Mortagne-au-Perche","usage":"Public"},{"icao":"LFQD","name":"Arras – Roclincourt Airport","city":"Arras / Roclincourt","usage":"Public"},{"icao":"LFAM","name":"Berck-sur-Mer Airport","city":"Berck","usage":"Public"},{"icao":"LFAC","name":"Calais–Dunkerque Airport","city":"Calais / Dunkirk","usage":"Public"},{"icao":"LFAT","name":"Le Touquet – Côte d'Opale Airport","city":"Le Touquet","usage":"Public"},{"icao":"LFQL","name":"Lens - Bénifontaine Airport","city":"Lens / Bénifontaine","usage":"Public"},{"icao":"LFQN","name":"Saint-Omer - Wizernes Airport","city":"Saint-Omer / Wizernes","usage":"Public"},{"icao":"LFQS","name":"Vitry-En-Artois Airport","city":"Vitry-en-Artois","usage":"Public"},{"icao":"LFHT","name":"Ambert - Le Poyet Airport","city":"Ambert / Le Poyet","usage":"Public"},{"icao":"LFLC","name":"Clermont-Ferrand Auvergne Airport","city":"Clermont-Ferrand / Auvergne","usage":"Public"},{"icao":"LFHA","name":"Issoire - Le Broc Airport","city":"Issoire / Le Broc","usage":"Public"},{"icao":"LFBZ","name":"Biarritz Pays Basque Airport","city":"Biarritz","usage":"Public"},{"icao":"LFIX","name":"Itxassou Aerodrome","city":"Itxassou","usage":"Restricted"},{"icao":"LFCO","name":"Oloron - Herrère Airport","city":"Oloron-Sainte-Marie / Herrère","usage":"Public"},{"icao":"LFBP","name":"Pau Pyrénées Airport","city":"Pau / Uzein","usage":"Public"},{"icao":"LFDQ","name":"Castelnau-Magnoac Aerodrome","city":"Castelnau-Magnoac","usage":"Restricted"},{"icao":"LFIP","name":"Peyresourde - Balestas Aerodrome","city":"Col de Peyresourde / Balestas","usage":"Restricted"},{"icao":"LFDT","name":"Tarbes - Laloubère Airport","city":"Tarbes / Laloubère","usage":"Public"},{"icao":"LFBT","name":"Tarbes–Lourdes–Pyrénées Airport","city":"Tarbes / Lourdes","usage":"Public"},{"icao":"LFNQ","name":"Mont-Louis - La Quillane Aerodrome","city":"Mont-Louis / La Quillane","usage":"Restricted"},{"icao":"LFMP","name":"Perpignan–Rivesaltes Airport","city":"Perpignan / Rivesaltes","usage":"Public"},{"icao":"LFYS","name":"Sainte-Léocadie Aerodrome","city":"Sainte-Léocadie","usage":"Restricted"},{"icao":"LFSH","name":"Haguenau Airport","city":"Haguenau","usage":"Public"},{"icao":"LFQU","name":"Sarre-Union Aerodrome","city":"Sarre-Union","usage":"Restricted"},{"icao":"LFQY","name":"Saverne - Steinbourg Aerodrome","city":"Saverne / Steinbourg","usage":"Restricted"},{"icao":"LFST","name":"Strasbourg Airport","city":"Strasbourg / Entzheim","usage":"Public/mil."},{"icao":"LFGC","name":"Strasbourg - Neuhof Airport","city":"Strasbourg / Neuhof","usage":"Public"},{"icao":"LFSB","name":"EuroAirport Basel Mulhouse Freiburg","city":"Mulhouse","usage":"Public"},{"icao":"LFGA","name":"Colmar Airport","city":"Colmar / Houssen","usage":"Public"},{"icao":"LFSC","name":"Quartier Colonel Dio","city":"Colmar / Meyenheim","usage":"Military"},{"icao":"LFGB","name":"Mulhouse–Habsheim Airport","city":"Mulhouse / Habsheim","usage":"Public"},{"icao":"LFHW","name":"Belleville - Villié-Morgon Aerodrome","city":"Belleville / Villié-Morgon","usage":"Restricted"},{"icao":"LFKL","name":"Lyon - Brindas Aerodrome","city":"Lyon / Brindas","usage":"Restricted"},{"icao":"LFLY","name":"Lyon–Bron Airport","city":"Lyon / Bron","usage":"Public"},{"icao":"LFHJ","name":"Lyon - Corbas Aerodrome","city":"Lyon / Corbas","usage":"Restricted"},{"icao":"LFLL","name":"Lyon–Saint-Exupéry Airport","city":"Lyon / Colombier-Saugnieu","usage":"Public"},{"icao":"LFHV","name":"Villefranche – Tarare Airport","city":"Villefranche-sur-Saône / Tarare","usage":"Public"},{"icao":"LFYH","name":"Broyes-lès-Pesmes Airport","city":"Broye-Aubigney-Montseugny","usage":"Public"},{"icao":"LFEV","name":"Gray - Saint-Adrien Airport","city":"Gray","usage":"Public"},{"icao":"LFYL","name":"Lure - Malbouhans Airport","city":"Lure / Malbouhans","usage":"Public"},{"icao":"LFSX","name":"Luxeuil - Saint-Sauveur Air Base","city":"Luxeuil-les-Bains / Saint-Sauveur","usage":"Military"},{"icao":"LFQW","name":"Vesoul - Frotey Airfield","city":"Vesoul / Frotey","usage":"Public"},{"icao":"LFQF","name":"Autun - Bellevue Aerodrome","city":"Autun / Bellevue","usage":"Public"},{"icao":"LFLH","name":"Chalon – Champforgeuil Airport","city":"Chalon-sur-Saône / Champforgeuil","usage":"Public"},{"icao":"LFLM","name":"Mâcon - Charnay Airport","city":"Mâcon / Charnay-lès-Mâcon","usage":"Public"},{"icao":"LFGM","name":"Montceau-les-Mines - Pouilloux Airport","city":"Montceau-les-Mines / Pouilloux","usage":"Public"},{"icao":"LFGN","name":"Paray-le-Monial Airport","city":"Paray-le-Monial","usage":"Public"},{"icao":"LFLN","name":"Saint-Yan Airport","city":"Saint-Yan","usage":"Public"},{"icao":"LFFX","name":"Tournus - Cruisery Aerodrome","city":"Tournus / Cuisery","usage":"Restricted"},{"icao":"LFAL","name":"La Flèche - Thorée-les-Pins Aerodrome","city":"La Flèche / Thorée-les-Pins","usage":"Restricted"},{"icao":"LFRM","name":"Le Mans - Arnage Aerodrome","city":"Le Mans / Arnage","usage":"Public"},{"icao":"LFKA","name":"Albertville Aerodrome","city":"Albertville","usage":"Restricted"},{"icao":"LFLE","name":"Chambéry Aerodrome","city":"Chambéry / Challes-les-Eaux","usage":"Public"},{"icao":"LFLB","name":"Chambéry Airport","city":"Chambéry / Aix-les-Bains","usage":"Public"},{"icao":"LFLJ","name":"Courchevel Altiport","city":"Courchevel / Saint-Bon-Tarentaise","usage":"Restricted"},{"icao":"LFKX","name":"Méribel Altiport","city":"Méribel","usage":"Restricted"},{"icao":"LFKR","name":"Saint-Rémy-de-Maurienne Aerodrome","city":"Saint-Rémy-de-Maurienne","usage":"Restricted"},{"icao":"LFKD","name":"Sollières-Sardières Aerodrome","city":"Sollières-Sardières","usage":"Restricted"},{"icao":"LFLP","name":"Annecy – Haute-Savoie – Mont Blanc Airport","city":"Annecy / Meythet","usage":"Public"},{"icao":"LFLI","name":"Annemasse Aerodrome","city":"Annemasse","usage":"Public"},{"icao":"LFHM","name":"Megève Altiport","city":"Megève","usage":"Restricted"},{"icao":"LFHZ","name":"Sallanches Aerodrome","city":"Sallanches","usage":"Restricted"},{"icao":"LFPI","name":"Paris - Issy-les-Moulineaux Heliport","city":"Paris / Issy-les-Moulineaux","usage":"Public"},{"icao":"LFAB","name":"Dieppe - Saint-Aubin Airport","city":"Dieppe / Saint-Aubin-sur-Scie","usage":"Public"},{"icao":"LFAE","name":"Eu - Mers - Le Tréport Aerodrome","city":"Eu / Mers-les-Bains / Le Tréport","usage":"Restricted"},{"icao":"LFOH","name":"Le Havre – Octeville Airport","city":"Le Havre / Octeville-sur-Mer","usage":"Public"},{"icao":"LFOY","name":"Le Havre - Saint-Romain Airport","city":"Le Havre / Saint-Romain-de-Colbosc","usage":"Public"},{"icao":"LFOP","name":"Rouen Airport","city":"Rouen","usage":"Public"},{"icao":"LFOS","name":"Saint-Valery - Vittefleur Airport","city":"Saint-Valery-en-Caux / Vittefleur","usage":"Public"},{"icao":"LFPH","name":"Chelles - Le Pin Aerodrome","city":"Chelles / Le Pin","usage":"Public"},{"icao":"LFPK","name":"Coulommiers – Voisins Aerodrome","city":"Coulommiers / Voisins","usage":"Public"},{"icao":"LFPQ","name":"Fontenay-Trésigny Airport","city":"Fontenay-Trésigny","usage":"Public"},{"icao":"LFFG","name":"La Ferté-Gaucher Aerodrome","city":"La Ferté-Gaucher","usage":"Restricted"},{"icao":"LFPL","name":"Lognes – Émerainville aerodrome","city":"Lognes / Émerainville","usage":"Public"},{"icao":"LFPE","name":"Meaux - Esbly Aerodrome","city":"Meaux / Esbly","usage":"Public"},{"icao":"LFPM","name":"Melun Villaroche Aerodrome","city":"Melun","usage":"Public"},{"icao":"LFPU","name":"Moret - Episy Aerodrome","city":"Moret-sur-Loing / Épisy","usage":"Public"},{"icao":"LFAI","name":"Nangis les Loges Aerodrome","city":"Nangis / Les Loges","usage":"Public"},{"icao":"LFPF","name":"Beynes - Thiverval Aerodrome","city":"Beynes / Thiverval","usage":"Restricted"},{"icao":"LFPX","name":"Aérodrome de Chavenay - Villepreux","city":"Chavenay / Villepreux","usage":"Public"},{"icao":"LFXU","name":"Les Mureaux Airport","city":"Les Mureaux","usage":"Public"},{"icao":"LFPZ","name":"Saint-Cyr-l'École Aerodrome","city":"Saint-Cyr-l'École","usage":"Public"},{"icao":"LFPN","name":"Toussus-le-Noble Airport","city":"Toussus-le-Noble","usage":"Public"},{"icao":"LFPV","name":"Vélizy – Villacoublay Air Base","city":"Vélizy-Villacoublay","usage":"Military"},{"icao":"LFJB","name":"Mauléon Airport","city":"Mauléon","usage":"Public"},{"icao":"LFBN","name":"Niort - Souché Airport","city":"Niort / Souché","usage":"Public"},{"icao":"LFCT","name":"Thouars Airport","city":"Thouars","usage":"Public"},{"icao":"LFOI","name":"Aerodrome Abbeville","city":"Abbeville / Buigny-Saint-Maclou","usage":"Public"},{"icao":"LFAQ","name":"Albert – Picardie Airport","city":"Albert / Bray-sur-Somme","usage":"Restricted"},{"icao":"LFAY","name":"Amiens – Glisy Aerodrome","city":"Amiens / Glisy","usage":"Public"},{"icao":"LFAR","name":"Montdidier Aerodrome","city":"Montdidier","usage":"Restricted"},{"icao":"LFAG","name":"Peronne-St Quentin Airport","city":"Péronne / Saint-Quentin","usage":"Public"},{"icao":"LFCI","name":"Albi - Le Sequestre Aerodrome","city":"Albi / Le Sequestre","usage":"Public"},{"icao":"LFCK","name":"Castres–Mazamet Airport","city":"Castres / Mazamet","usage":"Public"},{"icao":"LFDG","name":"Gaillac - Lisle-sur-Tarn Airport","city":"Gaillac / Lisle-sur-Tarn","usage":"Public"},{"icao":"LFCQ","name":"Graulhet - Montdragon Airport","city":"Graulhet / Montdragon","usage":"Public"},{"icao":"LFCX","name":"Castelsarrazin - Moissac Airport","city":"Castelsarrasin / Moissac","usage":"Public"},{"icao":"LFDB","name":"Montauban Airport","city":"Montauban","usage":"Public"},{"icao":"LFTF","name":"Cuers - Pierrefeu Airport","city":"Cuers / Pierrefeu","usage":"Public"},{"icao":"LFMF","name":"Fayence-Tourrettes Airfield","city":"Fayence","usage":"Public"},{"icao":"LFTZ","name":"La Môle – Saint-Tropez Airport","city":"Saint-Tropez / La Môle","usage":"Restricted"},{"icao":"LFMQ","name":"Le Castellet Airport","city":"Le Castellet","usage":"Private"},{"icao":"LFMC","name":"Le Luc – Le Cannet Airport","city":"Le Luc / Le Cannet","usage":"Public"},{"icao":"LFTH","name":"Toulon–Hyères Airport","city":"Toulon / Hyères / Le Palyvestre","usage":"Public"},{"icao":"LFNF","name":"Vinon Airport","city":"Vinon-sur-Verdon","usage":"Public"},{"icao":"LFMV","name":"Avignon – Provence Airport","city":"Avignon / Caumont-sur-Durance","usage":"Public"},{"icao":"LFNH","name":"Carpentras Airport","city":"Carpentras","usage":"Public"},{"icao":"LFMO","name":"Orange-Caritat Air Base","city":"Orange / Caritat","usage":"Military"},{"icao":"LFND","name":"Pont-Saint-Esprit Airport","city":"Pont-Saint-Esprit","usage":"Public"},{"icao":"LFXI","name":"Saint-Christol Airport","city":"Saint-Christol","usage":"Public"},{"icao":"LFNV","name":"Valréas - Visan Airport","city":"Valréas / Visan","usage":"Public"},{"icao":"LFFK","name":"Fontenay-le-Comte Airport","city":"Fontenay-le-Comte","usage":"Public"},{"icao":"LFEY","name":"Île d'Yeu Aerodrome","city":"Île d'Yeu","usage":"Public"},{"icao":"LFRI","name":"La Roche-sur-Yon Aerodrome","city":"La Roche-sur-Yon / Les Ajoncs","usage":"Public"},{"icao":"LFOO","name":"Les Sables-d'Olonne - Talmont Airport","city":"Les Sables-d'Olonne / Talmont-Saint-Hilaire","usage":"Public"},{"icao":"LFFW","name":"Montaigu - Saint-Georges Airport","city":"Montaigu / Saint-Georges-de-Montaigu","usage":"Public"},{"icao":"LFCA","name":"Châtellerault - Targe Airport","city":"Châtellerault / Targe","usage":"Public"},{"icao":"LFDW","name":"Chauvigny Airport","city":"Chauvigny","usage":"Public"},{"icao":"LFDV","name":"Couhé - Vérac Airport","city":"Couhé / Vérac","usage":"Public"},{"icao":"LFDL","name":"Loudun Airport","city":"Loudun","usage":"Public"},{"icao":"LFBI","name":"Poitiers–Biard Airport","city":"Poitiers / Biard","usage":"Public"},{"icao":"LFBL","name":"Limoges – Bellegarde Airport","city":"Limoges / Bellegarde","usage":"Public"},{"icao":"LFBJ","name":"Saint-Junien Maryse Bastié Airport","city":"Saint-Junien","usage":"Public"},{"icao":"LFYD","name":"Damblain Airport","city":"Damblain","usage":"Public"},{"icao":"LFSE","name":"Épinal - Dogneville Airport","city":"Épinal / Dogneville","usage":"Public"},{"icao":"LFSG","name":"Épinal – Mirecourt Airport","city":"Épinal / Mirecourt","usage":"Public"},{"icao":"LFFT","name":"Neufchâteau Airport","city":"Neufchâteau","usage":"Public"},{"icao":"LFGY","name":"Saint-Dié - Remomeix Airport","city":"Saint-Dié-des-Vosges / Remomeix","usage":"Public"},{"icao":"LFSZ","name":"Vittel - Champ-de-Courses Airport","city":"Vittel / Champ de Courses","usage":"Public"},{"icao":"LFXC","name":"Vittel - Auzainvilliers Airport","city":"Vittel / Auzainvilliers","usage":"Military"},{"icao":"LFLA","name":"Auxerre – Branches Aerodrome","city":"Auxerre / Branches","usage":"Public"},{"icao":"LFGE","name":"Avallon Airport","city":"Avallon","usage":"Public"},{"icao":"LFGK","name":"Joigny Airport","city":"Joigny","usage":"Public"},{"icao":"LFGO","name":"Pont-sur-Yonne Airport","city":"Pont-sur-Yonne","usage":"Public"},{"icao":"LFGP","name":"Saint-Florentin - Chéu Airport","city":"Saint-Florentin / Chéu","usage":"Public"},{"icao":"LFGG","name":"Belfort Chaux Airport","city":"Belfort / Chaux","usage":"Public"},{"icao":"LFSQ","name":"Belfort - Fontaine Aerodrome","city":"Belfort / Fontaine","usage":"Public"},{"icao":"LFPY","name":"Brétigny-sur-Orge Air Base","city":"Brétigny-sur-Orge","usage":"Military"},{"icao":"LFFB","name":"Buno-Bonnevaux Aerodrome","city":"Buno-Bonnevaux","usage":"Restricted"},{"icao":"LFOX","name":"Étampes - Mondésir Aerodrome","city":"Étampes / Mondésir","usage":"Public"},{"icao":"LFFQ","name":"La Ferté-Alais Aerodrome","city":"La Ferté-Alais","usage":"Restricted"},{"icao":"LFPB","name":"Paris–Le Bourget Airport","city":"Paris / Le Bourget","usage":"Public"},{"icao":"LFPO","name":"Orly Airport","city":"Paris / Orly","usage":"Public"},{"icao":"LFFE","name":"Enghien Moisselles Airport","city":"Enghien-les-Bains / Moisselles","usage":"Restricted"},{"icao":"LFFC","name":"Mantes - Chérence Aerodrome","city":"Mantes-la-Jolie / Chérence","usage":"Restricted"},{"icao":"LFPG","name":"Charles de Gaulle Airport","city":"Paris / Roissy","usage":"Public"},{"icao":"LFPA","name":"Persan-Beaumont Airport","city":"Persan / Beaumont-sur-Oise","usage":"Public"},{"icao":"LFPT","name":"Pontoise – Cormeilles Aerodrome","city":"Pontoise / Cormeilles-en-Vexin","usage":"Public"}];
+
+// Portail SIA de l'atlas VAC en vigueur pour le cycle AIRAC courant.
+// L'URL change à chaque cycle (tous les 28 jours) : à mettre à jour à la demande de Maël.
+const AIRAC_ATLAS = {
+  cycle: '03 SEP 2026',
+  url: 'https://www.sia.aviation-civile.gouv.fr/media/dvd/eAIP_03_SEP_2026/Atlas-VAC/FR/VACProduitPartieframeset.htm',
+  // Dossier de base du cycle AIRAC en vigueur — à mettre à jour tous les 28 jours
+  // (même date que ci-dessus). Modèle vérifié : .../Atlas-VAC/PDF_AIPparSSection/VAC/AD/AD-2.{OACI}.pdf
+  base: 'https://www.sia.aviation-civile.gouv.fr/media/dvd/eAIP_03_SEP_2026'
+};
+
+function stripAccents(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+function norm(s){ return stripAccents(s||'').toLowerCase().trim(); }
+
+function searchAirports(query, limit){
+  const q = norm(query);
+  if(q==='') return [];
+  const qUpper = query.trim().toUpperCase();
+  const scored = [];
+  for(const a of AIRPORTS){
+    const nCity = norm(a.city), nName = norm(a.name);
+    let score = -1;
+    if(a.icao===qUpper) score = 0;
+    else if(a.icao.startsWith(qUpper) && qUpper.length>=2) score = 1;
+    else if(nCity.startsWith(q)) score = 2;
+    else if(nName.startsWith(q)) score = 3;
+    else if(nCity.includes(q) || nName.includes(q)) score = 4;
+    if(score>=0) scored.push({a, score});
+  }
+  scored.sort((x,y)=> x.score-y.score || x.a.city.localeCompare(y.a.city));
+  return scored.slice(0, limit||8).map(s=>s.a);
+}
+
+function vacLinks(rawCode){
+  const code = rawCode.trim().toUpperCase();
+  return {
+    pdf: `${AIRAC_ATLAS.base}/Atlas-VAC/PDF_AIPparSSection/VAC/AD/AD-2.${code}.pdf`,
+    atlas: AIRAC_ATLAS.url,
+    search: 'https://www.google.com/search?q=' + encodeURIComponent('carte VAC SIA ' + code)
+  };
+}
+
+function findAirport(code){
+  const c = code.trim().toUpperCase();
+  return AIRPORTS.find(a=>a.icao===c) || null;
+}
+
+// Altitude terrain (AMSL) confirmée par recoupement pour les aérodromes déjà demandés.
+// "special" = zones d'activité particulière repérées près du terrain (parachutage, voltige,
+// aéromodélisme, zones réglementées...), ajoutées manuellement quand demandées. Toujours
+// vérifier l'activation réelle (horaires/NOTAM) séparément — leur présence ici ne veut pas
+// dire qu'elles sont actives. Volontairement PAS de piste/fréquence/circuit : voir le PDF officiel.
+const AD_NOTES = {
+  LFLQ: { elevFt: 240,  elevM: 73  },
+  LFNA: { elevFt: 1966, elevM: 599 },
+  LFLU: {
+    elevFt: 525,  elevM: 160,
+    freqs: [
+      { label: 'A/A - TWR', mhz: '120.100' },
+      { label: 'LYON Approche (>1000 ft ASFC)', mhz: '136.075 / 133.150' }
+    ],
+    special: "Fréquences trouvées sur un extrait de carte VAC officielle daté de 2015. Le 120.100 (A/A-TWR) est recoupé par une fiche à jour (2026) ; les fréquences d'approche Lyon n'ont pas été revérifiées récemment — à confirmer avant vol."
+  },
+  LFMV: { elevFt: 124,  elevM: 38  },
+  LFHD: {
+    freqs: [ { label: 'A/A', mhz: '118.980' } ],
+    special: "Zone réglementée LF-R 329 Pierrelatte (créée par arrêté du 16/02/2018, source Légifrance) : liée à une activité de drones (confirmé par la carte VAC elle-même), s'étendrait du sol jusqu'à 150 m/492 ft selon une source secondaire non confirmée par l'AIP — contacter le gestionnaire et vérifier l'activation avant vol. Egalement zone interdite P19 Tricastin (site nucléaire) à proximité immédiate, et zones d'activité au sol : parachutage n°438, voltige n°6803, aéromodélisme n°9815. Limites précises et horaires : voir AIP ENR 5.1, non trouvées ici."
+  }
+};
+
+// Coordonnées GPS (WGS84, degrés décimaux) — ajoutées terrain par terrain, sur demande vérifiée.
+// Source pour les 3 premières : Wikipédia (infobox sourcée AIP France).
+const COORDS = {
+  LFNA: { lat: 44.4539, lon: 6.0367 },
+  LFLU: { lat: 44.9156, lon: 4.9686 },
+  LFMV: { lat: 43.9067, lon: 4.9019 }
+};
+
+function toRad2(d){ return d*Math.PI/180; }
+function toDeg2(r){ return r*180/Math.PI; }
+
+function greatCircle(lat1,lon1,lat2,lon2){
+  const R = 3440.065; // NM
+  const φ1=toRad2(lat1), φ2=toRad2(lat2);
+  const Δφ=toRad2(lat2-lat1), Δλ=toRad2(lon2-lon1);
+  const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const dist = R*c;
+  const θ = Math.atan2(Math.sin(Δλ)*Math.cos(φ2), Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ));
+  const bearing = (toDeg2(θ)+360)%360;
+  return { dist, bearing };
+}
+
+function updateRouteNote(){
+  const panel = document.getElementById('routeNote');
+  const body = document.getElementById('routeNoteBody');
+  const depCode = document.getElementById('t_dep').value.trim().toUpperCase();
+  const arrCode = document.getElementById('t_arr').value.trim().toUpperCase();
+  const c1 = COORDS[depCode], c2 = COORDS[arrCode];
+
+  if(!depCode || !arrCode || !c1 || !c2){
+    panel.style.display = 'none';
+    return;
+  }
+
+  const { dist, bearing } = greatCircle(c1.lat, c1.lon, c2.lat, c2.lon);
+  const vp = Number(document.getElementById('f_vp').value)||100;
+  const timeMin = (dist/vp)*60;
+
+  body.innerHTML = `
+    🧭 Route directe ${depCode} → ${arrCode} : <strong>${dist.toFixed(1)} NM</strong>,
+    cap vrai <strong>${bearing.toFixed(0)}°</strong>,
+    ~${Math.round(timeMin)} min à ${vp} kt (vent non pris en compte).
+    <button type="button" class="btn-mini" id="fillLeg1FromRoute" style="margin-left:8px;">Remplir l'étape 1 avec ces valeurs</button>
+  `;
+  panel.style.display = 'block';
+
+  document.getElementById('fillLeg1FromRoute').addEventListener('click', ()=>{
+    if(legs.length===0) addLeg();
+    legs[0].rv = bearing.toFixed(0);
+    legs[0].dist = dist.toFixed(1);
+    if(!legs[0].point){
+      const arrAirport = findAirport(arrCode);
+      legs[0].point = arrAirport ? arrAirport.city : arrCode;
+    }
+    renderLegsInputs();
+    recompute();
+  });
+}
+
+function updateNotamNote(){
+  const panel = document.getElementById('notamNote');
+  const list = document.getElementById('notamCodesList');
+  const codes = ['t_dep','t_arr','t_deg1','t_deg2']
+    .map(id=>document.getElementById(id).value.trim().toUpperCase())
+    .filter(c=>/^[A-Z0-9]{4}$/.test(c));
+  const uniqueCodes = [...new Set(codes)];
+
+  if(uniqueCodes.length===0){
+    panel.style.display = 'none';
+    return;
+  }
+  list.textContent = uniqueCodes.join(' · ');
+  panel.style.display = 'block';
+}
+
+document.getElementById('btnCopyNotamCodes').addEventListener('click', (e)=>{
+  const text = document.getElementById('notamCodesList').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = e.target;
+    const old = btn.textContent;
+    btn.textContent = 'Copié ✓';
+    setTimeout(()=>{ btn.textContent = old; }, 1500);
+  }).catch(()=>{
+    alert('Codes : ' + text);
+  });
+});
+
+function updateAdNote(code){
+  const panel = document.getElementById('adNote');
+  const title = document.getElementById('adNoteTitle');
+  const body = document.getElementById('adNoteBody');
+  const known = findAirport(code);
+  const note = AD_NOTES[code];
+
+  if(!known){ panel.style.display='none'; return; }
+
+  const parts = [];
+  if(note && note.elevFt!==undefined){
+    parts.push(`Altitude terrain : ${note.elevFt} ft (${note.elevM} m)`);
+  }
+  if(note && note.special){
+    parts.push(`⚠ ${note.special}`);
+  }
+  if(parts.length===0){
+    parts.push('Rien de vérifié dans cette appli pour ce terrain — tout est dans le PDF officiel.');
+  } else {
+    parts.push('Piste et circuit : voir le PDF officiel, non reproduits ici.');
+  }
+
+  title.textContent = `${code} — ${known.name}`;
+  body.textContent = `${known.city} · ${parts.join(' · ')}`;
+  panel.style.display = 'block';
+}
+
+function wireTerrainField(inputId, hintId, linksId, listId, slot){
+  const input = document.getElementById(inputId);
+  const hint = document.getElementById(hintId);
+  const linksBox = document.getElementById(linksId);
+  const list = document.getElementById(listId);
+  let activeIdx = -1;
+  let currentMatches = [];
+
+  function closeList(){
+    list.classList.remove('open');
+    list.innerHTML='';
+    activeIdx=-1;
+    currentMatches=[];
+  }
+
+  function selectAirport(a){
+    input.value = a.icao;
+    closeList();
+    updateStatus();
+    recompute();
+  }
+
+  function renderList(){
+    const q = input.value;
+    currentMatches = searchAirports(q, 8);
+    if(currentMatches.length===0){
+      list.innerHTML = q.trim()==='' ? '' : `<div class="ac-empty">Aucun aérodrome trouvé — tu peux saisir le code OACI directement</div>`;
+      list.classList.toggle('open', q.trim()!=='');
+      return;
+    }
+    list.innerHTML = currentMatches.map((a,i)=>`
+      <div class="ac-item${i===activeIdx?' active':''}" data-idx="${i}">
+        <span class="ac-tag">${a.usage||''}</span>
+        <span class="ac-code">${a.icao}</span>${a.name}
+        <div class="ac-city">${a.city}</div>
+      </div>
+    `).join('');
+    list.classList.add('open');
+    list.querySelectorAll('.ac-item').forEach(el=>{
+      el.addEventListener('mousedown', e=>{ // mousedown fires before input blur
+        e.preventDefault();
+        const idx = Number(el.dataset.idx);
+        selectAirport(currentMatches[idx]);
+      });
+    });
+  }
+
+  function updateStatus(){
+    let val = input.value.toUpperCase();
+    if(input.value !== val) input.value = val;
+    val = val.trim();
+
+    if(val===''){
+      input.classList.remove('invalid');
+      hint.innerHTML='';
+      linksBox.innerHTML='';
+      return;
+    }
+
+    const validFormat = /^[A-Z0-9]{4}$/.test(val);
+    input.classList.toggle('invalid', !validFormat);
+
+    const known = validFormat ? findAirport(val) : null;
+    if(known){
+      hint.innerHTML = `<span class="terrain-selected">✓ ${known.name} — ${known.city}</span>`;
+    } else if(!validFormat){
+      hint.textContent = 'Code OACI attendu sur 4 caractères (ou choisis un aérodrome dans la liste)';
+    } else {
+      hint.textContent = 'Code inconnu de la base embarquée — vérifie-le, il reste utilisable';
+    }
+    updateAdNote(val);
+    updateRouteNote();
+    updateNotamNote();
+
+    const note = AD_NOTES[val];
+    const links = vacLinks(val);
+    linksBox.innerHTML = `
+      <a href="${links.pdf}" target="_blank" rel="noopener">Ouvrir en PDF ↗</a>
+    `;
+  }
+
+  input.addEventListener('input', ()=>{
+    activeIdx=-1;
+    renderList();
+    updateStatus();
+    recompute();
+  });
+
+  input.addEventListener('keydown', e=>{
+    if(!list.classList.contains('open') || currentMatches.length===0) return;
+    if(e.key==='ArrowDown'){ e.preventDefault(); activeIdx=Math.min(activeIdx+1, currentMatches.length-1); renderList(); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); activeIdx=Math.max(activeIdx-1,0); renderList(); }
+    else if(e.key==='Enter'){ e.preventDefault(); const i=activeIdx>=0?activeIdx:0; selectAirport(currentMatches[i]); }
+    else if(e.key==='Escape'){ closeList(); }
+  });
+
+  input.addEventListener('blur', ()=> setTimeout(closeList, 120));
+  input.addEventListener('focus', ()=>{ if(input.value.trim()!=='') renderList(); });
+}
+
+wireTerrainField('t_dep','hint_dep','links_dep','ac_dep','dep');
+wireTerrainField('t_arr','hint_arr','links_arr','ac_arr','arr');
+wireTerrainField('t_deg1','hint_deg1','links_deg1','ac_deg1','deg1');
+wireTerrainField('t_deg2','hint_deg2','links_deg2','ac_deg2','deg2');
+
+document.getElementById('btnAddLeg').addEventListener('click', addLeg);
+document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  if(confirm('Réinitialiser toutes les données saisies ?')){
+    document.querySelectorAll('.field input').forEach(i=>i.value='');
+    document.querySelectorAll('.terrain-cell input').forEach(i=>{
+      i.value='';
+      i.classList.remove('invalid');
+      i.dispatchEvent(new Event('input'));
+    });
+    document.getElementById('f_vp').value=100;
+    document.getElementById('f_conso').value=30;
+    document.getElementById('f_var').value=0;
+    legs=[];
+    renderLegsInputs();
+    recompute();
+  }
+});
+
+// ==================== STOCKAGE PERSISTANT ====================
+// Hangar = partagé (shared:true) : la flotte est commune à qui utilise cette appli.
+// Profil pilote + vols enregistrés = personnels (shared:false), propres à chaque utilisateur.
+
+async function storageGetSafe(key, shared){
+  try{
+    const r = await window.storage.get(key, shared);
+    return r ? JSON.parse(r.value) : null;
+  }catch(e){ return null; }
+}
+async function storageSetSafe(key, value, shared){
+  try{
+    await window.storage.set(key, JSON.stringify(value), shared);
+    return true;
+  }catch(e){ return false; }
+}
+
+let fleet = [];
+let savedLogs = [];
+
+function renderHangar(){
+  const box = document.getElementById('hangarList');
+  if(fleet.length===0){
+    box.innerHTML = `<div class="hangar-empty">Aucun avion pour l'instant — ajoute-en un ci-dessous.</div>`;
+    return;
+  }
+  box.innerHTML = fleet.map(a=>`
+    <div class="hangar-card">
+      <div class="hc-info">
+        <div class="hc-title">${a.immat || '(sans immat)'} — ${a.type || '?'}</div>
+        <div class="hc-sub">Vp ${a.vp||'?'} kt · ${a.conso||'?'} L/h${a.note?(' · '+a.note):''}</div>
+      </div>
+      <div class="hc-actions">
+        <button type="button" class="btn-mini" data-use="${a.id}">✈️ Utiliser</button>
+        <button type="button" class="btn-mini-del" data-del="${a.id}">Retirer</button>
+      </div>
+    </div>
+  `).join('');
+  box.querySelectorAll('[data-use]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const a = fleet.find(f=>f.id===btn.dataset.use);
+      if(!a) return;
+      document.getElementById('f_immat').value = a.immat||'';
+      document.getElementById('f_type').value = a.type||'';
+      document.getElementById('f_vp').value = a.vp||100;
+      document.getElementById('f_conso').value = a.conso||30;
+      recompute();
+    });
+  });
+  box.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Retirer cet avion du hangar (visible par tous les utilisateurs) ?')) return;
+      fleet = fleet.filter(f=>f.id!==btn.dataset.del);
+      await storageSetSafe('hangar-fleet', fleet, true);
+      renderHangar();
+    });
+  });
+}
+
+const SEED_AIRCRAFT = {
+  id: 'ac_fgmxh',
+  immat: 'F-GMXH',
+  type: 'DR400-120',
+  vp: 100,
+  conso: 25,
+  note: "Fiche de pesée du 22/10/2021, valide (prochaine pesée 12/04/2026)",
+  wb: {
+    emptyMass: 564.5,
+    emptyArm: 0.350,
+    mtow: 900,
+    fuelDensity: 0.72,
+    armFront: 0.41,
+    armRear: 1.19,
+    armBag: 1.90,
+    armFuel: 1.12,
+    cgMin: 0.428,
+    cgMax: 0.564,
+    cgFwdLowMass: 750,
+    cgFwdLowArm: 0.205
+  }
+};
+
+async function loadHangar(){
+  const status = document.getElementById('hangarStatus');
+  status.textContent = 'Chargement du hangar...';
+  const data = await storageGetSafe('hangar-fleet', true);
+  fleet = data || [];
+  if(!fleet.some(a=>a.immat===SEED_AIRCRAFT.immat)){
+    fleet.push({...SEED_AIRCRAFT, wb:{...SEED_AIRCRAFT.wb}});
+    await storageSetSafe('hangar-fleet', fleet, true);
+  }
+  renderHangar();
+  status.textContent = '';
+}
+
+document.getElementById('hg_add').addEventListener('click', async ()=>{
+  const immat = document.getElementById('hg_immat').value.trim();
+  const type = document.getElementById('hg_type').value.trim();
+  const vp = document.getElementById('hg_vp').value;
+  const conso = document.getElementById('hg_conso').value;
+  const note = document.getElementById('hg_note').value.trim();
+  if(!immat && !type){ alert('Donne au moins une immatriculation ou un type.'); return; }
+
+  const wbFieldIds = ['hg_emptyMass','hg_emptyArm','hg_mtow','hg_fuelDensity','hg_armFront','hg_armRear','hg_armBag','hg_armFuel','hg_cgMin','hg_cgMax','hg_cgFwdLowMass','hg_cgFwdLowArm'];
+  const wb = {};
+  let hasWb = false;
+  wbFieldIds.forEach(id=>{
+    const v = document.getElementById(id).value;
+    const key = id.replace('hg_','');
+    if(v!==''){ wb[key] = Number(v); hasWb = true; }
+  });
+
+  const aircraft = { id: 'ac_'+Date.now(), immat, type, vp, conso, note };
+  if(hasWb) aircraft.wb = wb;
+  fleet.push(aircraft);
+
+  const status = document.getElementById('hangarStatus');
+  status.textContent = 'Enregistrement...';
+  const ok = await storageSetSafe('hangar-fleet', fleet, true);
+  status.textContent = ok ? 'Avion ajouté ✓' : "Échec de l'enregistrement — réessaie.";
+  ['hg_immat','hg_type','hg_vp','hg_conso','hg_note', ...wbFieldIds].forEach(id=>document.getElementById(id).value='');
+  renderHangar();
+  populateWbAircraftSelect();
+  setTimeout(()=>status.textContent='', 2000);
+});
+
+// ---- Vols enregistrés (personnel) ----
+
+function gatherFormState(){
+  const ids = ['f_date','f_immat','f_type','f_pilote','f_eobt','f_alt','f_vp','f_conso','f_var','f_fuel',
+               't_dep','t_arr','t_deg1','t_deg2'];
+  const data = {};
+  ids.forEach(id=>{ data[id] = document.getElementById(id).value; });
+  data.legs = legs.map(l=>({...l}));
+  return data;
+}
+
+function applyFormState(data){
+  Object.keys(data).forEach(id=>{
+    if(id==='legs') return;
+    const el = document.getElementById(id);
+    if(el) el.value = data[id];
+  });
+  legs = (data.legs||[]).map(l=>({...l}));
+  renderLegsInputs();
+  ['t_dep','t_arr','t_deg1','t_deg2'].forEach(id=>document.getElementById(id).dispatchEvent(new Event('input')));
+  recompute();
+}
+
+function renderSavedLogs(){
+  const box = document.getElementById('savedLogsList');
+  if(savedLogs.length===0){
+    box.innerHTML = `<div class="savedlog-empty">Aucun vol enregistré pour l'instant.</div>`;
+    return;
+  }
+  box.innerHTML = savedLogs.slice().reverse().map(s=>`
+    <div class="savedlog-card">
+      <div class="sc-info">
+        <div class="sc-title">${s.name}</div>
+        <div class="sc-sub">${s.data.t_dep||'?'} → ${s.data.t_arr||'?'} · enregistré le ${new Date(s.savedAt).toLocaleDateString('fr-FR')}</div>
+      </div>
+      <div class="sc-actions">
+        <button type="button" class="btn-mini" data-load="${s.id}">Charger</button>
+        <button type="button" class="btn-mini-del" data-delLog="${s.id}">Supprimer</button>
+      </div>
+    </div>
+  `).join('');
+  box.querySelectorAll('[data-load]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const s = savedLogs.find(x=>x.id===btn.dataset.load);
+      if(!s) return;
+      applyFormState(s.data);
+      document.getElementById('savedLogsPanel').style.display='none';
+    });
+  });
+  box.querySelectorAll('[data-delLog]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Supprimer ce vol enregistré ?')) return;
+      savedLogs = savedLogs.filter(x=>x.id!==btn.dataset.delLog);
+      await storageSetSafe('saved-navlogs', savedLogs, false);
+      renderSavedLogs();
+    });
+  });
+}
+
+async function loadSavedLogsFromStorage(){
+  const status = document.getElementById('savedLogsStatus');
+  status.textContent = 'Chargement...';
+  const data = await storageGetSafe('saved-navlogs', false);
+  savedLogs = data || [];
+  renderSavedLogs();
+  status.textContent = '';
+}
+
+document.getElementById('btnSaveLog').addEventListener('click', async ()=>{
+  const suggested = `${document.getElementById('t_dep').value||'?'} → ${document.getElementById('t_arr').value||'?'} — ${document.getElementById('f_date').value||''}`;
+  const name = prompt('Nom pour ce vol enregistré :', suggested);
+  if(name===null) return;
+  const entry = { id:'log_'+Date.now(), name: name || suggested, savedAt: Date.now(), data: gatherFormState() };
+  savedLogs.push(entry);
+  const ok = await storageSetSafe('saved-navlogs', savedLogs, false);
+  alert(ok ? 'Vol enregistré ✓' : "Échec de l'enregistrement — réessaie.");
+  renderSavedLogs();
+});
+
+document.getElementById('btnHangar').addEventListener('click', ()=>{
+  const panel = document.getElementById('hangarPanel');
+  panel.style.display = panel.style.display==='none' ? 'block' : 'none';
+  document.getElementById('savedLogsPanel').style.display = 'none';
+});
+document.getElementById('btnSavedLogs').addEventListener('click', ()=>{
+  const panel = document.getElementById('savedLogsPanel');
+  panel.style.display = panel.style.display==='none' ? 'block' : 'none';
+  document.getElementById('hangarPanel').style.display = 'none';
+});
+
+// ==================== ONGLETS ====================
+function switchTab(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('tabPanel'+i).style.display = (i===n) ? 'block' : 'none';
+    document.getElementById('tabBtn'+i).classList.toggle('active', i===n);
+  }
+  if(n===3) populateWbAircraftSelect();
+}
+[1,2,3].forEach(n=>{
+  document.getElementById('tabBtn'+n).addEventListener('click', ()=>switchTab(n));
+});
+
+function updateTabValidation(){
+  const dep = document.getElementById('t_dep').value.trim();
+  const arr = document.getElementById('t_arr').value.trim();
+  const depOk = /^[A-Z0-9]{4}$/.test(dep);
+  const arrOk = /^[A-Z0-9]{4}$/.test(arr);
+  const acOk = document.getElementById('f_immat').value.trim()!=='' || document.getElementById('f_type').value.trim()!=='';
+  const tab1Valid = depOk && arrOk && acOk;
+
+  const tab2Valid = legs.some(l=> l.point && l.rv!=='' && l.dist!=='');
+
+  const wbFormVisible = document.getElementById('wbForm').style.display === 'block';
+  const tab3Valid = wbFormVisible;
+
+  document.getElementById('tabDot1').classList.toggle('valid', tab1Valid);
+  document.getElementById('tabDot2').classList.toggle('valid', tab2Valid);
+  document.getElementById('tabDot3').classList.toggle('valid', tab3Valid);
+}
+
+// ==================== MASSE & CENTRAGE / CARBURANT ====================
+
+function populateWbAircraftSelect(){
+  const sel = document.getElementById('wb_aircraft');
+  sel.innerHTML = `<option value="">— choisir un avion du hangar —</option>` +
+    fleet.map(a=>`<option value="${a.id}">${a.immat||'?'} — ${a.type||'?'}</option>`).join('');
+}
+
+function computeWB(){
+  const sel = document.getElementById('wb_aircraft');
+  const a = fleet.find(f=>f.id===sel.value);
+  const noData = document.getElementById('wbNoData');
+  const form = document.getElementById('wbForm');
+
+  if(!a || !a.wb){
+    noData.style.display = a ? 'block' : 'none';
+    form.style.display = 'none';
+    updateTabValidation();
+    return;
+  }
+  noData.style.display = 'none';
+  form.style.display = 'block';
+
+  const wb = a.wb;
+  const front = Number(document.getElementById('wb_front').value)||0;
+  const rear = Number(document.getElementById('wb_rear').value)||0;
+  const bag = Number(document.getElementById('wb_bag').value)||0;
+  let fuelL = document.getElementById('wb_fuelL').value;
+  if(fuelL===''){
+    fuelL = document.getElementById('f_fuel').value || 0;
+    document.getElementById('wb_fuelL').placeholder = `Depuis "Carburant emporté" : ${fuelL||0} L`;
+  }
+  fuelL = Number(fuelL)||0;
+  const fuelDensity = wb.fuelDensity || 0.72;
+  const fuelKg = fuelL * fuelDensity;
+
+  const emptyMoment = (wb.emptyMass||0) * (wb.emptyArm||0);
+  const frontMoment = front * (wb.armFront||0);
+  const rearMoment = rear * (wb.armRear||0);
+  const bagMoment = bag * (wb.armBag||0);
+  const fuelMoment = fuelKg * (wb.armFuel||0);
+
+  const totalMass = (wb.emptyMass||0) + front + rear + bag + fuelKg;
+  const totalMoment = emptyMoment + frontMoment + rearMoment + bagMoment + fuelMoment;
+  const cg = totalMass>0 ? totalMoment/totalMass : 0;
+
+  const mtow = wb.mtow;
+  const massOk = mtow ? totalMass <= mtow : null;
+
+  // Limite avant : interpolée entre charge réduite et MTOW si les 2 points sont fournis,
+  // sinon limite fixe (wb.cgMin). Limite arrière toujours constante (wb.cgMax).
+  let fwdLimit = wb.cgMin;
+  let fwdLimitLabel = (wb.cgMin!==undefined) ? `${wb.cgMin} m (fixe)` : '—';
+  if(wb.cgFwdLowMass!==undefined && wb.cgFwdLowArm!==undefined && wb.cgMin!==undefined && mtow){
+    if(totalMass <= wb.cgFwdLowMass){
+      fwdLimit = wb.cgFwdLowArm;
+    } else {
+      const t = (totalMass - wb.cgFwdLowMass) / (mtow - wb.cgFwdLowMass);
+      fwdLimit = wb.cgFwdLowArm + t * (wb.cgMin - wb.cgFwdLowArm);
+    }
+    fwdLimitLabel = `${fwdLimit.toFixed(3)} m (interpolée, ${wb.cgFwdLowArm}–${wb.cgMin} m selon masse)`;
+  }
+  const cgOk = (fwdLimit!==undefined && wb.cgMax!==undefined) ? (cg>=fwdLimit && cg<=wb.cgMax) : null;
+
+  const cells = [
+    ['Masse totale', `${totalMass.toFixed(1)} kg`, massOk===false],
+    ['MTOW', mtow ? `${mtow} kg` : '—', false],
+    ['Marge / MTOW', mtow ? `${(mtow-totalMass).toFixed(1)} kg` : '—', massOk===false],
+    ['Centrage (CG)', `${cg.toFixed(3)} m`, cgOk===false],
+    ['Limite avant applicable', fwdLimitLabel, false],
+    ['Limite arrière', (wb.cgMax!==undefined) ? `${wb.cgMax} m` : '—', false],
+    ['Statut', massOk===false||cgOk===false ? '⚠ HORS LIMITES' : (massOk===null||cgOk===null ? 'Incomplet' : '✓ Dans les limites'), massOk===false||cgOk===false]
+  ];
+  document.getElementById('wbSummary').innerHTML = cells.map(([k,v,bad])=>`
+    <div class="sum-cell"><div class="k">${k}</div><div class="v"${bad?' style="color:var(--alert)"':''}>${v}</div></div>
+  `).join('');
+
+  computeFuelPlan(fuelL, fuelDensity);
+  updateTabValidation();
+}
+
+function computeFuelPlan(fuelL, fuelDensity){
+  const reserveMin = Number(document.getElementById('fuel_type').value);
+  const taxiMin = Number(document.getElementById('fuel_taxi').value)||0;
+  const altMin = Number(document.getElementById('fuel_altTime').value)||0;
+  const marginMin = Number(document.getElementById('fuel_margin').value)||0;
+  const conso = Number(document.getElementById('f_conso').value)||0;
+
+  // Temps total de route déjà calculé dans le log de nav (dernière ligne du tableau)
+  const cumTimeText = document.querySelector('#navFoot td:nth-child(9)');
+  let tripMin = 0;
+  if(cumTimeText){
+    const m = cumTimeText.textContent.match(/(\d+)/);
+    if(m) tripMin = Number(m[1]);
+  }
+
+  const totalMin = taxiMin + tripMin + altMin + reserveMin + marginMin;
+  const fuelNeededL = (totalMin/60) * conso;
+  const margin = fuelL - fuelNeededL;
+
+  const rows = [
+    ['Roulage', `${taxiMin} min`],
+    ['Route (log de nav)', `${tripMin} min`],
+    ['Dégagement', `${altMin} min`],
+    ['Réserve finale', `${reserveMin} min`],
+    ['Marge perso', `${marginMin} min`],
+    ['Total requis', `${totalMin} min ≈ ${fuelNeededL.toFixed(1)} L`]
+  ];
+  document.getElementById('fuelSummary').innerHTML = rows.map(([k,v],i)=>`
+    <div class="sum-cell"><div class="k">${k}</div><div class="v"${i===5 && margin<0 ? ' style="color:var(--alert)"':''}>${v}</div></div>
+  `).join('') + `
+    <div class="sum-cell"><div class="k">Carburant embarqué</div><div class="v">${fuelL.toFixed(1)} L</div></div>
+    <div class="sum-cell"><div class="k">Marge</div><div class="v"${margin<0?' style="color:var(--alert)"':''}>${margin>=0?'+':''}${margin.toFixed(1)} L</div></div>
+  `;
+}
+
+document.getElementById('wb_aircraft').addEventListener('change', computeWB);
+['wb_front','wb_rear','wb_bag','wb_fuelL','fuel_type','fuel_taxi','fuel_altTime','fuel_margin']
+  .forEach(id=>document.getElementById(id).addEventListener('input', computeWB));
+
+// ---- Onboarding ----
+async function initOnboarding(){
+  const profile = await storageGetSafe('pilot-profile', false);
+  if(profile && profile.onboarded){
+    return;
+  }
+  document.getElementById('onboardModal').style.display = 'flex';
+}
+
+document.getElementById('obSkip').addEventListener('click', async ()=>{
+  await storageSetSafe('pilot-profile', { onboarded:true }, false);
+  document.getElementById('onboardModal').style.display = 'none';
+});
+
+document.getElementById('obStart').addEventListener('click', async ()=>{
+  const name = document.getElementById('ob_name').value.trim();
+  const home = document.getElementById('ob_home').value.trim();
+  await storageSetSafe('pilot-profile', { onboarded:true, name, home }, false);
+
+  const immat = document.getElementById('ob_immat').value.trim();
+  const type = document.getElementById('ob_type').value.trim();
+  const vp = document.getElementById('ob_vp').value;
+  const conso = document.getElementById('ob_conso').value;
+  if(immat || type){
+    fleet.push({ id:'ac_'+Date.now(), immat, type, vp, conso, note:'' });
+    await storageSetSafe('hangar-fleet', fleet, true);
+    renderHangar();
+  }
+  if(home) document.getElementById('t_dep').dispatchEvent(new Event('focus'));
+  document.getElementById('onboardModal').style.display = 'none';
+});
+
+// init with 3 empty legs to start
+addLeg(); addLeg(); addLeg();
+updateTabValidation();
+
+// Charger hangar + vols enregistrés + lancer l'onboarding si besoin
+loadHangar();
+loadSavedLogsFromStorage();
+initOnboarding();
+</script>
+</body>
+</html>
