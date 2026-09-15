@@ -4,21 +4,26 @@
 <meta charset="UTF-8">
 <title>Log de navigation VFR</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root{
-  --navy-deep:#0E1A26;
-  --navy-panel:#16283A;
-  --navy-panel-2:#1D3348;
-  --amber:#E8A33D;
-  --amber-dim:#8A6529;
-  --cyan:#4FB0C6;
-  --ink:#EDEFF2;
-  --ink-dim:#9FB0BE;
-  --alert:#D6604A;
+  --navy-deep:#0B1520;
+  --navy-panel:#132437;
+  --navy-panel-2:#1B2F45;
+  --navy-panel-3:#233A53;
+  --amber:#F0A93D;
+  --amber-dim:#7A5A26;
+  --cyan:#4FB8CE;
+  --ink:#EDF1F4;
+  --ink-dim:#8FA3B5;
+  --ink-faint:#5D7488;
+  --alert:#E06A52;
+  --grass:#3FAE7A;
   --rule:#2A4256;
+  --rule-soft:#1E3348;
 }
 
 *{box-sizing:border-box;}
@@ -26,9 +31,11 @@ html,body{margin:0;padding:0;}
 body{
   background:var(--navy-deep);
   color:var(--ink);
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'IBM Plex Sans',sans-serif;
   padding:28px 20px 60px;
+  font-variant-numeric:tabular-nums;
 }
+h1,h2,h3,.panel-head,.tab-btn,.tab-dropdown-item,.brand-text{font-family:'Titillium Web',sans-serif;}
 
 .wrap{max-width:1180px;margin:0 auto;}
 
@@ -54,7 +61,7 @@ header.app-head p{
 }
 .head-actions{margin-left:auto;display:flex;gap:10px;}
 button{
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'IBM Plex Sans',sans-serif;
   cursor:pointer;
   border-radius:3px;
 }
@@ -287,6 +294,20 @@ table.navtable tfoot td{
   border-bottom:1px solid transparent;
 }
 .terrain-links a:hover{border-bottom-color:var(--cyan);}
+.terrain-links a.btn-vac{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  align-self:flex-start;
+  padding:6px 12px;
+  border:1px solid var(--amber);
+  color:var(--amber);
+  font-size:12px;
+  font-weight:600;
+  text-decoration:none;
+  transition:background .15s ease;
+}
+.terrain-links a.btn-vac:hover{background:rgba(240,175,76,0.12);border-color:var(--amber);}
 .terrain-hint{
   font-size:10.5px;
   color:var(--ink-dim);
@@ -406,7 +427,7 @@ table.navtable tfoot td{
   padding:4px 9px;
   margin-top:2px;
   cursor:pointer;
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'IBM Plex Sans',sans-serif;
 }
 .btn-visualize:hover{background:rgba(232,163,61,0.12);}
 .freq-picker{
@@ -422,7 +443,7 @@ table.navtable tfoot td{
   color:var(--ink);
   font-size:11.5px;
   padding:4px 6px;
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'IBM Plex Sans',sans-serif;
 }
 .freq-select:focus{outline:none;border-color:var(--cyan);}
 
@@ -432,6 +453,8 @@ table.navtable tfoot td{
   body{background:#fff;color:#111;padding:0;font-family:'IBM Plex Mono',monospace;font-size:10px;}
   .no-print{display:none!important;}
   .layout{display:block;}
+  .shell{display:block;}
+  .main{padding:0;}
   .panel{border:none;}
   .panel-head{display:none;}
   .panel-body{padding:0;}
@@ -504,6 +527,43 @@ table.navtable tfoot td{
   padding:10px 4px;
 }
 
+/* ---- tableau de bord ---- */
+.dash-route{display:flex; align-items:center; gap:14px; padding:4px 0 10px;}
+.dash-node{display:flex; flex-direction:column; align-items:center; gap:6px; flex:0 0 auto;}
+.dash-dot{width:13px; height:13px; border-radius:50%; border:2.5px solid var(--amber); background:var(--navy-panel); display:block;}
+.dash-dot.arr{border-color:var(--cyan);}
+.dash-code{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+.dash-city{font-size:10.5px; color:var(--ink-dim); max-width:110px; text-align:center;}
+.dash-track{flex:1; height:2px; background:repeating-linear-gradient(90deg,var(--rule) 0 6px,transparent 6px 11px); position:relative; margin-top:-20px;}
+.dash-plane{position:absolute; left:38%; top:-9px; color:var(--amber); font-size:15px; transform:rotate(90deg); display:inline-block;}
+.dash-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+.dash-cols{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:22px;}
+@media (max-width:700px){ .dash-stats{grid-template-columns:repeat(2,1fr);} .dash-cols{grid-template-columns:1fr;} }
+.stat-tile{background:var(--navy-panel-2); border:1px solid var(--rule-soft); border-radius:10px; padding:10px 12px;}
+.stat-tile .v{font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:600; line-height:1.1;}
+.stat-tile .v .u{font-size:10.5px; color:var(--ink-dim); margin-left:3px; font-family:'IBM Plex Sans',sans-serif;}
+.stat-tile .l{font-size:9.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-faint); margin-top:5px;}
+.pill{font-size:10px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; padding:3px 9px; border-radius:20px;}
+.pill.green{background:rgba(63,174,122,.14); color:var(--grass); border:1px solid rgba(63,174,122,.35);}
+.pill.amber{background:rgba(240,169,61,.14); color:var(--amber); border:1px solid rgba(240,169,61,.35);}
+.pill.red{background:rgba(224,106,82,.14); color:var(--alert); border:1px solid rgba(224,106,82,.35);}
+
+/* ---- analyse zones réglementées / points de route (carte) ---- */
+.airspace-card{
+  border:1px solid var(--rule);
+  border-left:4px solid var(--ink-dim);
+  background:var(--navy-panel-2);
+  padding:10px 14px;
+  margin-bottom:8px;
+}
+.airspace-card.sev-high{border-left-color:var(--alert);}
+.airspace-card.sev-med{border-left-color:var(--amber);}
+.airspace-card .as-title{font-weight:600; font-size:13.5px; color:var(--ink);}
+.airspace-card .as-type{color:var(--ink-dim); font-size:11px; text-transform:uppercase; letter-spacing:.5px; margin-left:8px;}
+.airspace-card .as-limits{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--cyan); margin-top:4px;}
+.airspace-card .as-tags{margin-top:4px; font-size:11px; color:var(--ink-dim);}
+.airspace-card .as-tags span{border:1px solid var(--rule); border-radius:2px; padding:1px 6px; margin-right:5px;}
+
 /* ---- hangar / saved logs panels ---- */
 .hangar-card, .savedlog-card{
   border:1px solid var(--rule);
@@ -537,7 +597,7 @@ table.navtable tfoot td{
   font-size:11.5px;
   padding:6px 10px;
   cursor:pointer;
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'IBM Plex Sans',sans-serif;
 }
 .btn-mini:hover{background:rgba(79,176,198,0.12);}
 .btn-mini-del{
@@ -547,7 +607,7 @@ table.navtable tfoot td{
   font-size:11.5px;
   padding:6px 10px;
   cursor:pointer;
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'IBM Plex Sans',sans-serif;
 }
 .btn-mini-del:hover{background:rgba(214,96,74,0.12);}
 .hangar-empty, .savedlog-empty{
@@ -564,40 +624,47 @@ table.navtable tfoot td{
   border-top:1px dashed var(--rule);
 }
 .add-aircraft-grid .full{grid-column:1/-1;}
-.tab-bar{
-  display:flex;
-  gap:0;
-  margin-bottom:20px;
-  border-bottom:2px solid var(--rule);
+/* ---- structure générale : barre latérale + contenu ---- */
+.shell{display:grid; grid-template-columns:230px 1fr; gap:26px; align-items:start;}
+@media (max-width:900px){ .shell{grid-template-columns:1fr;} .sidebar{position:static; width:auto;} }
+
+.sidebar{
+  background:var(--navy-panel); border:1px solid var(--rule); border-radius:14px;
+  padding:20px 14px; display:flex; flex-direction:column; gap:22px;
+  position:sticky; top:20px;
 }
-.tab-btn{
-  background:transparent;
-  border:none;
-  border-bottom:3px solid transparent;
-  color:var(--ink-dim);
-  font-family:'Space Grotesk',sans-serif;
-  font-size:13.5px;
-  font-weight:500;
-  padding:12px 20px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:8px;
+.brand{display:flex; align-items:center; gap:10px; padding:0 6px;}
+.brand-text{font-family:'Titillium Web',sans-serif; font-weight:700; font-size:15px; line-height:1.2;}
+.brand-text small{display:block; font-family:'IBM Plex Sans',sans-serif; font-weight:400; font-size:10px; color:var(--ink-dim); letter-spacing:.3px; text-transform:uppercase; margin-top:2px;}
+
+.navlist{display:flex; flex-direction:column; gap:3px;}
+.navitem{
+  display:flex; align-items:center; gap:10px; padding:10px 10px; border-radius:8px;
+  color:var(--ink-dim); font-size:13px; font-weight:500; cursor:pointer; position:relative;
 }
-.tab-btn:hover{color:var(--ink);}
-.tab-btn.active{
-  color:var(--amber);
-  border-bottom-color:var(--amber);
+.navitem .ic{width:18px; text-align:center; font-size:14px; flex:0 0 auto;}
+.navitem .tab-dot{margin-left:auto;}
+.navitem.active{background:var(--navy-panel-3); color:var(--ink);}
+.navitem.active::before{
+  content:''; position:absolute; left:-14px; top:8px; bottom:8px; width:3px; background:var(--amber); border-radius:0 3px 3px 0;
 }
+.navitem:hover:not(.active){background:var(--navy-panel-2); color:var(--ink);}
+
+.sidebar-actions{display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--rule); padding-top:14px;}
+.sidebar-actions .btn-ghost{width:100%; justify-content:flex-start; text-align:left;}
+
 .tab-dot{
-  width:9px;
-  height:9px;
+  width:8px;
+  height:8px;
   border-radius:50%;
   background:var(--rule);
   display:inline-block;
   flex:0 0 auto;
 }
-.tab-dot.valid{background:var(--grass, #3FA772);}
+.tab-dot.valid{background:var(--grass, #3FAE7A);}
+
+.main-top{display:flex; justify-content:flex-end; gap:10px; margin-bottom:16px;}
+.main{min-width:0;}
 .storage-status{
   font-size:11px;
   color:var(--ink-dim);
@@ -613,32 +680,82 @@ table.navtable tfoot td{
 }
 .btn-collapse:hover{border-color:var(--amber); color:var(--amber);}
 
+.leaflet-container{background:var(--navy-panel-2);font-family:'IBM Plex Sans',sans-serif;}
+.prep-map-marker{
+  background:var(--navy-panel);
+  border:2px solid var(--amber);
+  border-radius:50%;
+  color:var(--amber);
+  font-weight:700;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+}
+.prep-map-marker.is-dep{border-color:var(--cyan);color:var(--cyan);}
+.prep-map-marker.is-free{border-color:var(--ink-dim);color:var(--ink-dim);}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip{background:var(--navy-panel-2);color:var(--ink);}
+.leaflet-popup-content{margin:12px;font-family:'IBM Plex Sans',sans-serif;}
+.leaflet-popup-content label{font-size:10.5px;color:var(--ink-dim);display:block;margin-bottom:2px;}
+.leaflet-popup-content input{
+  width:100%;background:var(--navy-deep);border:1px solid var(--rule);color:var(--ink);
+  padding:6px 8px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;border-radius:2px;
+}
+.leaflet-popup-content input:focus, .leaflet-popup-content textarea:focus{outline:none;border-color:var(--cyan);}
+.leaflet-popup-content textarea{
+  width:100%;background:var(--navy-deep);border:1px solid var(--rule);color:var(--ink);
+  padding:6px 8px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;margin-bottom:8px;border-radius:2px;resize:vertical;
+}
+.leaflet-container a.leaflet-popup-close-button{color:var(--ink-dim);}
+
+.airport-info{font-size:11px;color:var(--ink-dim);margin:6px 0;padding:8px;background:rgba(0,0,0,.15);border-radius:2px;line-height:1.5;}
+.airport-info a{color:var(--cyan);}
+.rp-notes-list{
+  width:100%;background:var(--navy-panel);border:1px solid var(--rule);color:var(--ink);
+  padding:6px 8px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;border-radius:2px;resize:vertical;
+}
+.rp-notes-list:focus{outline:none;border-color:var(--cyan);}
 </style>
 </head>
 <body>
 <div class="wrap">
+<div class="shell">
 
-  <header class="app-head">
-    <svg width="34" height="34" viewBox="0 0 34 34" class="no-print">
-      <circle cx="17" cy="17" r="15.5" fill="none" stroke="#E8A33D" stroke-width="1.4"/>
-      <line x1="17" y1="3" x2="17" y2="9" stroke="#E8A33D" stroke-width="1.4"/>
-      <line x1="17" y1="25" x2="17" y2="31" stroke="#4FB0C6" stroke-width="1.4"/>
-      <line x1="3" y1="17" x2="9" y2="17" stroke="#4FB0C6" stroke-width="1.4"/>
-      <line x1="25" y1="17" x2="31" y2="17" stroke="#4FB0C6" stroke-width="1.4"/>
-      <path d="M17 8 L20.5 18 L17 15.5 L13.5 18 Z" fill="#EDEFF2"/>
-    </svg>
-    <div>
-      <h1>Log de navigation VFR</h1>
-      <p>Saisis ta préparation, la table se calcule et s'imprime au format paysage</p>
+  <aside class="sidebar no-print">
+    <div class="brand">
+      <svg width="32" height="32" viewBox="0 0 34 34" style="flex:0 0 auto;">
+        <circle cx="17" cy="17" r="15.5" fill="none" stroke="#F0A93D" stroke-width="1.4"/>
+        <line x1="17" y1="3" x2="17" y2="9" stroke="#F0A93D" stroke-width="1.4"/>
+        <line x1="17" y1="25" x2="17" y2="31" stroke="#4FB8CE" stroke-width="1.4"/>
+        <line x1="3" y1="17" x2="9" y2="17" stroke="#4FB8CE" stroke-width="1.4"/>
+        <line x1="25" y1="17" x2="31" y2="17" stroke="#4FB8CE" stroke-width="1.4"/>
+        <path d="M17 8 L20.5 18 L17 15.5 L13.5 18 Z" fill="#EDF1F4"/>
+      </svg>
+      <div class="brand-text">Log VFR<small>Préparation de vol</small></div>
     </div>
-    <div class="head-actions no-print">
+    <nav class="navlist">
+      <div class="navitem active" data-tab="0"><span class="ic">◎</span> Tableau de bord</div>
+      <div class="navitem" data-tab="1"><span class="ic">▤</span> Préparation <span class="tab-dot" id="tabDot1"></span></div>
+      <div class="navitem" data-tab="2"><span class="ic">≡</span> Log de navigation <span class="tab-dot" id="tabDot2"></span></div>
+      <div class="navitem" data-tab="3"><span class="ic">⚖</span> Masse &amp; carburant <span class="tab-dot" id="tabDot3"></span></div>
+      <div class="navitem" data-tab="4"><span class="ic">☁</span> NOTAM &amp; METAR</div>
+      <div class="navitem" data-tab="5"><span class="ic">🧭</span> Simulation de route</div>
+    </nav>
+    <div class="sidebar-actions">
       <button class="btn-ghost" id="btnHangar">🏠 Hangar</button>
       <button class="btn-ghost" id="btnSavedLogs">📁 Mes vols</button>
-      <button class="btn-ghost" id="btnSaveLog">💾 Enregistrer</button>
       <button class="btn-ghost" id="btnReset">Réinitialiser</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-top no-print">
+      <button class="btn-ghost" id="btnSaveLog">💾 Enregistrer</button>
       <button class="btn-print" id="btnPrint">Imprimer / PDF</button>
     </div>
-  </header>
 
   <div class="print-title" id="printTitle"></div>
 
@@ -717,20 +834,27 @@ table.navtable tfoot td{
     </div>
   </div>
 
-  <!-- ===== ONGLETS ===== -->
-  <div class="tab-bar no-print">
-    <button type="button" class="tab-btn active" id="tabBtn1" data-tab="1">
-      <span class="tab-dot" id="tabDot1"></span> 1 · Préparation
-    </button>
-    <button type="button" class="tab-btn" id="tabBtn2" data-tab="2">
-      <span class="tab-dot" id="tabDot2"></span> 2 · Log de navigation
-    </button>
-    <button type="button" class="tab-btn" id="tabBtn3" data-tab="3">
-      <span class="tab-dot" id="tabDot3"></span> 3 · Masse &amp; carburant
-    </button>
+  <div id="tabPanel0">
+
+  <div class="panel no-print">
+    <div class="panel-head">Tableau de bord</div>
+    <div class="panel-body" id="dashRoute"></div>
   </div>
 
-  <div id="tabPanel1">
+  <div class="dash-cols">
+    <div class="panel no-print">
+      <div class="panel-head">Carburant</div>
+      <div class="panel-body" id="dashFuel" style="align-items:center;text-align:center;"></div>
+    </div>
+    <div class="panel no-print">
+      <div class="panel-head">Masse &amp; centrage</div>
+      <div class="panel-body" id="dashWb"></div>
+    </div>
+  </div>
+
+  </div><!-- /tabPanel0 -->
+
+  <div id="tabPanel1" style="display:none;">
 
   <div class="panel no-print" style="margin-bottom:22px;">
     <div class="panel-head">Terrains du vol — vérifier les cartes VAC</div>
@@ -783,14 +907,6 @@ table.navtable tfoot td{
         <span id="routeNoteBody"></span>
       </div>
 
-      <div class="terrain-note" id="notamNote" style="display:none;">
-        <strong style="color:var(--amber);">🛰️ NOTAM du vol</strong> — terrains à saisir dans SOFIA Briefing :
-        <span id="notamCodesList" style="font-family:'IBM Plex Mono',monospace;color:var(--cyan);"></span>
-        <button type="button" class="btn-mini" id="btnCopyNotamCodes" style="margin-left:8px;">Copier les codes</button>
-        <a href="https://sofia-briefing.aviation-civile.gouv.fr/sofia/pages/notamform.html" target="_blank" rel="noopener" style="margin-left:8px;color:var(--cyan);">Ouvrir SOFIA Briefing ↗</a>
-        <div style="margin-top:6px;font-size:11px;color:var(--ink-dim);">Compte SOFIA requis pour la méthode manuelle. Les NOTAM changent en continu — cette appli n'en stocke jamais, va toujours chercher la version du moment sur SOFIA. (Récupération automatique testée et abandonnée : le site utilise un mécanisme de session à plusieurs étapes que notre appli ne peut pas reproduire de l'extérieur.)</div>
-      </div>
-
       <div class="terrain-note">
         Tape un nom de ville, un nom d'aérodrome ou un code OACI : la liste te propose les terrains français qui correspondent, clique dessus pour le sélectionner. Les liens ouvrent ensuite la consultation officielle du SIA — jamais une copie enregistrée ici, pour ne pas préparer un vol avec une carte VAC périmée (elles changent tous les 28 jours, à chaque cycle AIRAC). Terrain introuvable dans la liste ? Tu peux quand même taper son code OACI à la main.
       </div>
@@ -800,6 +916,12 @@ table.navtable tfoot td{
   <div class="panel no-print">
     <div class="panel-head">Informations vol</div>
     <div class="panel-body">
+      <div class="field">
+        <label>Avion (depuis le hangar)</label>
+        <select id="flight_aircraft">
+          <option value="">— choisir un avion pour pré-remplir —</option>
+        </select>
+      </div>
       <div class="field-row">
         <div class="field"><label>Date</label><input type="date" id="f_date"></div>
         <div class="field"><label>Immatriculation</label><input type="text" id="f_immat" placeholder="F-GABC"></div>
@@ -908,8 +1030,91 @@ table.navtable tfoot td{
 
   </div><!-- /tabPanel3 -->
 
+  <div id="tabPanel4" style="display:none;">
+
+  <div class="panel no-print">
+    <div class="panel-head">🛰️ NOTAM du vol</div>
+    <div class="panel-body">
+      <div id="notamNote" style="display:none;">
+        <div class="terrain-note">
+          Terrains à saisir dans SOFIA Briefing :
+          <span id="notamCodesList" style="font-family:'IBM Plex Mono',monospace;color:var(--cyan);"></span>
+          <button type="button" class="btn-mini" id="btnCopyNotamCodes" style="margin-left:8px;">Copier les codes</button>
+          <a href="https://sofia-briefing.aviation-civile.gouv.fr/sofia/pages/notamform.html" target="_blank" rel="noopener" style="margin-left:8px;color:var(--cyan);">Ouvrir SOFIA Briefing ↗</a>
+          <div style="margin-top:6px;font-size:11px;color:var(--ink-dim);">Compte SOFIA requis. Les NOTAM changent en continu — cette appli n'en stocke jamais, va toujours chercher la version du moment sur SOFIA. (Récupération ou pré-remplissage automatique impossibles depuis l'extérieur : le site bloque les requêtes cross-origin (CORS) et son formulaire est derrière un compte — reste sur la saisie manuelle, plus fiable.)</div>
+        </div>
+      </div>
+      <div id="notamEmpty" style="color:var(--ink-dim);font-size:12.5px;">Renseigne au moins un terrain dans l'onglet 1 pour voir apparaître les liens NOTAM ici.</div>
+    </div>
+  </div>
+
+  <div class="panel no-print" style="margin-top:22px;">
+    <div class="panel-head">🌤️ METAR du vol</div>
+    <div class="panel-body">
+      <div id="metarNote" style="display:none;">
+        <div class="terrain-note" style="border-color:var(--cyan);">
+          Terrains détectés : <span id="metarCodesList" style="font-family:'IBM Plex Mono',monospace;color:var(--cyan);"></span>
+          <a href="#" target="_blank" rel="noopener" class="btn-mini" id="btnOpenMetar" style="margin-left:8px;text-decoration:none;display:inline-block;">Ouvrir les METAR ↗</a>
+          <div id="metarSubstituteNote" style="display:none;margin-top:6px;font-size:11px;color:var(--amber);"></div>
+          <div style="margin-top:6px;font-size:11px;color:var(--ink-dim);">Source : aviationweather.gov (service public officiel, sans compte). Chaque METAR affiche sa propre heure d'observation — vérifie-la avant de t'y fier.</div>
+        </div>
+
+        <div id="metarNearbyBlock" style="display:none;margin-top:14px;">
+          <div class="field">
+            <label>Stations METAR proches (rayon ~30 NM) — sélectionne pour lire</label>
+            <select id="metarNearbySelect"><option value="">— recherche en cours... —</option></select>
+          </div>
+          <pre id="metarRawText" style="display:none;background:#0b1620;color:#c8e6f0;border:1px solid var(--rule);padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:pre-wrap;margin-top:8px;"></pre>
+          <div id="metarFetchStatus" style="font-size:11px;color:var(--ink-dim);margin-top:6px;"></div>
+        </div>
+      </div>
+      <div id="metarEmpty" style="color:var(--ink-dim);font-size:12.5px;">Renseigne au moins un terrain dans l'onglet 1 pour voir apparaître les METAR ici.</div>
+    </div>
+  </div>
+
+  </div><!-- /tabPanel4 -->
+
+  <div id="tabPanel5" style="display:none;">
+
+  <div class="panel no-print">
+    <div class="panel-head">
+      🧭 Construction de la route
+      <span style="float:right;font-weight:400;font-size:11px;display:flex;gap:12px;">
+        <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="oaci" checked style="width:auto;"> OACI-VFR</label>
+        <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="scan25" style="width:auto;"> Plan IGN détaillé (non aéro.)</label>
+      </span>
+    </div>
+    <div class="panel-body">
+      <div style="font-size:11.5px;color:var(--ink-dim);margin-bottom:10px;">
+        Clique sur un aérodrome pour l'ajouter à la route ; clique ailleurs pour poser un point libre (coordonnées). Clique sur un point déjà posé pour le nommer, lui donner une altitude, ou le retirer.
+      </div>
+      <div id="routeMap" style="height:520px;"></div>
+      <div style="margin-top:8px;font-size:10.5px;color:var(--ink-dim);">
+        Fond de carte © IGN (carte OACI-VFR 2026, données SIA-DGAC, ou Plan IGN détaillé). Vue d'ensemble — vérifie toujours les infos à jour sur la carte VAC et NOTAM avant le vol.
+      </div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <button type="button" class="btn-mini-del" id="btnClearRoute">Effacer la route</button>
+        <button type="button" class="btn-mini" id="btnExportRoute">📤 Exporter le tracé vers le log de nav</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel no-print" style="margin-top:22px;">
+    <div class="panel-head">📋 Points de la route</div>
+    <div class="panel-body">
+      <div id="routePointsEmpty" style="color:var(--ink-dim);font-size:12.5px;">Clique sur la carte pour poser ton premier point.</div>
+      <div id="routePointsList"></div>
+      <div id="routeSummary" style="display:none;margin-top:10px;padding:10px 12px;border:1px solid var(--cyan);font-size:13px;color:var(--cyan);font-weight:600;"></div>
+    </div>
+  </div>
+
+  </div><!-- /tabPanel5 -->
+
+  </main>
+</div><!-- /shell -->
 </div><!-- /wrap -->
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 let legs = [];
 let legId = 0;
@@ -1059,8 +1264,12 @@ function recompute(){
   });
 
   renderOutput(rows, {cumDist, cumTime, cumFuel, fuelOnboard, dep, eobt});
+  updateMetarNote();
   updateTabValidation();
+  lastNavTotals = {cumDist, cumTime, cumFuel, fuelOnboard, dep, eobt};
+  if(document.getElementById('tabPanel0').style.display !== 'none') renderDashboard();
 }
+let lastNavTotals = null;
 
 function renderOutput(rows, totals){
   const arr = document.getElementById('t_arr').value || 'Arrivée';
@@ -1208,12 +1417,465 @@ const AD_NOTES = {
   }
 };
 
-// Coordonnées GPS (WGS84, degrés décimaux) — ajoutées terrain par terrain, sur demande vérifiée.
-// Source pour les 3 premières : Wikipédia (infobox sourcée AIP France).
+// Coordonnées GPS (WGS84, degrés décimaux) de tous les terrains de AIRPORTS.
+// Source : OurAirports (jeu de données public, https://ourairports.com/data/) — arrondi à 4 décimales (~11 m).
 const COORDS = {
-  LFNA: { lat: 44.4539, lon: 6.0367 },
-  LFLU: { lat: 44.9156, lon: 4.9686 },
-  LFMV: { lat: 43.9067, lon: 4.9019 }
+  LFAB: { lat: 49.8847, lon: 1.081 },
+  LFAC: { lat: 50.9621, lon: 1.9548 },
+  LFAD: { lat: 49.4312, lon: 2.8015 },
+  LFAE: { lat: 50.0682, lon: 1.4247 },
+  LFAF: { lat: 49.5958, lon: 3.6317 },
+  LFAG: { lat: 49.8689, lon: 3.0296 },
+  LFAI: { lat: 48.5962, lon: 3.0068 },
+  LFAJ: { lat: 48.7095, lon: 0.0029 },
+  LFAK: { lat: 51.0396, lon: 2.5491 },
+  LFAL: { lat: 47.6926, lon: -0.0022 },
+  LFAM: { lat: 50.4231, lon: 1.5919 },
+  LFAO: { lat: 48.5458, lon: -0.3874 },
+  LFAP: { lat: 49.481, lon: 4.3633 },
+  LFAQ: { lat: 49.97, lon: 2.6939 },
+  LFAR: { lat: 49.6721, lon: 2.5678 },
+  LFAS: { lat: 48.9272, lon: -0.1447 },
+  LFAT: { lat: 50.5183, lon: 1.6217 },
+  LFAU: { lat: 49.6228, lon: -1.8307 },
+  LFAV: { lat: 50.3278, lon: 3.4611 },
+  LFAW: { lat: 49.4104, lon: 5.8893 },
+  LFAX: { lat: 48.5392, lon: 0.532 },
+  LFAY: { lat: 49.873, lon: 2.3871 },
+  LFBA: { lat: 44.1742, lon: 0.5931 },
+  LFBC: { lat: 44.5333, lon: -1.125 },
+  LFBD: { lat: 44.8287, lon: -0.7154 },
+  LFBE: { lat: 44.8253, lon: 0.5186 },
+  LFBF: { lat: 43.5456, lon: 1.3675 },
+  LFBG: { lat: 45.6583, lon: -0.3175 },
+  LFBH: { lat: 46.1792, lon: -1.1953 },
+  LFBI: { lat: 46.5877, lon: 0.3067 },
+  LFBJ: { lat: 45.9022, lon: 0.9182 },
+  LFBK: { lat: 46.2226, lon: 2.364 },
+  LFBL: { lat: 45.8628, lon: 1.1794 },
+  LFBM: { lat: 43.9117, lon: -0.5075 },
+  LFBN: { lat: 46.3135, lon: -0.3945 },
+  LFBO: { lat: 43.6291, lon: 1.3638 },
+  LFBP: { lat: 43.38, lon: -0.4186 },
+  LFBR: { lat: 43.4489, lon: 1.2633 },
+  LFBS: { lat: 44.3676, lon: -1.1339 },
+  LFBT: { lat: 43.1787, lon: -0.0064 },
+  LFBU: { lat: 45.7292, lon: 0.2215 },
+  LFBV: { lat: 45.1508, lon: 1.4692 },
+  LFBX: { lat: 45.1981, lon: 0.8156 },
+  LFBY: { lat: 43.6892, lon: -1.0689 },
+  LFBZ: { lat: 43.4684, lon: -1.5232 },
+  LFCA: { lat: 46.7826, lon: 0.5505 },
+  LFCB: { lat: 42.8, lon: 0.6 },
+  LFCC: { lat: 44.3514, lon: 1.4753 },
+  LFCD: { lat: 44.755, lon: -1.065 },
+  LFCE: { lat: 46.1761, lon: 1.9538 },
+  LFCF: { lat: 44.6733, lon: 1.7892 },
+  LFCG: { lat: 43.0078, lon: 1.1032 },
+  LFCH: { lat: 44.5964, lon: -1.1108 },
+  LFCI: { lat: 43.9139, lon: 2.1131 },
+  LFCJ: { lat: 45.4842, lon: -0.4214 },
+  LFCK: { lat: 43.5563, lon: 2.2892 },
+  LFCL: { lat: 43.5868, lon: 1.4992 },
+  LFCM: { lat: 43.9893, lon: 3.183 },
+  LFCN: { lat: 43.7697, lon: -0.0328 },
+  LFCO: { lat: 43.1635, lon: -0.5615 },
+  LFCP: { lat: 45.57, lon: -0.515 },
+  LFCQ: { lat: 43.7711, lon: 2.0108 },
+  LFCR: { lat: 44.4079, lon: 2.4827 },
+  LFCS: { lat: 44.7003, lon: -0.5956 },
+  LFCT: { lat: 46.9619, lon: -0.1528 },
+  LFCU: { lat: 45.5357, lon: 2.4245 },
+  LFCV: { lat: 44.3695, lon: 2.0257 },
+  LFCW: { lat: 44.3969, lon: 0.7589 },
+  LFCX: { lat: 44.0864, lon: 1.1272 },
+  LFCY: { lat: 45.6281, lon: -0.9725 },
+  LFCZ: { lat: 44.1459, lon: -1.1643 },
+  LFDA: { lat: 43.7094, lon: -0.2453 },
+  LFDB: { lat: 44.0257, lon: 1.378 },
+  LFDC: { lat: 45.2744, lon: -0.4522 },
+  LFDE: { lat: 45.4214, lon: 2.0689 },
+  LFDF: { lat: 44.8536, lon: 0.1767 },
+  LFDG: { lat: 43.8839, lon: 1.8756 },
+  LFDH: { lat: 43.6836, lon: 0.5997 },
+  LFDI: { lat: 44.9835, lon: -0.1384 },
+  LFDJ: { lat: 43.0906, lon: 1.6958 },
+  LFDK: { lat: 45.495, lon: -1.0822 },
+  LFDL: { lat: 47.0359, lon: 0.1006 },
+  LFDM: { lat: 44.499, lon: 0.2005 },
+  LFDN: { lat: 45.8878, lon: -0.9831 },
+  LFDO: { lat: 44.8511, lon: -0.8055 },
+  LFDP: { lat: 45.9592, lon: -1.3161 },
+  LFDQ: { lat: 43.2794, lon: 0.5217 },
+  LFDR: { lat: 44.5681, lon: -0.0561 },
+  LFDS: { lat: 44.7917, lon: 1.2471 },
+  LFDT: { lat: 43.2153, lon: 0.0773 },
+  LFDU: { lat: 45.1978, lon: -0.8822 },
+  LFDV: { lat: 46.2728, lon: 0.1906 },
+  LFDW: { lat: 46.5836, lon: 0.6425 },
+  LFDX: { lat: 44.4609, lon: 1.0067 },
+  LFDY: { lat: 44.876, lon: -0.4804 },
+  LFEA: { lat: 47.3253, lon: -3.2013 },
+  LFEB: { lat: 48.4434, lon: -2.1031 },
+  LFEC: { lat: 48.4632, lon: -5.0636 },
+  LFED: { lat: 48.0567, lon: -2.9208 },
+  LFEF: { lat: 47.3398, lon: 0.9459 },
+  LFEG: { lat: 46.5963, lon: 1.6016 },
+  LFEH: { lat: 47.4799, lon: 2.3933 },
+  LFEI: { lat: 47.6144, lon: 2.7819 },
+  LFEJ: { lat: 46.8409, lon: 1.62 },
+  LFEK: { lat: 46.888, lon: 2.0399 },
+  LFEL: { lat: 46.6208, lon: 1.0875 },
+  LFEM: { lat: 47.9606, lon: 2.6858 },
+  LFEN: { lat: 47.2661, lon: 0.6987 },
+  LFEO: { lat: 48.6136, lon: -1.9736 },
+  LFEP: { lat: 47.2214, lon: 4.5611 },
+  LFEQ: { lat: 47.4822, lon: -3.1 },
+  LFER: { lat: 47.6994, lon: -2.0367 },
+  LFES: { lat: 48.0525, lon: -3.6647 },
+  LFET: { lat: 47.5463, lon: 5.2104 },
+  LFEU: { lat: 48.8675, lon: 5.1851 },
+  LFEV: { lat: 47.4317, lon: 5.6178 },
+  LFEW: { lat: 47.2393, lon: 4.2659 },
+  LFEX: { lat: 48.5935, lon: 6.241 },
+  LFEY: { lat: 46.7176, lon: -2.3925 },
+  LFEZ: { lat: 48.7244, lon: 6.2078 },
+  LFFB: { lat: 48.3501, lon: 2.4244 },
+  LFFC: { lat: 49.0788, lon: 1.6883 },
+  LFFD: { lat: 48.8977, lon: 1.2508 },
+  LFFE: { lat: 49.046, lon: 2.354 },
+  LFFG: { lat: 48.757, lon: 3.2781 },
+  LFFH: { lat: 49.0668, lon: 3.3555 },
+  LFFI: { lat: 47.4081, lon: -1.1775 },
+  LFFJ: { lat: 48.3851, lon: 5.1435 },
+  LFFK: { lat: 46.4414, lon: -0.7928 },
+  LFFL: { lat: 48.5158, lon: 1.64 },
+  LFFM: { lat: 47.6556, lon: 1.9881 },
+  LFFN: { lat: 48.4304, lon: 4.4725 },
+  LFFP: { lat: 48.1552, lon: 2.1876 },
+  LFFQ: { lat: 48.4986, lon: 2.3369 },
+  LFFR: { lat: 48.0659, lon: 4.4124 },
+  LFFT: { lat: 48.359, lon: 5.7196 },
+  LFFU: { lat: 46.8711, lon: 2.3769 },
+  LFFV: { lat: 47.1941, lon: 2.0654 },
+  LFFW: { lat: 46.932, lon: -1.3279 },
+  LFFX: { lat: 46.5621, lon: 4.9756 },
+  LFFY: { lat: 49.3053, lon: 1.6379 },
+  LFFZ: { lat: 48.7096, lon: 3.7633 },
+  LFGA: { lat: 48.1099, lon: 7.359 },
+  LFGB: { lat: 47.7413, lon: 7.4322 },
+  LFGC: { lat: 48.5533, lon: 7.7766 },
+  LFGD: { lat: 46.92, lon: 5.76 },
+  LFGE: { lat: 47.5038, lon: 3.901 },
+  LFGF: { lat: 47.0066, lon: 4.8941 },
+  LFGG: { lat: 47.7007, lon: 6.8313 },
+  LFGH: { lat: 47.3609, lon: 2.9159 },
+  LFGI: { lat: 47.3853, lon: 4.9469 },
+  LFGJ: { lat: 47.039, lon: 5.4276 },
+  LFGK: { lat: 47.9945, lon: 3.3927 },
+  LFGL: { lat: 46.675, lon: 5.4691 },
+  LFGM: { lat: 46.6032, lon: 4.3382 },
+  LFGN: { lat: 46.4658, lon: 4.1345 },
+  LFGO: { lat: 48.2916, lon: 3.2457 },
+  LFGP: { lat: 47.9802, lon: 3.7756 },
+  LFGQ: { lat: 47.481, lon: 4.343 },
+  LFGR: { lat: 49.1522, lon: 5.9334 },
+  LFGS: { lat: 49.4836, lon: 5.5719 },
+  LFGT: { lat: 48.7169, lon: 7.0743 },
+  LFGU: { lat: 49.1281, lon: 7.1083 },
+  LFGV: { lat: 49.3547, lon: 6.2014 },
+  LFGW: { lat: 49.1224, lon: 5.4691 },
+  LFGX: { lat: 46.763, lon: 5.8197 },
+  LFGY: { lat: 48.2665, lon: 7.0074 },
+  LFGZ: { lat: 47.142, lon: 4.9685 },
+  LFHA: { lat: 45.515, lon: 3.2675 },
+  LFHC: { lat: 45.8697, lon: 5.1872 },
+  LFHD: { lat: 44.3976, lon: 4.7176 },
+  LFHE: { lat: 45.0661, lon: 5.1033 },
+  LFHF: { lat: 44.4446, lon: 4.3328 },
+  LFHG: { lat: 45.4919, lon: 4.5344 },
+  LFHH: { lat: 45.4624, lon: 4.8281 },
+  LFHI: { lat: 45.6869, lon: 5.4522 },
+  LFHJ: { lat: 45.6542, lon: 4.9136 },
+  LFHL: { lat: 44.7036, lon: 3.8849 },
+  LFHM: { lat: 45.823, lon: 6.6494 },
+  LFHN: { lat: 46.1233, lon: 5.8049 },
+  LFHO: { lat: 44.5444, lon: 4.3722 },
+  LFHP: { lat: 45.0807, lon: 3.7629 },
+  LFHQ: { lat: 45.0764, lon: 2.9936 },
+  LFHR: { lat: 45.3199, lon: 3.3616 },
+  LFHS: { lat: 46.2009, lon: 5.292 },
+  LFHT: { lat: 45.5162, lon: 3.7451 },
+  LFHU: { lat: 45.0874, lon: 6.0836 },
+  LFHV: { lat: 45.9183, lon: 4.6352 },
+  LFHW: { lat: 46.1408, lon: 4.7138 },
+  LFHX: { lat: 46.2539, lon: 3.5886 },
+  LFHY: { lat: 46.5346, lon: 3.4237 },
+  LFHZ: { lat: 45.9539, lon: 6.6392 },
+  LFIB: { lat: 44.7825, lon: 0.9589 },
+  LFID: { lat: 43.9103, lon: 0.3872 },
+  LFIF: { lat: 43.8246, lon: 2.744 },
+  LFIG: { lat: 44.1778, lon: 2.515 },
+  LFIH: { lat: 45.2681, lon: 0.0169 },
+  LFIK: { lat: 45.2387, lon: 0.2648 },
+  LFIL: { lat: 43.9158, lon: -0.9492 },
+  LFIM: { lat: 43.1074, lon: 0.6191 },
+  LFIO: { lat: 43.5689, lon: 1.4808 },
+  LFIP: { lat: 42.7967, lon: 0.4365 },
+  LFIR: { lat: 43.4814, lon: 1.98 },
+  LFIT: { lat: 43.6122, lon: 1.7253 },
+  LFIV: { lat: 45.3806, lon: -1.1158 },
+  LFIX: { lat: 43.3375, lon: -1.4222 },
+  LFIY: { lat: 45.965, lon: -0.5234 },
+  LFJA: { lat: 48.0807, lon: 5.0477 },
+  LFJB: { lat: 46.9028, lon: -0.6978 },
+  LFJC: { lat: 47.4376, lon: 3.5074 },
+  LFJD: { lat: 46.0405, lon: 5.4945 },
+  LFJE: { lat: 44.4958, lon: 5.4028 },
+  LFJF: { lat: 44.6945, lon: 5.1511 },
+  LFJH: { lat: 43.2022, lon: 1.0511 },
+  LFJI: { lat: 45.825, lon: -1.0767 },
+  LFJL: { lat: 48.9821, lon: 6.2513 },
+  LFJR: { lat: 47.5603, lon: -0.3122 },
+  LFJS: { lat: 49.345, lon: 3.2827 },
+  LFJT: { lat: 47.1493, lon: 0.7111 },
+  LFJU: { lat: 46.7123, lon: 2.9448 },
+  LFKA: { lat: 45.626, lon: 6.3281 },
+  LFKB: { lat: 42.5527, lon: 9.4837 },
+  LFKC: { lat: 42.5304, lon: 8.793 },
+  LFKD: { lat: 45.2538, lon: 6.8011 },
+  LFKE: { lat: 45.0278, lon: 5.31 },
+  LFKF: { lat: 41.5018, lon: 9.0971 },
+  LFKG: { lat: 42.0534, lon: 9.4002 },
+  LFKH: { lat: 45.5167, lon: 5.6806 },
+  LFKJ: { lat: 41.9236, lon: 8.8029 },
+  LFKL: { lat: 45.7105, lon: 4.6967 },
+  LFKM: { lat: 45.6072, lon: 4.3058 },
+  LFKO: { lat: 41.6606, lon: 8.8897 },
+  LFKP: { lat: 45.5549, lon: 5.3859 },
+  LFKR: { lat: 45.3767, lon: 6.2769 },
+  LFKS: { lat: 41.9244, lon: 9.406 },
+  LFKT: { lat: 42.2919, lon: 9.189 },
+  LFKX: { lat: 45.4075, lon: 6.5776 },
+  LFKY: { lat: 45.6941, lon: 5.6915 },
+  LFKZ: { lat: 46.3847, lon: 5.7703 },
+  LFLA: { lat: 47.8502, lon: 3.4971 },
+  LFLB: { lat: 45.6381, lon: 5.8802 },
+  LFLC: { lat: 45.7867, lon: 3.1692 },
+  LFLD: { lat: 47.0602, lon: 2.3696 },
+  LFLE: { lat: 45.5611, lon: 5.9758 },
+  LFLG: { lat: 45.218, lon: 5.8483 },
+  LFLH: { lat: 46.8258, lon: 4.8176 },
+  LFLI: { lat: 46.192, lon: 6.2684 },
+  LFLJ: { lat: 45.3975, lon: 6.635 },
+  LFLK: { lat: 46.2784, lon: 5.6663 },
+  LFLL: { lat: 45.726, lon: 5.0901 },
+  LFLM: { lat: 46.2951, lon: 4.796 },
+  LFLN: { lat: 46.414, lon: 4.0142 },
+  LFLO: { lat: 46.0538, lon: 3.999 },
+  LFLP: { lat: 45.9289, lon: 6.0987 },
+  LFLQ: { lat: 44.5799, lon: 4.7388 },
+  LFLR: { lat: 45.2515, lon: 4.8264 },
+  LFLS: { lat: 45.3629, lon: 5.3294 },
+  LFLT: { lat: 46.3528, lon: 2.5705 },
+  LFLU: { lat: 44.9216, lon: 4.9699 },
+  LFLV: { lat: 46.1697, lon: 3.4036 },
+  LFLW: { lat: 44.8914, lon: 2.4219 },
+  LFLX: { lat: 46.8602, lon: 1.7283 },
+  LFLY: { lat: 45.7279, lon: 4.944 },
+  LFLZ: { lat: 45.7062, lon: 4.1973 },
+  LFMA: { lat: 43.5063, lon: 5.3664 },
+  LFMC: { lat: 43.3847, lon: 6.3871 },
+  LFMD: { lat: 43.548, lon: 6.9552 },
+  LFME: { lat: 43.8539, lon: 4.4136 },
+  LFMF: { lat: 43.6096, lon: 6.6974 },
+  LFMG: { lat: 43.4075, lon: 1.9903 },
+  LFMH: { lat: 45.5406, lon: 4.2964 },
+  LFMI: { lat: 43.5227, lon: 4.9238 },
+  LFMK: { lat: 43.216, lon: 2.3063 },
+  LFML: { lat: 43.4381, lon: 5.2125 },
+  LFMN: { lat: 43.6584, lon: 7.2159 },
+  LFMO: { lat: 44.1405, lon: 4.8667 },
+  LFMP: { lat: 42.7404, lon: 2.8707 },
+  LFMQ: { lat: 43.2525, lon: 5.7852 },
+  LFMR: { lat: 44.3872, lon: 6.6088 },
+  LFMS: { lat: 44.0697, lon: 4.1421 },
+  LFMT: { lat: 43.5762, lon: 3.963 },
+  LFMU: { lat: 43.3235, lon: 3.3539 },
+  LFMV: { lat: 43.9073, lon: 4.9018 },
+  LFMW: { lat: 43.3122, lon: 1.9211 },
+  LFMX: { lat: 44.06, lon: 5.9914 },
+  LFMY: { lat: 43.6064, lon: 5.1093 },
+  LFMZ: { lat: 43.1758, lon: 2.7342 },
+  LFNA: { lat: 44.455, lon: 6.0378 },
+  LFNB: { lat: 44.5021, lon: 3.5328 },
+  LFNC: { lat: 44.7017, lon: 6.6003 },
+  LFND: { lat: 44.2694, lon: 4.6533 },
+  LFNE: { lat: 43.6583, lon: 5.0136 },
+  LFNF: { lat: 43.7378, lon: 5.7842 },
+  LFNG: { lat: 43.6103, lon: 4.0703 },
+  LFNH: { lat: 44.0277, lon: 5.0843 },
+  LFNJ: { lat: 44.5175, lon: 5.7357 },
+  LFNL: { lat: 43.8008, lon: 3.7825 },
+  LFNO: { lat: 44.2864, lon: 3.4667 },
+  LFNP: { lat: 43.5058, lon: 3.4136 },
+  LFNQ: { lat: 42.5436, lon: 2.12 },
+  LFNR: { lat: 43.5367, lon: 5.1774 },
+  LFNS: { lat: 44.2865, lon: 5.9291 },
+  LFNT: { lat: 43.9969, lon: 4.7556 },
+  LFNU: { lat: 44.0821, lon: 4.3939 },
+  LFNV: { lat: 44.3357, lon: 4.9069 },
+  LFNW: { lat: 42.9114, lon: 2.0561 },
+  LFNX: { lat: 43.6408, lon: 3.1456 },
+  LFNZ: { lat: 43.7689, lon: 4.8936 },
+  LFOA: { lat: 47.0533, lon: 2.6325 },
+  LFOB: { lat: 49.4544, lon: 2.1128 },
+  LFOC: { lat: 48.0579, lon: 1.3793 },
+  LFOD: { lat: 47.2568, lon: -0.1151 },
+  LFOE: { lat: 49.0287, lon: 1.2199 },
+  LFOF: { lat: 48.4466, lon: 0.108 },
+  LFOG: { lat: 48.75, lon: -0.5939 },
+  LFOH: { lat: 49.534, lon: 0.0884 },
+  LFOI: { lat: 50.1435, lon: 1.8319 },
+  LFOJ: { lat: 47.9878, lon: 1.7606 },
+  LFOK: { lat: 48.7733, lon: 4.2061 },
+  LFOL: { lat: 48.7585, lon: 0.6566 },
+  LFOM: { lat: 49.2023, lon: -1.508 },
+  LFON: { lat: 48.7054, lon: 1.3612 },
+  LFOO: { lat: 46.4769, lon: -1.7228 },
+  LFOP: { lat: 49.3849, lon: 1.1791 },
+  LFOQ: { lat: 47.6785, lon: 1.2088 },
+  LFOR: { lat: 48.4575, lon: 1.5198 },
+  LFOS: { lat: 49.8352, lon: 0.6553 },
+  LFOT: { lat: 47.4322, lon: 0.7276 },
+  LFOU: { lat: 47.0821, lon: -0.8771 },
+  LFOV: { lat: 48.0322, lon: -0.744 },
+  LFOW: { lat: 49.8161, lon: 3.2057 },
+  LFOX: { lat: 48.3819, lon: 2.0753 },
+  LFOY: { lat: 49.5447, lon: 0.3604 },
+  LFOZ: { lat: 47.8978, lon: 2.1645 },
+  LFPA: { lat: 49.1658, lon: 2.3131 },
+  LFPB: { lat: 48.9623, lon: 2.4365 },
+  LFPC: { lat: 49.2535, lon: 2.5191 },
+  LFPD: { lat: 49.1024, lon: 0.5659 },
+  LFPE: { lat: 48.9275, lon: 2.8335 },
+  LFPF: { lat: 48.8432, lon: 1.9063 },
+  LFPG: { lat: 49.009, lon: 2.5541 },
+  LFPH: { lat: 48.8966, lon: 2.6062 },
+  LFPI: { lat: 48.833, lon: 2.273 },
+  LFPK: { lat: 48.8396, lon: 3.0087 },
+  LFPL: { lat: 48.821, lon: 2.626 },
+  LFPM: { lat: 48.6047, lon: 2.6711 },
+  LFPN: { lat: 48.7519, lon: 2.1062 },
+  LFPO: { lat: 48.7295, lon: 2.359 },
+  LFPP: { lat: 49.1088, lon: 2.7361 },
+  LFPQ: { lat: 48.7063, lon: 2.9028 },
+  LFPT: { lat: 49.0961, lon: 2.0355 },
+  LFPU: { lat: 48.3412, lon: 2.7985 },
+  LFPV: { lat: 48.7744, lon: 2.2031 },
+  LFPX: { lat: 48.8423, lon: 1.9805 },
+  LFPY: { lat: 48.5961, lon: 2.3322 },
+  LFPZ: { lat: 48.8125, lon: 2.0675 },
+  LFQA: { lat: 49.2087, lon: 4.1566 },
+  LFQB: { lat: 48.3221, lon: 4.0167 },
+  LFQC: { lat: 48.5933, lon: 6.5454 },
+  LFQD: { lat: 50.3239, lon: 2.8028 },
+  LFQE: { lat: 49.2269, lon: 5.6722 },
+  LFQF: { lat: 46.9673, lon: 4.2609 },
+  LFQG: { lat: 47.0029, lon: 3.1131 },
+  LFQH: { lat: 47.8439, lon: 4.58 },
+  LFQI: { lat: 50.2218, lon: 3.1542 },
+  LFQJ: { lat: 50.3105, lon: 4.0331 },
+  LFQK: { lat: 48.9051, lon: 4.3527 },
+  LFQL: { lat: 50.4664, lon: 2.8197 },
+  LFQM: { lat: 47.2066, lon: 6.0832 },
+  LFQN: { lat: 50.7275, lon: 2.2326 },
+  LFQO: { lat: 50.6872, lon: 3.0756 },
+  LFQP: { lat: 48.7662, lon: 7.2006 },
+  LFQQ: { lat: 50.5666, lon: 3.1024 },
+  LFQR: { lat: 48.5006, lon: 3.7633 },
+  LFQS: { lat: 50.3379, lon: 2.9907 },
+  LFQT: { lat: 50.6184, lon: 2.6422 },
+  LFQU: { lat: 48.9509, lon: 7.0785 },
+  LFQV: { lat: 49.7839, lon: 4.6471 },
+  LFQW: { lat: 47.6386, lon: 6.2044 },
+  LFQX: { lat: 48.114, lon: 4.8194 },
+  LFQY: { lat: 48.7534, lon: 7.4254 },
+  LFQZ: { lat: 48.7744, lon: 6.7141 },
+  LFRA: { lat: 47.4992, lon: -0.5728 },
+  LFRB: { lat: 48.4479, lon: -4.4185 },
+  LFRC: { lat: 49.6501, lon: -1.4703 },
+  LFRD: { lat: 48.5877, lon: -2.08 },
+  LFRE: { lat: 47.2894, lon: -2.3464 },
+  LFRF: { lat: 48.8831, lon: -1.5642 },
+  LFRG: { lat: 49.3652, lon: 0.1545 },
+  LFRH: { lat: 47.7606, lon: -3.44 },
+  LFRI: { lat: 46.7019, lon: -1.3786 },
+  LFRJ: { lat: 48.5303, lon: -4.1516 },
+  LFRK: { lat: 49.1768, lon: -0.4549 },
+  LFRL: { lat: 48.2817, lon: -4.445 },
+  LFRM: { lat: 47.9486, lon: 0.2017 },
+  LFRN: { lat: 48.0695, lon: -1.7348 },
+  LFRO: { lat: 48.7544, lon: -3.4717 },
+  LFRP: { lat: 48.0028, lon: -2.3772 },
+  LFRQ: { lat: 47.973, lon: -4.1697 },
+  LFRS: { lat: 47.1532, lon: -1.6107 },
+  LFRT: { lat: 48.5386, lon: -2.8535 },
+  LFRU: { lat: 48.6032, lon: -3.8158 },
+  LFRV: { lat: 47.7233, lon: -2.7186 },
+  LFRW: { lat: 48.6623, lon: -1.4037 },
+  LFRZ: { lat: 47.3114, lon: -2.1526 },
+  LFSA: { lat: 47.2731, lon: 6.0829 },
+  LFSB: { lat: 47.6007, lon: 7.5211 },
+  LFSC: { lat: 47.922, lon: 7.3997 },
+  LFSD: { lat: 47.2689, lon: 5.09 },
+  LFSE: { lat: 48.2119, lon: 6.4492 },
+  LFSF: { lat: 49.0734, lon: 6.1329 },
+  LFSG: { lat: 48.325, lon: 6.07 },
+  LFSH: { lat: 48.7948, lon: 7.8161 },
+  LFSI: { lat: 48.636, lon: 4.8994 },
+  LFSJ: { lat: 49.6597, lon: 5.0378 },
+  LFSK: { lat: 48.7024, lon: 4.6831 },
+  LFSL: { lat: 45.0397, lon: 1.4856 },
+  LFSM: { lat: 47.487, lon: 6.7905 },
+  LFSN: { lat: 48.6921, lon: 6.2305 },
+  LFSO: { lat: 48.5831, lon: 5.955 },
+  LFSP: { lat: 46.904, lon: 6.3268 },
+  LFSQ: { lat: 47.6556, lon: 7.0108 },
+  LFSR: { lat: 49.31, lon: 4.05 },
+  LFST: { lat: 48.5383, lon: 7.6282 },
+  LFSU: { lat: 47.9648, lon: 5.2937 },
+  LFSV: { lat: 48.6001, lon: 6.0565 },
+  LFSW: { lat: 49.0045, lon: 4.0853 },
+  LFSX: { lat: 47.7877, lon: 6.3534 },
+  LFSY: { lat: 47.6094, lon: 4.6182 },
+  LFSZ: { lat: 48.2239, lon: 5.9353 },
+  LFTF: { lat: 43.2476, lon: 6.1267 },
+  LFTH: { lat: 43.0973, lon: 6.146 },
+  LFTM: { lat: 44.4583, lon: 5.7283 },
+  LFTN: { lat: 44.2444, lon: 4.0122 },
+  LFTP: { lat: 43.8689, lon: 6.1628 },
+  LFTQ: { lat: 47.7396, lon: -1.1895 },
+  LFTW: { lat: 43.7574, lon: 4.4164 },
+  LFTZ: { lat: 43.2054, lon: 6.482 },
+  LFXA: { lat: 45.9873, lon: 5.3284 },
+  LFXB: { lat: 45.7019, lon: -0.6361 },
+  LFXC: { lat: 48.2286, lon: 5.843 },
+  LFXH: { lat: 47.1667, lon: 6.35 },
+  LFXI: { lat: 44.0582, lon: 5.4947 },
+  LFXM: { lat: 49.1114, lon: 4.3669 },
+  LFXQ: { lat: 47.9431, lon: -2.1859 },
+  LFXR: { lat: 45.9308, lon: -0.9953 },
+  LFXU: { lat: 48.9983, lon: 1.9428 },
+  LFYD: { lat: 48.0863, lon: 5.6641 },
+  LFYG: { lat: 50.1405, lon: 3.2632 },
+  LFYH: { lat: 47.3329, lon: 5.5135 },
+  LFYK: { lat: 49.4565, lon: 5.4138 },
+  LFYL: { lat: 47.7047, lon: 6.5458 },
+  LFYM: { lat: 48.6612, lon: 3.8356 },
+  LFYR: { lat: 47.3175, lon: 1.691 },
+  LFYS: { lat: 42.4472, lon: 2.0108 },
+  LFYT: { lat: 49.7575, lon: 3.216 }
 };
 
 function toRad2(d){ return d*Math.PI/180; }
@@ -1270,6 +1932,7 @@ function updateRouteNote(){
 
 function updateNotamNote(){
   const panel = document.getElementById('notamNote');
+  const empty = document.getElementById('notamEmpty');
   const list = document.getElementById('notamCodesList');
   const codes = ['t_dep','t_arr','t_deg1','t_deg2']
     .map(id=>document.getElementById(id).value.trim().toUpperCase())
@@ -1278,10 +1941,12 @@ function updateNotamNote(){
 
   if(uniqueCodes.length===0){
     panel.style.display = 'none';
+    empty.style.display = 'block';
     return;
   }
   list.textContent = uniqueCodes.join(' · ');
   panel.style.display = 'block';
+  empty.style.display = 'none';
 }
 
 document.getElementById('btnCopyNotamCodes').addEventListener('click', (e)=>{
@@ -1295,6 +1960,401 @@ document.getElementById('btnCopyNotamCodes').addEventListener('click', (e)=>{
     alert('Codes : ' + text);
   });
 });
+
+// Terrains connus sans station METAR propre → station la plus proche qui en publie une.
+// Ajoutée au cas par cas, vérifiée avant d'être codée en dur (comme pour les zones réglementées).
+const NEAREST_METAR = {
+  LFHD: { metar: 'LFMO', label: 'Orange-Caritat' } // Pierrelatte n'a pas de station météo
+};
+
+function collectRouteAirportCodes(){
+  const fromFields = ['t_dep','t_arr','t_deg1','t_deg2']
+    .map(id=>document.getElementById(id).value.trim().toUpperCase())
+    .filter(c=>/^[A-Z0-9]{4}$/.test(c));
+
+  const fromLegs = legs
+    .map(l=>l.point ? l.point.trim().toUpperCase() : '')
+    .filter(c=>/^[A-Z0-9]{4}$/.test(c) && findAirport(c));
+
+  return [...new Set([...fromFields, ...fromLegs])];
+}
+
+// Carte de construction de route (IGN, WMTS gratuit "usages libres SCAN 25/100/OACI" — clé publique
+// documentée par l'IGN, pas de compte requis). OACI-VFR = zoom 6-11 (carte au 1/500 000, la seule
+// échelle aéronautique VFR officielle française — pas de 1/250 000 officiel, on ne le fabrique pas).
+// SCAN25 = plan IGN classique, plus détaillé mais NON aéronautique, utile pour le détail du relief/sol.
+// La carte vit dans l'onglet 5, qui peut être masqué (display:none) — Leaflet ne peut pas se
+// dimensionner correctement dans un conteneur caché, donc le fit/invalidateSize est différé jusqu'à
+// ce que l'onglet soit effectivement affiché (voir switchTab).
+let prepMap = null, prepMapLayer = null, routeMarkers = [], routePolyline = null;
+let routePoints = [];
+
+const BASE_LAYERS = {
+  oaci: { layer:'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-OACI', tms:'PM_6_11', minZoom:6, maxZoom:11, attr:'© IGN-F/Géoportail — carte OACI-VFR (SIA/DGAC)' },
+  scan25: { layer:'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR', tms:'PM_6_16', minZoom:6, maxZoom:16, attr:'© IGN-F/Géoportail — Plan IGN (non aéronautique)' }
+};
+
+function tileUrlFor(cfg){
+  return `https://data.geopf.fr/private/wmts?apikey=ign_scan_ws&LAYER=${cfg.layer}&STYLE=normal&TILEMATRIXSET=${cfg.tms}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile`;
+}
+
+function setBaseLayer(key){
+  const cfg = BASE_LAYERS[key];
+  if(prepMapLayer) prepMap.removeLayer(prepMapLayer);
+  prepMap.setMinZoom(cfg.minZoom);
+  prepMap.setMaxZoom(cfg.maxZoom);
+  if(prepMap.getZoom() < cfg.minZoom) prepMap.setZoom(cfg.minZoom);
+  if(prepMap.getZoom() > cfg.maxZoom) prepMap.setZoom(cfg.maxZoom);
+  prepMapLayer = L.tileLayer(tileUrlFor(cfg), { minZoom:cfg.minZoom, maxZoom:cfg.maxZoom, attribution:cfg.attr }).addTo(prepMap);
+}
+
+function initPrepMap(){
+  if(prepMap) return;
+  prepMap = L.map('routeMap', { minZoom:6, maxZoom:11 }).setView([46.6, 2.5], 6);
+  setBaseLayer('oaci');
+
+  document.querySelectorAll('input[name="baseLayer"]').forEach(r=>{
+    r.addEventListener('change', ()=>{ if(r.checked) setBaseLayer(r.value); });
+  });
+
+  prepMap.on('click', (e)=>{
+    const nearest = findNearestAirportOnScreen(e.latlng, e.containerPoint);
+    if(nearest){
+      addRoutePoint({ type:'airport', code:nearest.icao, name:nearest.name, lat:nearest.lat, lon:nearest.lon });
+    } else {
+      addRoutePoint({ type:'free', name:'', lat:e.latlng.lat, lon:e.latlng.lng });
+    }
+  });
+}
+
+function findNearestAirportOnScreen(latlng, containerPoint){
+  const thresholdPx = 16;
+  let best = null, bestDist = thresholdPx;
+  Object.keys(COORDS).forEach(code=>{
+    const c = COORDS[code];
+    if(Math.abs(c.lat-latlng.lat) > 1.5 || Math.abs(c.lon-latlng.lng) > 1.5) return; // filtre grossier avant projection
+    const pt = prepMap.latLngToContainerPoint([c.lat, c.lon]);
+    const d = pt.distanceTo(containerPoint);
+    if(d < bestDist){ bestDist = d; best = code; }
+  });
+  if(!best) return null;
+  const airport = findAirport(best);
+  return { icao: best, name: airport ? airport.name : '', lat: COORDS[best].lat, lon: COORDS[best].lon };
+}
+
+function fitPrepMap(points){
+  if(!prepMap || points.length===0) return;
+  prepMap.invalidateSize();
+  const bounds = L.latLngBounds(points.map(p=>[p.lat,p.lon]));
+  if(points.length===1){ prepMap.setView(bounds.getCenter(), 9); return; }
+  prepMap.fitBounds(bounds.pad(0.35), { maxZoom:10 });
+}
+
+// ---- Points de route : cliqués sur la carte, éditables via une bulle (nom, altitude) ----
+function pointMarkerHtml(point, idx){
+  const label = point.type==='airport' ? point.code : String(idx+1);
+  const cls = idx===0 ? 'is-dep' : (point.type==='free' ? 'is-free' : '');
+  return `<div class="prep-map-marker ${cls}">${label}</div>`;
+}
+// Infos terrain affichées pour un point aérodrome : uniquement ce qui est vérifié dans AD_NOTES
+// (rare — quelques terrains seulement) + un lien direct vers la carte VAC pour le reste. Jamais de
+// fréquence ou altitude devinée.
+function airportInfoHtml(code){
+  const airport = findAirport(code);
+  if(!airport) return '';
+  const note = AD_NOTES[code];
+  const links = vacLinks(code);
+  const lines = [`${airport.city || '?'} · ${airport.usage || '?'}`];
+  if(note && note.elevFt!==undefined) lines.push(`Altitude terrain : ${note.elevFt} ft (${note.elevM} m)`);
+  if(note && note.freqs && note.freqs.length){
+    lines.push('Fréquences : ' + note.freqs.map(f=>`${f.label} ${f.mhz}`).join(' · '));
+  } else {
+    lines.push('Fréquences : non vérifiées ici — voir la carte VAC');
+  }
+  let html = `<div class="airport-info">${lines.join('<br>')}`;
+  if(note && note.special) html += `<br><span style="color:var(--amber);">⚠ ${note.special}</span>`;
+  html += `<br><a href="${links.pdf}" target="_blank" rel="noopener">📄 Carte VAC (PDF) ↗</a></div>`;
+  return html;
+}
+function popupHtml(point, idx){
+  return `
+    <div style="min-width:220px;">
+      <div style="font-size:11px;color:var(--ink-dim);margin-bottom:6px;">Point ${idx+1}${point.type==='airport'?' — '+point.code:' (libre)'}</div>
+      ${point.type==='airport' ? airportInfoHtml(point.code) : ''}
+      <label>Nom</label>
+      <input type="text" class="rp-name" placeholder="${point.type==='airport' ? point.code : 'Nom du point'}" value="${point.name||''}">
+      <label>Altitude (ft)</label>
+      <input type="number" class="rp-alt" placeholder="ex. 3500" value="${point.altFt??''}">
+      <label>Observations</label>
+      <textarea class="rp-notes" rows="2" placeholder="Notes libres...">${point.notes||''}</textarea>
+      <button type="button" class="btn-mini-del rp-del" style="width:100%;">Retirer ce point</button>
+    </div>
+  `;
+}
+function renderRouteMarkers(){
+  routeMarkers.forEach(m=>prepMap.removeLayer(m));
+  routeMarkers = [];
+  routePoints.forEach((point, idx)=>{
+    const icon = L.divIcon({ className:'', html: pointMarkerHtml(point, idx), iconSize:[26,26], iconAnchor:[13,13] });
+    const marker = L.marker([point.lat, point.lon], { icon }).addTo(prepMap);
+    marker.bindPopup(popupHtml(point, idx));
+    marker.on('popupopen', (e)=>{
+      const el = e.popup.getElement();
+      el.querySelector('.rp-name').addEventListener('input', (ev)=>{ point.name = ev.target.value; renderRoutePointsList(); });
+      el.querySelector('.rp-alt').addEventListener('input', (ev)=>{ point.altFt = ev.target.value===''?undefined:Number(ev.target.value); renderRoutePointsList(); });
+      el.querySelector('.rp-notes').addEventListener('input', (ev)=>{ point.notes = ev.target.value; renderRoutePointsList(); });
+      el.querySelector('.rp-del').addEventListener('click', ()=>{ prepMap.closePopup(); removeRoutePoint(idx); });
+    });
+    routeMarkers.push(marker);
+  });
+  if(routePolyline){ prepMap.removeLayer(routePolyline); routePolyline = null; }
+  if(routePoints.length>1){
+    routePolyline = L.polyline(routePoints.map(p=>[p.lat,p.lon]), { color:'#4FB0C6', weight:3 }).addTo(prepMap);
+  }
+}
+function renderRoutePointsList(){
+  const empty = document.getElementById('routePointsEmpty');
+  const list = document.getElementById('routePointsList');
+  const summary = document.getElementById('routeSummary');
+  if(routePoints.length===0){
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    summary.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  const tas = Number(document.getElementById('f_vp') && document.getElementById('f_vp').value) || 100;
+
+  let totalDist = 0, totalMin = 0;
+  let html = '';
+  routePoints.forEach((p, i)=>{
+    let legHtml = '';
+    if(i>0){
+      const prev = routePoints[i-1];
+      const gc = greatCircle(prev.lat, prev.lon, p.lat, p.lon);
+      const timeMin = tas>0 ? (gc.dist/tas)*60 : null;
+      totalDist += gc.dist;
+      if(timeMin!==null) totalMin += timeMin;
+      legHtml = `<div class="as-limits">${gc.dist.toFixed(1)} NM · cap ${Math.round(gc.bearing)}°${timeMin!==null?' · '+Math.round(timeMin)+' min':''}</div>`;
+    }
+    html += `
+      <div class="airspace-card" style="border-left-color:var(--cyan);">
+        <span class="as-title">${i+1}. ${p.name || (p.type==='airport'?p.code:'Point libre')}</span>
+        <span class="as-type">${p.type==='airport'?p.code:'libre'}${p.altFt?' · '+p.altFt+' ft':''}</span>
+        ${legHtml}
+        ${p.type==='airport' ? airportInfoHtml(p.code) : ''}
+        <label style="font-size:10.5px;color:var(--ink-dim);display:block;margin-top:6px;margin-bottom:3px;">Observations</label>
+        <textarea class="rp-notes-list" data-idx="${i}" rows="2" placeholder="Notes libres...">${p.notes||''}</textarea>
+        <div class="as-tags" style="margin-top:6px;">
+          <button type="button" class="btn-mini" data-up="${i}" ${i===0?'disabled':''} style="padding:3px 8px;">↑</button>
+          <button type="button" class="btn-mini" data-down="${i}" ${i===routePoints.length-1?'disabled':''} style="padding:3px 8px;">↓</button>
+          <button type="button" class="btn-mini-del" data-del="${i}" style="padding:3px 8px;">Retirer</button>
+        </div>
+      </div>
+    `;
+  });
+  list.innerHTML = html;
+  list.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click', ()=>moveRoutePoint(Number(b.dataset.up), -1)));
+  list.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click', ()=>moveRoutePoint(Number(b.dataset.down), 1)));
+  list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>removeRoutePoint(Number(b.dataset.del))));
+  // Pas de re-rendu de la liste sur chaque frappe ici (sinon le curseur saute) — seule la donnée
+  // est mise à jour ; le prochain rendu (ajout/suppression/réordonnancement) reprendra la valeur.
+  list.querySelectorAll('.rp-notes-list').forEach(t=>t.addEventListener('input', (ev)=>{
+    routePoints[Number(t.dataset.idx)].notes = ev.target.value;
+  }));
+
+  if(routePoints.length>1){
+    summary.style.display = 'block';
+    summary.textContent = `Total : ${totalDist.toFixed(1)} NM · ${Math.round(totalMin)} min à ${tas} kt (sans vent)`;
+  } else {
+    summary.style.display = 'none';
+  }
+}
+function addRoutePoint(point){
+  routePoints.push(point);
+  renderRouteMarkers();
+  renderRoutePointsList();
+  routeMarkers[routeMarkers.length-1].openPopup();
+}
+function removeRoutePoint(idx){
+  routePoints.splice(idx, 1);
+  renderRouteMarkers();
+  renderRoutePointsList();
+}
+function moveRoutePoint(idx, dir){
+  const j = idx + dir;
+  if(j<0 || j>=routePoints.length) return;
+  [routePoints[idx], routePoints[j]] = [routePoints[j], routePoints[idx]];
+  renderRouteMarkers();
+  renderRoutePointsList();
+}
+document.getElementById('btnClearRoute').addEventListener('click', ()=>{
+  if(routePoints.length && !confirm('Effacer tous les points de la route ?')) return;
+  routePoints = [];
+  renderRouteMarkers();
+  renderRoutePointsList();
+});
+
+// Fréquence "connue" pour un aérodrome : uniquement celles vérifiées dans AD_NOTES (rare), jamais devinée.
+function primaryFrequency(code){
+  const note = AD_NOTES[code];
+  return (note && note.freqs && note.freqs.length) ? note.freqs[0].mhz : '';
+}
+
+// Exporte les points de la route vers le Log de navigation (onglet 2) : remplace le départ/arrivée
+// de l'onglet 1 et reconstruit entièrement les étapes à partir des points tracés (cap et distance
+// recalculés par géométrie, altitude et fréquence reprises quand connues). Le vent reste à saisir
+// manuellement pour chaque étape — la route tracée ne connaît pas la météo du jour.
+document.getElementById('btnExportRoute').addEventListener('click', ()=>{
+  if(routePoints.length < 2){
+    alert('Trace au moins deux points avant d\'exporter.');
+    return;
+  }
+  if(legs.length > 0 && !confirm('Ça va remplacer les étapes actuelles du Log de navigation par les points de cette route. Continuer ?')){
+    return;
+  }
+
+  const dep = routePoints[0];
+  const arr = routePoints[routePoints.length-1];
+  document.getElementById('t_dep').value = dep.type==='airport' ? dep.code : (dep.name || 'Départ');
+  document.getElementById('t_arr').value = arr.type==='airport' ? arr.code : (arr.name || '');
+
+  legs = [];
+  for(let i=1; i<routePoints.length; i++){
+    const prev = routePoints[i-1], p = routePoints[i];
+    const gc = greatCircle(prev.lat, prev.lon, p.lat, p.lon);
+    legId++;
+    legs.push({
+      id: legId,
+      point: p.name || (p.type==='airport' ? p.code : `Point ${i+1}`),
+      rv: Math.round(gc.bearing),
+      dist: Math.round(gc.dist*10)/10,
+      wdir: '', wspd: '',
+      alt: p.altFt!==undefined ? String(p.altFt) : '',
+      freq: p.type==='airport' ? primaryFrequency(p.code) : ''
+    });
+  }
+  renderLegsInputs();
+  document.getElementById('t_dep').dispatchEvent(new Event('input'));
+  document.getElementById('t_arr').dispatchEvent(new Event('input'));
+  recompute();
+  switchTab(2);
+});
+
+function updateMetarNote(){
+  const panel = document.getElementById('metarNote');
+  const empty = document.getElementById('metarEmpty');
+  const list = document.getElementById('metarCodesList');
+  const link = document.getElementById('btnOpenMetar');
+  const subNote = document.getElementById('metarSubstituteNote');
+  const codes = collectRouteAirportCodes();
+
+  if(codes.length===0){
+    panel.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  const substitutions = [];
+  const queryCodes = [...new Set(codes.map(c=>{
+    if(NEAREST_METAR[c]){
+      substitutions.push(`${c} (pas de station) → ${NEAREST_METAR[c].metar} (${NEAREST_METAR[c].label})`);
+      return NEAREST_METAR[c].metar;
+    }
+    return c;
+  }))];
+
+  const url = `https://aviationweather.gov/api/data/metar?ids=${queryCodes.join(',')}&format=raw`;
+  list.textContent = codes.join(' · ');
+  link.href = url;
+  if(substitutions.length){
+    subNote.textContent = '⚠ ' + substitutions.join(' · ');
+    subNote.style.display = 'block';
+  } else {
+    subNote.style.display = 'none';
+  }
+  panel.style.display = 'block';
+  empty.style.display = 'none';
+
+  searchNearbyMetar(codes);
+}
+
+// ---- Recherche METAR via AVWX REST API (gère nativement le CORS + la station la plus proche) ----
+const AVWX_TOKEN = '2JfEZyrGKSRIQLtUdjpaDNE3FTtaLHF5MfZRziAfzLU';
+
+async function fetchAvwxMetar(stationOrCoords){
+  const url = `https://avwx.rest/api/metar/${stationOrCoords}?options=info`;
+  const res = await fetch(url, {
+    headers: { 'Authorization': 'BEARER ' + AVWX_TOKEN }
+  });
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
+}
+
+async function searchNearbyMetar(codes){
+  const block = document.getElementById('metarNearbyBlock');
+  const select = document.getElementById('metarNearbySelect');
+  const status = document.getElementById('metarFetchStatus');
+  const raw = document.getElementById('metarRawText');
+  raw.style.display = 'none';
+  block.style.display = 'block';
+  select.innerHTML = '<option value="">Recherche en cours...</option>';
+  status.textContent = 'Interrogation d\'AVWX...';
+
+  const results = [];
+
+  for(const code of codes){
+    const before = results.length;
+
+    // 1) essai direct sur le code du terrain (fonctionne s'il publie lui-même un METAR)
+    try{
+      const d = await fetchAvwxMetar(code);
+      if(d && d.raw){
+        results.push({ label: `${code} (terrain saisi)`, raw: d.raw });
+      }
+    } catch(e){ /* pas de station ici, on continue */ }
+
+    // 2) essai par coordonnées si connues → AVWX cherche lui-même la station la plus proche
+    const coords = COORDS[code];
+    if(coords){
+      try{
+        const d = await fetchAvwxMetar(`${coords.lat},${coords.lon}`);
+        if(d && d.raw){
+          const stationId = d.station || (d.raw && d.raw.split(' ')[0]) || 'station proche';
+          const already = results.some(r=>r.raw === d.raw);
+          if(!already) results.push({ label: `${stationId} (la plus proche de ${code}, trouvée par AVWX)`, raw: d.raw });
+        }
+      } catch(e){ /* échec coordonnées, on continue */ }
+    }
+
+    // 3) repli sur la table NEAREST_METAR vérifiée à la main
+    if(results.length===before && NEAREST_METAR[code]){
+      try{
+        const d = await fetchAvwxMetar(NEAREST_METAR[code].metar);
+        if(d && d.raw){
+          results.push({ label: `${NEAREST_METAR[code].metar} (${NEAREST_METAR[code].label}, vérifié manuellement)`, raw: d.raw });
+        }
+      } catch(e){ /* échec aussi */ }
+    }
+  }
+
+  if(results.length===0){
+    select.innerHTML = '<option value="">Aucune station trouvée automatiquement</option>';
+    status.textContent = '⚠ AVWX n\'a rien renvoyé pour ce terrain — utilise le lien "Ouvrir les METAR" ci-dessus.';
+    return;
+  }
+
+  select.innerHTML = results.map((r,i)=>`<option value="${i}">${r.label}</option>`).join('');
+  status.textContent = `${results.length} résultat(s) via AVWX.`;
+  select.onchange = ()=>{
+    const r = results[Number(select.value)];
+    if(!r){ raw.style.display='none'; return; }
+    raw.textContent = r.raw;
+    raw.style.display = 'block';
+  };
+  select.value = '0';
+  select.onchange();
+}
 
 function updateAdNote(code){
   const panel = document.getElementById('adNote');
@@ -1379,29 +2439,31 @@ function wireTerrainField(inputId, hintId, linksId, listId, slot){
       input.classList.remove('invalid');
       hint.innerHTML='';
       linksBox.innerHTML='';
-      return;
-    }
-
-    const validFormat = /^[A-Z0-9]{4}$/.test(val);
-    input.classList.toggle('invalid', !validFormat);
-
-    const known = validFormat ? findAirport(val) : null;
-    if(known){
-      hint.innerHTML = `<span class="terrain-selected">✓ ${known.name} — ${known.city}</span>`;
-    } else if(!validFormat){
-      hint.textContent = 'Code OACI attendu sur 4 caractères (ou choisis un aérodrome dans la liste)';
     } else {
-      hint.textContent = 'Code inconnu de la base embarquée — vérifie-le, il reste utilisable';
+      const validFormat = /^[A-Z0-9]{4}$/.test(val);
+      input.classList.toggle('invalid', !validFormat);
+
+      const known = validFormat ? findAirport(val) : null;
+      if(known){
+        hint.innerHTML = `<span class="terrain-selected">✓ ${known.name} — ${known.city}</span>`;
+      } else if(!validFormat){
+        hint.textContent = 'Code OACI attendu sur 4 caractères (ou choisis un aérodrome dans la liste)';
+      } else {
+        hint.textContent = 'Code inconnu de la base embarquée — vérifie-le, il reste utilisable';
+      }
+
+      const links = vacLinks(val);
+      linksBox.innerHTML = `
+        <a href="${links.pdf}" target="_blank" rel="noopener" class="btn-vac">📄 Carte VAC (PDF) ↗</a>
+      `;
     }
+
+    // Toujours rafraîchir les panneaux partagés (NOTAM/METAR), même en effaçant un
+    // champ : sinon ils restent bloqués sur l'ancienne valeur si c'était le dernier terrain rempli.
     updateAdNote(val);
     updateRouteNote();
     updateNotamNote();
-
-    const note = AD_NOTES[val];
-    const links = vacLinks(val);
-    linksBox.innerHTML = `
-      <a href="${links.pdf}" target="_blank" rel="noopener">Ouvrir en PDF ↗</a>
-    `;
+    updateMetarNote();
   }
 
   input.addEventListener('input', ()=>{
@@ -1502,6 +2564,8 @@ function renderHangar(){
       fleet = fleet.filter(f=>f.id!==btn.dataset.del);
       await storageSetSafe('hangar-fleet', fleet, true);
       renderHangar();
+      populateWbAircraftSelect();
+      populateFlightAircraftSelect();
     });
   });
 }
@@ -1539,6 +2603,7 @@ async function loadHangar(){
     await storageSetSafe('hangar-fleet', fleet, true);
   }
   renderHangar();
+  populateFlightAircraftSelect();
   status.textContent = '';
 }
 
@@ -1570,6 +2635,7 @@ document.getElementById('hg_add').addEventListener('click', async ()=>{
   ['hg_immat','hg_type','hg_vp','hg_conso','hg_note', ...wbFieldIds].forEach(id=>document.getElementById(id).value='');
   renderHangar();
   populateWbAircraftSelect();
+  populateFlightAircraftSelect();
   setTimeout(()=>status.textContent='', 2000);
 });
 
@@ -1665,15 +2731,135 @@ document.getElementById('btnSavedLogs').addEventListener('click', ()=>{
 
 // ==================== ONGLETS ====================
 function switchTab(n){
-  for(let i=1;i<=3;i++){
+  for(let i=0;i<=5;i++){
     document.getElementById('tabPanel'+i).style.display = (i===n) ? 'block' : 'none';
-    document.getElementById('tabBtn'+i).classList.toggle('active', i===n);
   }
+  document.querySelectorAll('.navitem[data-tab]').forEach(item=>{
+    item.classList.toggle('active', Number(item.dataset.tab) === n);
+  });
+
+  if(n===0) renderDashboard();
   if(n===3) populateWbAircraftSelect();
+  if(n===5){
+    initPrepMap();
+    if(routePoints.length) requestAnimationFrame(()=>requestAnimationFrame(()=>fitPrepMap(routePoints)));
+    else requestAnimationFrame(()=>requestAnimationFrame(()=>prepMap.invalidateSize()));
+  }
 }
-[1,2,3].forEach(n=>{
-  document.getElementById('tabBtn'+n).addEventListener('click', ()=>switchTab(n));
+
+document.querySelectorAll('.navitem[data-tab]').forEach(item=>{
+  item.addEventListener('click', ()=>switchTab(Number(item.dataset.tab)));
 });
+
+// ==================== TABLEAU DE BORD ====================
+// Ne recalcule rien lui-même : relit ce que recompute()/computeWB()/computeFuelPlan() ont déjà
+// calculé (lastNavTotals/lastWbStatus/lastFuelPlan), pour ne jamais diverger des vrais résultats
+// affichés dans les onglets Log de nav / Masse & carburant.
+function fuelGaugeSvg(frac, color){
+  const r=60, cx=75, cy=75, circumference=2*Math.PI*r;
+  const dash = circumference * Math.max(0, Math.min(frac,1));
+  return `
+    <svg viewBox="0 0 150 150" width="150" height="150" style="transform:rotate(-90deg);">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--rule)" stroke-width="13"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="13"
+        stroke-dasharray="${dash} ${circumference}" stroke-linecap="round"/>
+    </svg>`;
+}
+function wbEnvelopeSvg(totalMass, cg, fwdLimit, cgMax, mtow, emptyMass, wb){
+  const W=180, H=140, padL=36, padR=14, padT=10, padB=22;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const massMin = Math.min(emptyMass||totalMass, totalMass) * 0.95;
+  const massMax = Math.max(mtow||totalMass, totalMass) * 1.05;
+  const cgLo = Math.min(wb.cgMin!==undefined?wb.cgMin:cg, cg) - 0.01;
+  const cgHi = Math.max(wb.cgMax!==undefined?wb.cgMax:cg, cg) + 0.01;
+  const x = v => padL + ((v-cgLo)/(cgHi-cgLo||1))*plotW;
+  const y = v => padT + plotH - ((v-massMin)/(massMax-massMin||1))*plotH;
+
+  let pts = null;
+  if(wb.cgFwdLowMass!==undefined && wb.cgFwdLowArm!==undefined && wb.cgMin!==undefined && wb.cgMax!==undefined && mtow){
+    pts = [[wb.cgFwdLowArm,wb.cgFwdLowMass],[wb.cgMin,mtow],[wb.cgMax,mtow],[wb.cgMax,wb.cgFwdLowMass]];
+  } else if(wb.cgMin!==undefined && wb.cgMax!==undefined){
+    pts = [[wb.cgMin,emptyMass||massMin],[wb.cgMin,mtow||totalMass],[wb.cgMax,mtow||totalMass],[wb.cgMax,emptyMass||massMin]];
+  }
+  const outOfEnvelope = (fwdLimit!==undefined && cg<fwdLimit) || (cgMax!==undefined && cg>cgMax) || (mtow && totalMass>mtow);
+  const ptColor = outOfEnvelope ? 'var(--alert)' : 'var(--amber)';
+  const polyHtml = pts ? `<polygon points="${pts.map(([cgv,mv])=>`${x(cgv)},${y(mv)}`).join(' ')}" fill="var(--cyan)" fill-opacity="0.12" stroke="var(--cyan)" stroke-width="1.3"/>` : '';
+  return `
+    <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="flex:0 0 auto;">
+      <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--rule)" stroke-width="1"/>
+      ${polyHtml}
+      <circle cx="${x(cg)}" cy="${y(totalMass)}" r="4.5" fill="${ptColor}" stroke="var(--navy-deep)" stroke-width="1.2"/>
+    </svg>`;
+}
+
+function renderDashboard(){
+  const dashRoute = document.getElementById('dashRoute');
+  const depCode = document.getElementById('t_dep').value.trim().toUpperCase();
+  const arrCode = document.getElementById('t_arr').value.trim().toUpperCase();
+  const depOk = /^[A-Z0-9]{4}$/.test(depCode), arrOk = /^[A-Z0-9]{4}$/.test(arrCode);
+
+  if(!depOk || !arrOk){
+    dashRoute.innerHTML = `<div style="color:var(--ink-dim);font-size:12.5px;">Renseigne le départ et l'arrivée dans l'onglet Préparation pour voir ton vol ici.</div>`;
+  } else {
+    const depA = findAirport(depCode), arrA = findAirport(arrCode);
+    const dist = lastNavTotals ? fmtNum(lastNavTotals.cumDist,1) : '—';
+    const time = lastNavTotals ? fmtMin(lastNavTotals.cumTime) : '—';
+    const alt = document.getElementById('f_alt').value || '—';
+    const immat = document.getElementById('f_immat').value.trim();
+    const type = document.getElementById('f_type').value.trim();
+    dashRoute.innerHTML = `
+      <div class="dash-route">
+        <div class="dash-node"><span class="dash-dot dep"></span><span class="dash-code">${depCode}</span><span class="dash-city">${depA?depA.city:''}</span></div>
+        <div class="dash-track"><span class="dash-plane">✈</span></div>
+        <div class="dash-node"><span class="dash-dot arr"></span><span class="dash-code">${arrCode}</span><span class="dash-city">${arrA?arrA.city:''}</span></div>
+      </div>
+      <div class="dash-stats">
+        <div class="stat-tile"><div class="v">${dist}<span class="u">NM</span></div><div class="l">Distance</div></div>
+        <div class="stat-tile"><div class="v">${time}</div><div class="l">Temps estimé</div></div>
+        <div class="stat-tile"><div class="v">${alt}</div><div class="l">Croisière</div></div>
+        <div class="stat-tile"><div class="v" style="font-size:14px;">${immat||type||'—'}</div><div class="l">Appareil</div></div>
+      </div>
+    `;
+  }
+
+  const dashFuel = document.getElementById('dashFuel');
+  if(!lastFuelPlan || !lastFuelPlan.fuelL){
+    dashFuel.innerHTML = `<div style="color:var(--ink-dim);font-size:12.5px;">Renseigne le carburant embarqué (onglet Masse &amp; carburant) pour voir la jauge.</div>`;
+  } else {
+    const { fuelL, fuelNeededL, margin } = lastFuelPlan;
+    const frac = fuelL>0 ? fuelNeededL/fuelL : 0;
+    const color = margin<0 ? 'var(--alert)' : (margin < fuelNeededL*0.15 ? 'var(--amber)' : 'var(--grass)');
+    dashFuel.innerHTML = `
+      <div style="position:relative;width:150px;height:150px;margin:0 auto;">
+        ${fuelGaugeSvg(frac, color)}
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:600;">${fuelNeededL.toFixed(1)}<span style="font-size:12px;"> L</span></div>
+          <div style="font-size:9.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px;">requis / ${fuelL.toFixed(0)} L dispo</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:${color};font-weight:600;">${margin>=0?'+':''}${margin.toFixed(1)} L de marge</div>
+    `;
+  }
+
+  const dashWb = document.getElementById('dashWb');
+  if(!lastWbStatus){
+    dashWb.innerHTML = `<div style="color:var(--ink-dim);font-size:12.5px;">Choisis un avion avec données masse et centrage (onglet Masse &amp; carburant).</div>`;
+  } else {
+    const { totalMass, mtow, cg, fwdLimit, cgMax, emptyMass, massOk, cgOk, aircraft } = lastWbStatus;
+    const ok = massOk!==false && cgOk!==false;
+    dashWb.innerHTML = `
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+        ${wbEnvelopeSvg(totalMass, cg, fwdLimit, cgMax, mtow, emptyMass, aircraft.wb)}
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;">${totalMass.toFixed(1)} kg</div><div style="font-size:9.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px;">Masse totale</div></div>
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;">${cg.toFixed(3)} m</div><div style="font-size:9.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px;">Centrage</div></div>
+          <div style="color:${ok?'var(--grass)':'var(--alert)'};font-weight:600;font-size:12.5px;">${ok?'Dans l’enveloppe':'⚠ Hors limites'}</div>
+        </div>
+      </div>
+    `;
+  }
+}
 
 function updateTabValidation(){
   const dep = document.getElementById('t_dep').value.trim();
@@ -1700,6 +2886,22 @@ function populateWbAircraftSelect(){
   sel.innerHTML = `<option value="">— choisir un avion du hangar —</option>` +
     fleet.map(a=>`<option value="${a.id}">${a.immat||'?'} — ${a.type||'?'}</option>`).join('');
 }
+
+function populateFlightAircraftSelect(){
+  const sel = document.getElementById('flight_aircraft');
+  sel.innerHTML = `<option value="">— choisir un avion pour pré-remplir —</option>` +
+    fleet.map(a=>`<option value="${a.id}">${a.immat||'?'} — ${a.type||'?'}</option>`).join('');
+}
+
+document.getElementById('flight_aircraft').addEventListener('change', (e)=>{
+  const a = fleet.find(f=>f.id===e.target.value);
+  if(!a) return;
+  document.getElementById('f_immat').value = a.immat||'';
+  document.getElementById('f_type').value = a.type||'';
+  document.getElementById('f_vp').value = a.vp||100;
+  document.getElementById('f_conso').value = a.conso||30;
+  recompute();
+});
 
 function computeWB(){
   const sel = document.getElementById('wb_aircraft');
@@ -1770,9 +2972,13 @@ function computeWB(){
     <div class="sum-cell"><div class="k">${k}</div><div class="v"${bad?' style="color:var(--alert)"':''}>${v}</div></div>
   `).join('');
 
+  lastWbStatus = { totalMass, mtow, cg, fwdLimit, cgMax: wb.cgMax, emptyMass: wb.emptyMass, massOk, cgOk, aircraft: a };
+
   computeFuelPlan(fuelL, fuelDensity);
   updateTabValidation();
+  if(document.getElementById('tabPanel0').style.display !== 'none') renderDashboard();
 }
+let lastWbStatus = null;
 
 function computeFuelPlan(fuelL, fuelDensity){
   const reserveMin = Number(document.getElementById('fuel_type').value);
@@ -1807,7 +3013,11 @@ function computeFuelPlan(fuelL, fuelDensity){
     <div class="sum-cell"><div class="k">Carburant embarqué</div><div class="v">${fuelL.toFixed(1)} L</div></div>
     <div class="sum-cell"><div class="k">Marge</div><div class="v"${margin<0?' style="color:var(--alert)"':''}>${margin>=0?'+':''}${margin.toFixed(1)} L</div></div>
   `;
+
+  lastFuelPlan = { fuelL, fuelNeededL, margin, reserveMin };
+  if(document.getElementById('tabPanel0').style.display !== 'none') renderDashboard();
 }
+let lastFuelPlan = null;
 
 document.getElementById('wb_aircraft').addEventListener('change', computeWB);
 ['wb_front','wb_rear','wb_bag','wb_fuelL','fuel_type','fuel_taxi','fuel_altTime','fuel_margin']
