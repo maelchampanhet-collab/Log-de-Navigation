@@ -5,6 +5,7 @@
 <title>Log de navigation VFR</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -35,36 +36,16 @@ body{
   padding:28px 20px 60px;
   font-variant-numeric:tabular-nums;
 }
-h1,h2,h3,.panel-head,.tab-btn,.tab-dropdown-item,.brand-text{font-family:'Titillium Web',sans-serif;}
+h1,h2,h3,.panel-head,.brand-text{font-family:'Titillium Web',sans-serif;}
 
 .wrap{max-width:1180px;margin:0 auto;}
 
-header.app-head{
-  display:flex;
-  align-items:center;
-  gap:16px;
-  margin-bottom:22px;
-  padding-bottom:18px;
-  border-bottom:1px solid var(--rule);
-}
-header.app-head svg{flex:0 0 auto;}
-header.app-head h1{
-  font-size:22px;
-  font-weight:600;
-  margin:0;
-  letter-spacing:0.2px;
-}
-header.app-head p{
-  margin:2px 0 0;
-  color:var(--ink-dim);
-  font-size:13.5px;
-}
-.head-actions{margin-left:auto;display:flex;gap:10px;}
 button{
   font-family:'IBM Plex Sans',sans-serif;
   cursor:pointer;
   border-radius:3px;
 }
+i[class^="ph-"]{vertical-align:-0.125em; line-height:1;}
 .btn-print{
   background:var(--amber);
   color:#22160A;
@@ -82,15 +63,6 @@ button{
   padding:9px 14px;
 }
 .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
-
-.layout{
-  display:grid;
-  grid-template-columns:340px 1fr;
-  gap:22px;
-}
-@media (max-width:900px){
-  .layout{grid-template-columns:1fr;}
-}
 
 .panel{
   background:var(--navy-panel);
@@ -381,78 +353,11 @@ table.navtable tfoot td{
 }
 .ad-note #adNoteBody{color:var(--ink-dim);}
 
-.vac-preview{
-  margin-top:14px;
-  border:1px solid var(--cyan);
-  background:var(--navy-panel-2);
-}
-.vac-preview-head{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:9px 12px;
-  border-bottom:1px solid var(--rule);
-  font-size:12.5px;
-}
-.vac-preview-head #vacPreviewLabel{color:var(--amber);font-weight:600;}
-.vac-preview-openlink{color:var(--cyan);font-size:12px;text-decoration:none;margin-left:auto;}
-.vac-preview-openlink:hover{text-decoration:underline;}
-.vac-preview-close{
-  background:transparent;
-  border:1px solid var(--rule);
-  color:var(--ink-dim);
-  font-size:11px;
-  padding:4px 9px;
-}
-.vac-preview-close:hover{border-color:var(--alert);color:var(--alert);}
-.vac-preview-note{
-  margin:0;
-  padding:8px 12px;
-  font-size:11.5px;
-  color:var(--ink-dim);
-  border-bottom:1px solid var(--rule);
-}
-.vac-preview-frame{
-  width:100%;
-  height:520px;
-  border:none;
-  display:block;
-  background:#fff;
-}
-.btn-visualize{
-  background:transparent;
-  border:1px solid var(--amber);
-  color:var(--amber);
-  font-size:11.5px;
-  padding:4px 9px;
-  margin-top:2px;
-  cursor:pointer;
-  font-family:'IBM Plex Sans',sans-serif;
-}
-.btn-visualize:hover{background:rgba(232,163,61,0.12);}
-.freq-picker{
-  display:flex;
-  gap:6px;
-  align-items:center;
-  margin-bottom:6px;
-}
-.freq-select{
-  flex:1;
-  background:var(--navy-deep);
-  border:1px solid var(--rule);
-  color:var(--ink);
-  font-size:11.5px;
-  padding:4px 6px;
-  font-family:'IBM Plex Sans',sans-serif;
-}
-.freq-select:focus{outline:none;border-color:var(--cyan);}
-
 /* ================= PRINT ================= */
 @media print{
   @page{ size:A5 landscape; margin:6mm; }
   body{background:#fff;color:#111;padding:0;font-family:'IBM Plex Mono',monospace;font-size:10px;}
   .no-print{display:none!important;}
-  .layout{display:block;}
   .shell{display:block;}
   .main{padding:0;}
   .panel{border:none;}
@@ -543,10 +448,6 @@ table.navtable tfoot td{
 .stat-tile .v{font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:600; line-height:1.1;}
 .stat-tile .v .u{font-size:10.5px; color:var(--ink-dim); margin-left:3px; font-family:'IBM Plex Sans',sans-serif;}
 .stat-tile .l{font-size:9.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-faint); margin-top:5px;}
-.pill{font-size:10px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; padding:3px 9px; border-radius:20px;}
-.pill.green{background:rgba(63,174,122,.14); color:var(--grass); border:1px solid rgba(63,174,122,.35);}
-.pill.amber{background:rgba(240,169,61,.14); color:var(--amber); border:1px solid rgba(240,169,61,.35);}
-.pill.red{background:rgba(224,106,82,.14); color:var(--alert); border:1px solid rgba(224,106,82,.35);}
 
 /* ---- analyse zones réglementées / points de route (carte) ---- */
 .airspace-card{
@@ -556,8 +457,6 @@ table.navtable tfoot td{
   padding:10px 14px;
   margin-bottom:8px;
 }
-.airspace-card.sev-high{border-left-color:var(--alert);}
-.airspace-card.sev-med{border-left-color:var(--amber);}
 .airspace-card .as-title{font-weight:600; font-size:13.5px; color:var(--ink);}
 .airspace-card .as-type{color:var(--ink-dim); font-size:11px; text-transform:uppercase; letter-spacing:.5px; margin-left:8px;}
 .airspace-card .as-limits{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--cyan); margin-top:4px;}
@@ -671,15 +570,6 @@ table.navtable tfoot td{
   margin-top:8px;
   min-height:14px;
 }
-.btn-collapse{
-  background:transparent;
-  border:1px solid var(--rule);
-  color:var(--ink-dim);
-  font-size:11.5px;
-  padding:6px 12px;
-}
-.btn-collapse:hover{border-color:var(--amber); color:var(--amber);}
-
 .leaflet-container{background:var(--navy-panel-2);font-family:'IBM Plex Sans',sans-serif;}
 .prep-map-marker{
   background:var(--navy-panel);
@@ -737,23 +627,23 @@ table.navtable tfoot td{
       <div class="brand-text">Log VFR<small>Préparation de vol</small></div>
     </div>
     <nav class="navlist">
-      <div class="navitem active" data-tab="0"><span class="ic">◎</span> Tableau de bord</div>
-      <div class="navitem" data-tab="1"><span class="ic">▤</span> Préparation <span class="tab-dot" id="tabDot1"></span></div>
-      <div class="navitem" data-tab="2"><span class="ic">≡</span> Log de navigation <span class="tab-dot" id="tabDot2"></span></div>
-      <div class="navitem" data-tab="3"><span class="ic">⚖</span> Masse &amp; carburant <span class="tab-dot" id="tabDot3"></span></div>
-      <div class="navitem" data-tab="4"><span class="ic">☁</span> NOTAM &amp; METAR</div>
-      <div class="navitem" data-tab="5"><span class="ic">🧭</span> Simulation de route</div>
+      <div class="navitem active" data-tab="0"><span class="ic"><i class="ph-bold ph-gauge"></i></span> Tableau de bord</div>
+      <div class="navitem" data-tab="1"><span class="ic"><i class="ph-bold ph-clipboard-text"></i></span> Préparation <span class="tab-dot" id="tabDot1"></span></div>
+      <div class="navitem" data-tab="2"><span class="ic"><i class="ph-bold ph-table"></i></span> Log de navigation <span class="tab-dot" id="tabDot2"></span></div>
+      <div class="navitem" data-tab="3"><span class="ic"><i class="ph-bold ph-scales"></i></span> Masse &amp; carburant <span class="tab-dot" id="tabDot3"></span></div>
+      <div class="navitem" data-tab="4"><span class="ic"><i class="ph-bold ph-cloud"></i></span> NOTAM &amp; METAR</div>
+      <div class="navitem" data-tab="5"><span class="ic"><i class="ph-bold ph-compass"></i></span> Simulation de route</div>
     </nav>
     <div class="sidebar-actions">
-      <button class="btn-ghost" id="btnHangar">🏠 Hangar</button>
-      <button class="btn-ghost" id="btnSavedLogs">📁 Mes vols</button>
+      <button class="btn-ghost" id="btnHangar"><i class="ph-bold ph-house"></i> Hangar</button>
+      <button class="btn-ghost" id="btnSavedLogs"><i class="ph-bold ph-folder-open"></i> Mes vols</button>
       <button class="btn-ghost" id="btnReset">Réinitialiser</button>
     </div>
   </aside>
 
   <main class="main">
     <div class="main-top no-print">
-      <button class="btn-ghost" id="btnSaveLog">💾 Enregistrer</button>
+      <button class="btn-ghost" id="btnSaveLog"><i class="ph-bold ph-floppy-disk"></i> Enregistrer</button>
       <button class="btn-print" id="btnPrint">Imprimer / PDF</button>
     </div>
 
@@ -762,7 +652,7 @@ table.navtable tfoot td{
   <!-- ===== ONBOARDING MODAL ===== -->
   <div class="modal-overlay no-print" id="onboardModal" style="display:none;">
     <div class="modal-box">
-      <h2>Bienvenue 👋</h2>
+      <h2>Bienvenue <i class="ph-bold ph-hand-waving"></i></h2>
       <p class="modal-sub">Deux ou trois infos pour démarrer — tu pourras toujours les changer plus tard.</p>
       <div class="field">
         <label>Ton prénom / pseudo</label>
@@ -790,7 +680,7 @@ table.navtable tfoot td{
 
   <!-- ===== HANGAR ===== -->
   <div class="panel no-print" id="hangarPanel" style="margin-bottom:22px; display:none;">
-    <div class="panel-head">🏠 Hangar — avions du club <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
+    <div class="panel-head"><i class="ph-bold ph-house"></i> Hangar — avions du club <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
     <div class="panel-body">
       <div id="hangarList"></div>
       <div class="add-aircraft-grid">
@@ -801,7 +691,7 @@ table.navtable tfoot td{
         <div class="field full"><label>Note (optionnel)</label><input type="text" id="hg_note" placeholder="Ex. basé à LFPN, carbu 100LL"></div>
 
         <details class="full" style="grid-column:1/-1;">
-          <summary style="cursor:pointer;color:var(--amber);font-size:12.5px;font-weight:600;margin:4px 0 10px;">⚖️ Données masse et centrage (optionnel — active le module M&C pour cet avion)</summary>
+          <summary style="cursor:pointer;color:var(--amber);font-size:12.5px;font-weight:600;margin:4px 0 10px;"><i class="ph-bold ph-scales"></i> Données masse et centrage (optionnel — active le module M&C pour cet avion)</summary>
           <div class="add-aircraft-grid" style="border:none;padding:0;margin:0;">
             <div class="field"><label>Masse à vide (kg)</label><input type="number" id="hg_emptyMass" placeholder="700"></div>
             <div class="field"><label>Bras à vide (m)</label><input type="number" step="0.001" id="hg_emptyArm" placeholder="1.150"></div>
@@ -827,7 +717,7 @@ table.navtable tfoot td{
 
   <!-- ===== VOLS ENREGISTRÉS ===== -->
   <div class="panel no-print" id="savedLogsPanel" style="margin-bottom:22px; display:none;">
-    <div class="panel-head">📁 Mes vols enregistrés <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
+    <div class="panel-head"><i class="ph-bold ph-folder-open"></i> Mes vols enregistrés <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
     <div class="panel-body">
       <div id="savedLogsList"></div>
       <div class="storage-status" id="savedLogsStatus"></div>
@@ -985,14 +875,14 @@ table.navtable tfoot td{
   <div id="tabPanel3" style="display:none;">
 
   <div class="panel no-print">
-    <div class="panel-head">⚖️ Masse et centrage · ⛽ Bilan carburant réglementaire</div>
+    <div class="panel-head"><i class="ph-bold ph-scales"></i> Masse et centrage · <i class="ph-bold ph-gas-pump"></i> Bilan carburant réglementaire</div>
     <div class="panel-body">
       <div class="field">
         <label>Avion (depuis le hangar)</label>
         <select id="wb_aircraft"></select>
       </div>
       <div id="wbNoData" style="display:none; color:var(--ink-dim); font-size:12.5px; padding:8px 0;">
-        Cet avion n'a pas de données masse et centrage enregistrées — ajoute-les depuis le Hangar (section "⚖️ Données masse et centrage").
+        Cet avion n'a pas de données masse et centrage enregistrées — ajoute-les depuis le Hangar (section "Données masse et centrage").
       </div>
       <div id="wbForm" style="display:none;">
         <div class="field-row">
@@ -1006,7 +896,7 @@ table.navtable tfoot td{
         <div class="output-summary" id="wbSummary" style="margin-top:10px;border:1px solid var(--rule);"></div>
 
         <div class="terrain-note" style="margin-top:16px;">
-          <strong style="color:var(--amber);">⛽ Bilan carburant réglementaire (Part-NCO OP.125)</strong>
+          <strong style="color:var(--amber);"><i class="ph-bold ph-gas-pump"></i> Bilan carburant réglementaire (Part-NCO OP.125)</strong>
         </div>
         <div class="field-row" style="margin-top:10px;">
           <div class="field">
@@ -1033,7 +923,7 @@ table.navtable tfoot td{
   <div id="tabPanel4" style="display:none;">
 
   <div class="panel no-print">
-    <div class="panel-head">🛰️ NOTAM du vol</div>
+    <div class="panel-head"><i class="ph-bold ph-broadcast"></i> NOTAM du vol</div>
     <div class="panel-body">
       <div id="notamNote" style="display:none;">
         <div class="terrain-note">
@@ -1049,7 +939,7 @@ table.navtable tfoot td{
   </div>
 
   <div class="panel no-print" style="margin-top:22px;">
-    <div class="panel-head">🌤️ METAR du vol</div>
+    <div class="panel-head"><i class="ph-bold ph-cloud-sun"></i> METAR du vol</div>
     <div class="panel-body">
       <div id="metarNote" style="display:none;">
         <div class="terrain-note" style="border-color:var(--cyan);">
@@ -1078,7 +968,7 @@ table.navtable tfoot td{
 
   <div class="panel no-print">
     <div class="panel-head">
-      🧭 Construction de la route
+      <i class="ph-bold ph-compass"></i> Construction de la route
       <span style="float:right;font-weight:400;font-size:11px;display:flex;gap:12px;">
         <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="oaci" checked style="width:auto;"> OACI-VFR</label>
         <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="scan25" style="width:auto;"> Plan IGN détaillé (non aéro.)</label>
@@ -1094,13 +984,13 @@ table.navtable tfoot td{
       </div>
       <div style="margin-top:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
         <button type="button" class="btn-mini-del" id="btnClearRoute">Effacer la route</button>
-        <button type="button" class="btn-mini" id="btnExportRoute">📤 Exporter le tracé vers le log de nav</button>
+        <button type="button" class="btn-mini" id="btnExportRoute"><i class="ph-bold ph-export"></i> Exporter le tracé vers le log de nav</button>
       </div>
     </div>
   </div>
 
   <div class="panel no-print" style="margin-top:22px;">
-    <div class="panel-head">📋 Points de la route</div>
+    <div class="panel-head"><i class="ph-bold ph-list-bullets"></i> Points de la route</div>
     <div class="panel-body">
       <div id="routePointsEmpty" style="color:var(--ink-dim);font-size:12.5px;">Clique sur la carte pour poser ton premier point.</div>
       <div id="routePointsList"></div>
@@ -1878,18 +1768,15 @@ const COORDS = {
   LFYT: { lat: 49.7575, lon: 3.216 }
 };
 
-function toRad2(d){ return d*Math.PI/180; }
-function toDeg2(r){ return r*180/Math.PI; }
-
 function greatCircle(lat1,lon1,lat2,lon2){
   const R = 3440.065; // NM
-  const φ1=toRad2(lat1), φ2=toRad2(lat2);
-  const Δφ=toRad2(lat2-lat1), Δλ=toRad2(lon2-lon1);
+  const φ1=toRad(lat1), φ2=toRad(lat2);
+  const Δφ=toRad(lat2-lat1), Δλ=toRad(lon2-lon1);
   const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
   const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   const dist = R*c;
   const θ = Math.atan2(Math.sin(Δλ)*Math.cos(φ2), Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ));
-  const bearing = (toDeg2(θ)+360)%360;
+  const bearing = (toDeg(θ)+360)%360;
   return { dist, bearing };
 }
 
@@ -1910,7 +1797,7 @@ function updateRouteNote(){
   const timeMin = (dist/vp)*60;
 
   body.innerHTML = `
-    🧭 Route directe ${depCode} → ${arrCode} : <strong>${dist.toFixed(1)} NM</strong>,
+    <i class="ph-bold ph-compass"></i> Route directe ${depCode} → ${arrCode} : <strong>${dist.toFixed(1)} NM</strong>,
     cap vrai <strong>${bearing.toFixed(0)}°</strong>,
     ~${Math.round(timeMin)} min à ${vp} kt (vent non pris en compte).
     <button type="button" class="btn-mini" id="fillLeg1FromRoute" style="margin-left:8px;">Remplir l'étape 1 avec ces valeurs</button>
@@ -2072,8 +1959,8 @@ function airportInfoHtml(code){
     lines.push('Fréquences : non vérifiées ici — voir la carte VAC');
   }
   let html = `<div class="airport-info">${lines.join('<br>')}`;
-  if(note && note.special) html += `<br><span style="color:var(--amber);">⚠ ${note.special}</span>`;
-  html += `<br><a href="${links.pdf}" target="_blank" rel="noopener">📄 Carte VAC (PDF) ↗</a></div>`;
+  if(note && note.special) html += `<br><span style="color:var(--amber);"><i class="ph-bold ph-warning"></i> ${note.special}</span>`;
+  html += `<br><a href="${links.pdf}" target="_blank" rel="noopener"><i class="ph-bold ph-file-pdf"></i> Carte VAC (PDF) ↗</a></div>`;
   return html;
 }
 function popupHtml(point, idx){
@@ -2268,7 +2155,7 @@ function updateMetarNote(){
   list.textContent = codes.join(' · ');
   link.href = url;
   if(substitutions.length){
-    subNote.textContent = '⚠ ' + substitutions.join(' · ');
+    subNote.innerHTML = '<i class="ph-bold ph-warning"></i> ' + substitutions.join(' · ');
     subNote.style.display = 'block';
   } else {
     subNote.style.display = 'none';
@@ -2340,7 +2227,7 @@ async function searchNearbyMetar(codes){
 
   if(results.length===0){
     select.innerHTML = '<option value="">Aucune station trouvée automatiquement</option>';
-    status.textContent = '⚠ AVWX n\'a rien renvoyé pour ce terrain — utilise le lien "Ouvrir les METAR" ci-dessus.';
+    status.innerHTML = '<i class="ph-bold ph-warning"></i> AVWX n\'a rien renvoyé pour ce terrain — utilise le lien "Ouvrir les METAR" ci-dessus.';
     return;
   }
 
@@ -2370,7 +2257,7 @@ function updateAdNote(code){
     parts.push(`Altitude terrain : ${note.elevFt} ft (${note.elevM} m)`);
   }
   if(note && note.special){
-    parts.push(`⚠ ${note.special}`);
+    parts.push(`<i class="ph-bold ph-warning"></i> ${note.special}`);
   }
   if(parts.length===0){
     parts.push('Rien de vérifié dans cette appli pour ce terrain — tout est dans le PDF officiel.');
@@ -2379,11 +2266,11 @@ function updateAdNote(code){
   }
 
   title.textContent = `${code} — ${known.name}`;
-  body.textContent = `${known.city} · ${parts.join(' · ')}`;
+  body.innerHTML = `${known.city} · ${parts.join(' · ')}`;
   panel.style.display = 'block';
 }
 
-function wireTerrainField(inputId, hintId, linksId, listId, slot){
+function wireTerrainField(inputId, hintId, linksId, listId){
   const input = document.getElementById(inputId);
   const hint = document.getElementById(hintId);
   const linksBox = document.getElementById(linksId);
@@ -2454,7 +2341,7 @@ function wireTerrainField(inputId, hintId, linksId, listId, slot){
 
       const links = vacLinks(val);
       linksBox.innerHTML = `
-        <a href="${links.pdf}" target="_blank" rel="noopener" class="btn-vac">📄 Carte VAC (PDF) ↗</a>
+        <a href="${links.pdf}" target="_blank" rel="noopener" class="btn-vac"><i class="ph-bold ph-file-pdf"></i> Carte VAC (PDF) ↗</a>
       `;
     }
 
@@ -2485,10 +2372,10 @@ function wireTerrainField(inputId, hintId, linksId, listId, slot){
   input.addEventListener('focus', ()=>{ if(input.value.trim()!=='') renderList(); });
 }
 
-wireTerrainField('t_dep','hint_dep','links_dep','ac_dep','dep');
-wireTerrainField('t_arr','hint_arr','links_arr','ac_arr','arr');
-wireTerrainField('t_deg1','hint_deg1','links_deg1','ac_deg1','deg1');
-wireTerrainField('t_deg2','hint_deg2','links_deg2','ac_deg2','deg2');
+wireTerrainField('t_dep','hint_dep','links_dep','ac_dep');
+wireTerrainField('t_arr','hint_arr','links_arr','ac_arr');
+wireTerrainField('t_deg1','hint_deg1','links_deg1','ac_deg1');
+wireTerrainField('t_deg2','hint_deg2','links_deg2','ac_deg2');
 
 document.getElementById('btnAddLeg').addEventListener('click', addLeg);
 document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
@@ -2542,7 +2429,7 @@ function renderHangar(){
         <div class="hc-sub">Vp ${a.vp||'?'} kt · ${a.conso||'?'} L/h${a.note?(' · '+a.note):''}</div>
       </div>
       <div class="hc-actions">
-        <button type="button" class="btn-mini" data-use="${a.id}">✈️ Utiliser</button>
+        <button type="button" class="btn-mini" data-use="${a.id}"><i class="ph-bold ph-airplane-tilt"></i> Utiliser</button>
         <button type="button" class="btn-mini-del" data-del="${a.id}">Retirer</button>
       </div>
     </div>
@@ -2811,7 +2698,7 @@ function renderDashboard(){
     dashRoute.innerHTML = `
       <div class="dash-route">
         <div class="dash-node"><span class="dash-dot dep"></span><span class="dash-code">${depCode}</span><span class="dash-city">${depA?depA.city:''}</span></div>
-        <div class="dash-track"><span class="dash-plane">✈</span></div>
+        <div class="dash-track"><span class="dash-plane"><i class="ph-bold ph-airplane"></i></span></div>
         <div class="dash-node"><span class="dash-dot arr"></span><span class="dash-code">${arrCode}</span><span class="dash-city">${arrA?arrA.city:''}</span></div>
       </div>
       <div class="dash-stats">
@@ -2854,7 +2741,7 @@ function renderDashboard(){
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div><div style="font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;">${totalMass.toFixed(1)} kg</div><div style="font-size:9.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px;">Masse totale</div></div>
           <div><div style="font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;">${cg.toFixed(3)} m</div><div style="font-size:9.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px;">Centrage</div></div>
-          <div style="color:${ok?'var(--grass)':'var(--alert)'};font-weight:600;font-size:12.5px;">${ok?'Dans l’enveloppe':'⚠ Hors limites'}</div>
+          <div style="color:${ok?'var(--grass)':'var(--alert)'};font-weight:600;font-size:12.5px;">${ok?'Dans l’enveloppe':'<i class="ph-bold ph-warning"></i> Hors limites'}</div>
         </div>
       </div>
     `;
@@ -2966,7 +2853,7 @@ function computeWB(){
     ['Centrage (CG)', `${cg.toFixed(3)} m`, cgOk===false],
     ['Limite avant applicable', fwdLimitLabel, false],
     ['Limite arrière', (wb.cgMax!==undefined) ? `${wb.cgMax} m` : '—', false],
-    ['Statut', massOk===false||cgOk===false ? '⚠ HORS LIMITES' : (massOk===null||cgOk===null ? 'Incomplet' : '✓ Dans les limites'), massOk===false||cgOk===false]
+    ['Statut', massOk===false||cgOk===false ? '<i class="ph-bold ph-warning"></i> HORS LIMITES' : (massOk===null||cgOk===null ? 'Incomplet' : '<i class="ph-bold ph-check-circle"></i> Dans les limites'), massOk===false||cgOk===false]
   ];
   document.getElementById('wbSummary').innerHTML = cells.map(([k,v,bad])=>`
     <div class="sum-cell"><div class="k">${k}</div><div class="v"${bad?' style="color:var(--alert)"':''}>${v}</div></div>
@@ -3022,6 +2909,9 @@ let lastFuelPlan = null;
 document.getElementById('wb_aircraft').addEventListener('change', computeWB);
 ['wb_front','wb_rear','wb_bag','wb_fuelL','fuel_type','fuel_taxi','fuel_altTime','fuel_margin']
   .forEach(id=>document.getElementById(id).addEventListener('input', computeWB));
+// "Carburant emporté" (onglet Préparation) alimente le bilan carburant/M&C par défaut
+// quand "Carburant embarqué" (onglet 3) est vide — le rafraîchir aussi depuis ce champ.
+document.getElementById('f_fuel').addEventListener('input', computeWB);
 
 // ---- Onboarding ----
 async function initOnboarding(){
@@ -3051,7 +2941,10 @@ document.getElementById('obStart').addEventListener('click', async ()=>{
     await storageSetSafe('hangar-fleet', fleet, true);
     renderHangar();
   }
-  if(home) document.getElementById('t_dep').dispatchEvent(new Event('focus'));
+  if(home){
+    document.getElementById('t_dep').value = home;
+    document.getElementById('t_dep').dispatchEvent(new Event('input'));
+  }
   document.getElementById('onboardModal').style.display = 'none';
 });
 
