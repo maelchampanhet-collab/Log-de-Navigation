@@ -1,0 +1,2738 @@
+{
+  "LFXA": {
+    "lat": 45.9873,
+    "lon": 5.3284,
+    "name": "Ambérieu-en-Bugey Air Base (BA 278)",
+    "city": "Ambérieu-en-Bugey"
+  },
+  "LFHN": {
+    "lat": 46.1233,
+    "lon": 5.8049,
+    "name": "Bellegarde - Vouvray Aerodrome",
+    "city": "Bellegarde-sur-Valserine / Vouvray"
+  },
+  "LFKY": {
+    "lat": 45.6941,
+    "lon": 5.6915,
+    "name": "Belley - Peyrieu Aerodrome",
+    "city": "Belley / Peyrieu"
+  },
+  "LFHS": {
+    "lat": 46.2009,
+    "lon": 5.292,
+    "name": "Bourg – Ceyzériat Airport",
+    "city": "Bourg-en-Bresse / Ceyzériat"
+  },
+  "LFJD": {
+    "lat": 46.0405,
+    "lon": 5.4945,
+    "name": "Corlier Aerodrome",
+    "city": "Corlier"
+  },
+  "LFLK": {
+    "lat": 46.2784,
+    "lon": 5.6663,
+    "name": "Oyonnax - Arbent Aerodrome",
+    "city": "Oyonnax / Arbent"
+  },
+  "LFHC": {
+    "lat": 45.8697,
+    "lon": 5.1872,
+    "name": "Pérouges - Meximieux Aerodrome",
+    "city": "Pérouges / Meximieux"
+  },
+  "LFFH": {
+    "lat": 49.0668,
+    "lon": 3.3555,
+    "name": "Château-Thierry – Belleau Aerodrome",
+    "city": "Château-Thierry / Belleau"
+  },
+  "LFAF": {
+    "lat": 49.5958,
+    "lon": 3.6317,
+    "name": "Laon - Chambry Airport",
+    "city": "Laon / Chambry"
+  },
+  "LFOW": {
+    "lat": 49.8161,
+    "lon": 3.2057,
+    "name": "Saint-Quentin - Roupy Airport",
+    "city": "Saint-Quentin / Roupy"
+  },
+  "LFYT": {
+    "lat": 49.7575,
+    "lon": 3.216,
+    "name": "Saint-Simon – Clastres Air Base",
+    "city": "Saint-Simon / Clastres"
+  },
+  "LFJS": {
+    "lat": 49.345,
+    "lon": 3.2827,
+    "name": "Soissons - Courmelles Airport",
+    "city": "Soissons / Courmelles"
+  },
+  "LFHX": {
+    "lat": 46.2539,
+    "lon": 3.5886,
+    "name": "Lapalisse - Périgny Airport",
+    "city": "Lapalisse / Périgny"
+  },
+  "LFJU": {
+    "lat": 46.7123,
+    "lon": 2.9448,
+    "name": "Lurcy-Lévis Aerodrome",
+    "city": "Lurcy-Lévis"
+  },
+  "LFLT": {
+    "lat": 46.3528,
+    "lon": 2.5705,
+    "name": "Montluçon - Domérat Aerodrome",
+    "city": "Montluçon / Domérat"
+  },
+  "LFHY": {
+    "lat": 46.5346,
+    "lon": 3.4237,
+    "name": "Moulins – Montbeugny Airport",
+    "city": "Moulins / Montbeugny"
+  },
+  "LFLV": {
+    "lat": 46.1697,
+    "lon": 3.4036,
+    "name": "Vichy−Charmeil Airport",
+    "city": "Vichy / Charmeil"
+  },
+  "LFMR": {
+    "lat": 44.3872,
+    "lon": 6.6088,
+    "name": "Barcelonnette – Saint-Pons Airfield",
+    "city": "Barcelonnette / Saint-Pons"
+  },
+  "LFMX": {
+    "lat": 44.06,
+    "lon": 5.9914,
+    "name": "Château-Arnoux-Saint-Auban Airport",
+    "city": "Château-Arnoux-Saint-Auban"
+  },
+  "LFTP": {
+    "lat": 43.8689,
+    "lon": 6.1628,
+    "name": "Puimoisson Aerodrome",
+    "city": "Puimoisson"
+  },
+  "LFNS": {
+    "lat": 44.2865,
+    "lon": 5.9291,
+    "name": "Sisteron - Thèze Aerodrome",
+    "city": "Sisteron / Thèze"
+  },
+  "LFNJ": {
+    "lat": 44.5175,
+    "lon": 5.7357,
+    "name": "Aspres-sur-Buëch Aerodrome",
+    "city": "Aspres-sur-Buëch"
+  },
+  "LFNA": {
+    "lat": 44.455,
+    "lon": 6.0378,
+    "name": "Gap–Tallard Airport",
+    "city": "Gap / Tallard"
+  },
+  "LFNC": {
+    "lat": 44.7017,
+    "lon": 6.6003,
+    "name": "Mont-Dauphin - Saint-Crépin Airport",
+    "city": "Mont-Dauphin / Saint-Crépin"
+  },
+  "LFTM": {
+    "lat": 44.4583,
+    "lon": 5.7283,
+    "name": "Serres - La Bâtie-Montsaléon Aerodrome",
+    "city": "Serres / La Bâtie-Montsaléon"
+  },
+  "LFMD": {
+    "lat": 43.548,
+    "lon": 6.9552,
+    "name": "Cannes–Mandelieu Airport",
+    "city": "Cannes / Mandelieu-la-Napoule"
+  },
+  "LFMN": {
+    "lat": 43.6584,
+    "lon": 7.2159,
+    "name": "Nice Côte d'Azur Airport",
+    "city": "Nice / Côte d'Azur"
+  },
+  "LFHO": {
+    "lat": 44.5444,
+    "lon": 4.3722,
+    "name": "Aubenas Aerodrome",
+    "city": "Aubenas / Ardèche Méridional"
+  },
+  "LFHL": {
+    "lat": 44.7036,
+    "lon": 3.8849,
+    "name": "Langogne - Lespéron Airport",
+    "city": "Langogne / Lespéron"
+  },
+  "LFHF": {
+    "lat": 44.4446,
+    "lon": 4.3328,
+    "name": "Ruoms Aerodrome",
+    "city": "Ruoms"
+  },
+  "LFQV": {
+    "lat": 49.7839,
+    "lon": 4.6471,
+    "name": "Charleville-Mézières Aerodrome",
+    "city": "Charleville-Mézières"
+  },
+  "LFAP": {
+    "lat": 49.481,
+    "lon": 4.3633,
+    "name": "Rethel - Perthes Aerodrome",
+    "city": "Rethel / Perthes"
+  },
+  "LFSJ": {
+    "lat": 49.6597,
+    "lon": 5.0378,
+    "name": "Sedan - Douzy Airport",
+    "city": "Sedan / Douzy"
+  },
+  "LFDJ": {
+    "lat": 43.0906,
+    "lon": 1.6958,
+    "name": "Pamiers - Les Pujols Airport",
+    "city": "Pamiers / Les Pujols"
+  },
+  "LFCG": {
+    "lat": 43.0078,
+    "lon": 1.1032,
+    "name": "Saint-Girons - Antichan Airport",
+    "city": "Saint-Girons / Antichan"
+  },
+  "LFFR": {
+    "lat": 48.0659,
+    "lon": 4.4124,
+    "name": "Bar-sur-Seine Aerodrome",
+    "city": "Bar-sur-Seine"
+  },
+  "LFFN": {
+    "lat": 48.4304,
+    "lon": 4.4725,
+    "name": "Brienne-le-Château Airport",
+    "city": "Brienne-le-Château"
+  },
+  "LFQX": {
+    "lat": 48.114,
+    "lon": 4.8194,
+    "name": "Juvancourt Aerodrome",
+    "city": "Juvancourt"
+  },
+  "LFQR": {
+    "lat": 48.5006,
+    "lon": 3.7633,
+    "name": "Romilly-sur-Seine Airport",
+    "city": "Romilly-sur-Seine"
+  },
+  "LFQB": {
+    "lat": 48.3221,
+    "lon": 4.0167,
+    "name": "Troyes – Barberey Airport",
+    "city": "Troyes / Barberey-Saint-Sulpice"
+  },
+  "LFMK": {
+    "lat": 43.216,
+    "lon": 2.3063,
+    "name": "Carcassonne Airport",
+    "city": "Carcassonne / Salvaza"
+  },
+  "LFMW": {
+    "lat": 43.3122,
+    "lon": 1.9211,
+    "name": "Castelnaudary – Villeneuve Airport",
+    "city": "Castelnaudary / Villeneuve-la-Comptal"
+  },
+  "LFMZ": {
+    "lat": 43.1758,
+    "lon": 2.7342,
+    "name": "Lézignan-Corbières Airport",
+    "city": "Lézignan-Corbières"
+  },
+  "LFNW": {
+    "lat": 42.9114,
+    "lon": 2.0561,
+    "name": "Puivert Aerodrome",
+    "city": "Puivert"
+  },
+  "LFIG": {
+    "lat": 44.1778,
+    "lon": 2.515,
+    "name": "Cassagnes-Bégonhès Airport",
+    "city": "Cassagnes-Bégonhès"
+  },
+  "LFCM": {
+    "lat": 43.9893,
+    "lon": 3.183,
+    "name": "Millau - Larzac Airport",
+    "city": "Millau / Larzac"
+  },
+  "LFCR": {
+    "lat": 44.4079,
+    "lon": 2.4827,
+    "name": "Rodez–Aveyron Airport",
+    "city": "Rodez / Marcillac-Vallon"
+  },
+  "LFIF": {
+    "lat": 43.8246,
+    "lon": 2.744,
+    "name": "Saint-Affrique - Belmont Aerodrome",
+    "city": "Saint-Affrique / Belmont-sur-Rance"
+  },
+  "LFCV": {
+    "lat": 44.3695,
+    "lon": 2.0257,
+    "name": "Villefranche-de-Rouergue Airport",
+    "city": "Villefranche-de-Rouergue"
+  },
+  "LFMA": {
+    "lat": 43.5063,
+    "lon": 5.3664,
+    "name": "Aix-en-Provence Aerodrome",
+    "city": "Aix-en-Provence / Les Milles"
+  },
+  "LFNR": {
+    "lat": 43.5367,
+    "lon": 5.1774,
+    "name": "Berre - La Fare Aerodrome",
+    "city": "Berre-l'Étang / La Fare-les-Oliviers"
+  },
+  "LFMI": {
+    "lat": 43.5227,
+    "lon": 4.9238,
+    "name": "Istres-Le Tubé Air Base",
+    "city": "Istres / Le Tubé"
+  },
+  "LFNZ": {
+    "lat": 43.7689,
+    "lon": 4.8936,
+    "name": "Le Mazet-de-Romanin Aerodrome",
+    "city": "Le Mazet-de-Romanin"
+  },
+  "LFML": {
+    "lat": 43.4381,
+    "lon": 5.2125,
+    "name": "Marseille Provence Airport",
+    "city": "Marseille / Marignane"
+  },
+  "LFMY": {
+    "lat": 43.6064,
+    "lon": 5.1093,
+    "name": "Salon-de-Provence Air Base",
+    "city": "Salon-de-Provence"
+  },
+  "LFNE": {
+    "lat": 43.6583,
+    "lon": 5.0136,
+    "name": "Salon - Eyguières Airport",
+    "city": "Salon-de-Provence / Eyguières"
+  },
+  "LFRK": {
+    "lat": 49.1768,
+    "lon": -0.4549,
+    "name": "Caen – Carpiquet Airport",
+    "city": "Caen / Carpiquet"
+  },
+  "LFRG": {
+    "lat": 49.3652,
+    "lon": 0.1545,
+    "name": "Deauville – Normandie Airport",
+    "city": "Deauville / Normandie"
+  },
+  "LFAS": {
+    "lat": 48.9272,
+    "lon": -0.1447,
+    "name": "Falaise - Monts d'Eraines Aerodrome",
+    "city": "Falaise / Damblainville"
+  },
+  "LFLW": {
+    "lat": 44.8914,
+    "lon": 2.4219,
+    "name": "Aurillac – Tronquières Airport",
+    "city": "Aurillac"
+  },
+  "LFHQ": {
+    "lat": 45.0764,
+    "lon": 2.9936,
+    "name": "Saint-Flour - Coltines Airport",
+    "city": "Saint-Flour / Coltines"
+  },
+  "LFBU": {
+    "lat": 45.7292,
+    "lon": 0.2215,
+    "name": "Angoulême – Cognac International Airport",
+    "city": "Angoulême / Brie / Champniers"
+  },
+  "LFIH": {
+    "lat": 45.2681,
+    "lon": 0.0169,
+    "name": "Chalais Airport",
+    "city": "Chalais"
+  },
+  "LFBG": {
+    "lat": 45.6583,
+    "lon": -0.3175,
+    "name": "Cognac – Châteaubernard Air Base",
+    "city": "Cognac / Châteaubernard"
+  },
+  "LFCJ": {
+    "lat": 45.4842,
+    "lon": -0.4214,
+    "name": "Jonzac - Neulles Airport",
+    "city": "Jonzac / Neulles"
+  },
+  "LFBH": {
+    "lat": 46.1792,
+    "lon": -1.1953,
+    "name": "La Rochelle – Île de Ré Airport",
+    "city": "La Rochelle / Île de Ré"
+  },
+  "LFJI": {
+    "lat": 45.825,
+    "lon": -1.0767,
+    "name": "Marennes Aerodrome",
+    "city": "Marennes"
+  },
+  "LFCP": {
+    "lat": 45.57,
+    "lon": -0.515,
+    "name": "Pons - Avy Airport",
+    "city": "Pons / Avy"
+  },
+  "LFDN": {
+    "lat": 45.8878,
+    "lon": -0.9831,
+    "name": "Rochefort – Saint-Agnant Airport",
+    "city": "Rochefort / Saint-Agnant"
+  },
+  "LFXR": {
+    "lat": 45.9308,
+    "lon": -0.9953,
+    "name": "Rochefort - Soubise Airport",
+    "city": "Rochefort / Soubise"
+  },
+  "LFCY": {
+    "lat": 45.6281,
+    "lon": -0.9725,
+    "name": "Royan – Médis Aerodrome",
+    "city": "Royan / Médis"
+  },
+  "LFIY": {
+    "lat": 45.965,
+    "lon": -0.5234,
+    "name": "Saint-Jean-d'Angély - Saint-Denis-du-Pin Aerodrome",
+    "city": "Saint-Jean-d'Angély / Saint-Denis-du-Pin"
+  },
+  "LFDP": {
+    "lat": 45.9592,
+    "lon": -1.3161,
+    "name": "Saint-Pierre-d'Oléron Airport",
+    "city": "Saint-Pierre-d'Oléron"
+  },
+  "LFXB": {
+    "lat": 45.7019,
+    "lon": -0.6361,
+    "name": "Saintes - Thénac Airport",
+    "city": "Saintes / Thénac"
+  },
+  "LFEH": {
+    "lat": 47.4799,
+    "lon": 2.3933,
+    "name": "Aubigny-sur-Nère Airport",
+    "city": "Aubigny-sur-Nère"
+  },
+  "LFOA": {
+    "lat": 47.0533,
+    "lon": 2.6325,
+    "name": "Avord Air Base",
+    "city": "Avord"
+  },
+  "LFLD": {
+    "lat": 47.0602,
+    "lon": 2.3696,
+    "name": "Bourges Airport",
+    "city": "Bourges"
+  },
+  "LFFU": {
+    "lat": 46.8711,
+    "lon": 2.3769,
+    "name": "Châteauneuf-sur-Cher Airport",
+    "city": "Châteauneuf-sur-Cher"
+  },
+  "LFFV": {
+    "lat": 47.1941,
+    "lon": 2.0654,
+    "name": "Vierzon - Méreau Aerodrome",
+    "city": "Vierzon / Méreau"
+  },
+  "LFSL": {
+    "lat": 45.0397,
+    "lon": 1.4856,
+    "name": "Toul-Rosières Air Base",
+    "city": "Toul / Rosières-en-Haye"
+  },
+  "LFBV": {
+    "lat": 45.1508,
+    "lon": 1.4692,
+    "name": "Brive–Laroche Airport",
+    "city": "Brive-la-Gaillarde / La Roche"
+  },
+  "LFDE": {
+    "lat": 45.4214,
+    "lon": 2.0689,
+    "name": "Égletons Airport",
+    "city": "Égletons"
+  },
+  "LFCU": {
+    "lat": 45.5357,
+    "lon": 2.4245,
+    "name": "Ussel - Thalamy Airport",
+    "city": "Ussel / Thalamy"
+  },
+  "LFKJ": {
+    "lat": 41.9236,
+    "lon": 8.8029,
+    "name": "Ajaccio Napoleon Bonaparte Airport",
+    "city": "Ajaccio / Campo dell'Oro"
+  },
+  "LFKF": {
+    "lat": 41.5018,
+    "lon": 9.0971,
+    "name": "Figari–Sud Corse Airport",
+    "city": "Figari Corse-du-Sud"
+  },
+  "LFKO": {
+    "lat": 41.6606,
+    "lon": 8.8897,
+    "name": "Propriano Airport",
+    "city": "Propriano"
+  },
+  "LFKS": {
+    "lat": 41.9244,
+    "lon": 9.406,
+    "name": "Solenzara Air Base",
+    "city": "Sari-Solenzara"
+  },
+  "LFKB": {
+    "lat": 42.5527,
+    "lon": 9.4837,
+    "name": "Bastia – Poretta Airport",
+    "city": "Bastia / Poretta"
+  },
+  "LFKC": {
+    "lat": 42.5304,
+    "lon": 8.793,
+    "name": "Calvi – Sainte-Catherine Airport",
+    "city": "Calvi / Sainte-Catherine"
+  },
+  "LFKT": {
+    "lat": 42.2919,
+    "lon": 9.189,
+    "name": "Corte Airport",
+    "city": "Corte"
+  },
+  "LFKG": {
+    "lat": 42.0534,
+    "lon": 9.4002,
+    "name": "Ghisonaccia Alzitone Airport",
+    "city": "Ghisonaccia / Alzitone"
+  },
+  "LFGF": {
+    "lat": 47.0066,
+    "lon": 4.8941,
+    "name": "Beaune - Challanges Airport",
+    "city": "Beaune / Challanges"
+  },
+  "LFSY": {
+    "lat": 47.6094,
+    "lon": 4.6182,
+    "name": "Cessey Airport",
+    "city": "Cessey / Baigneux-les-Juifs"
+  },
+  "LFQH": {
+    "lat": 47.8439,
+    "lon": 4.58,
+    "name": "Châtillon-sur-Seine Airport",
+    "city": "Châtillon-sur-Seine"
+  },
+  "LFGI": {
+    "lat": 47.3853,
+    "lon": 4.9469,
+    "name": "Dijon - Darois Airport",
+    "city": "Dijon / Darois"
+  },
+  "LFSD": {
+    "lat": 47.2689,
+    "lon": 5.09,
+    "name": "Dijon–Bourgogne Airport",
+    "city": "Dijon / Longvic"
+  },
+  "LFGZ": {
+    "lat": 47.142,
+    "lon": 4.9685,
+    "name": "Nuits-Saint-Georges Aerodrome",
+    "city": "Nuits-Saint-Georges"
+  },
+  "LFEP": {
+    "lat": 47.2214,
+    "lon": 4.5611,
+    "name": "Pouilly - Maconge Aerodrome",
+    "city": "Pouilly-en-Auxois / Maconge"
+  },
+  "LFEW": {
+    "lat": 47.2393,
+    "lon": 4.2659,
+    "name": "Saulieu - Liernais Airport",
+    "city": "Saulieu / Liernais"
+  },
+  "LFGQ": {
+    "lat": 47.481,
+    "lon": 4.343,
+    "name": "Semur-en-Auxois Airport",
+    "city": "Semur-en-Auxois"
+  },
+  "LFET": {
+    "lat": 47.5463,
+    "lon": 5.2104,
+    "name": "Til-Châtel Airport",
+    "city": "Til-Châtel"
+  },
+  "LFEB": {
+    "lat": 48.4434,
+    "lon": -2.1031,
+    "name": "Dinan - Trélivan Airport",
+    "city": "Dinan / Trélivan"
+  },
+  "LFRO": {
+    "lat": 48.7544,
+    "lon": -3.4717,
+    "name": "Lannion – Côte de Granit Airport",
+    "city": "Lannion"
+  },
+  "LFRT": {
+    "lat": 48.5386,
+    "lon": -2.8535,
+    "name": "Saint-Brieuc – Armor Airport",
+    "city": "Saint-Brieuc / Côtes-d'Armor"
+  },
+  "LFCE": {
+    "lat": 46.1761,
+    "lon": 1.9538,
+    "name": "Guéret - Saint-Laurent Airport",
+    "city": "Guéret / Saint-Laurent"
+  },
+  "LFBK": {
+    "lat": 46.2226,
+    "lon": 2.364,
+    "name": "Montluçon – Guéret Airport",
+    "city": "Montluçon / Guéret"
+  },
+  "LFIB": {
+    "lat": 44.7825,
+    "lon": 0.9589,
+    "name": "Belvès - Saint-Pardoux Aerodrome",
+    "city": "Belvès / Saint-Pardoux-et-Vielvic"
+  },
+  "LFBE": {
+    "lat": 44.8253,
+    "lon": 0.5186,
+    "name": "Bergerac Dordogne Périgord Airport",
+    "city": "Bergerac / Roumanière"
+  },
+  "LFBX": {
+    "lat": 45.1981,
+    "lon": 0.8156,
+    "name": "Périgueux Bassillac Airport",
+    "city": "Périgueux / Bassillac"
+  },
+  "LFIK": {
+    "lat": 45.2387,
+    "lon": 0.2648,
+    "name": "Ribérac - Saint-Aulaye Aerodrome",
+    "city": "Ribérac / Saint-Aulaye"
+  },
+  "LFDF": {
+    "lat": 44.8536,
+    "lon": 0.1767,
+    "name": "Sainte-Foy-la-Grande Airport",
+    "city": "Sainte-Foy-la-Grande"
+  },
+  "LFDS": {
+    "lat": 44.7917,
+    "lon": 1.2471,
+    "name": "Sarlat - Domme Airport",
+    "city": "Sarlat-la-Canéda / Domme"
+  },
+  "LFQM": {
+    "lat": 47.2066,
+    "lon": 6.0832,
+    "name": "Besançon – La Vèze Aerodrome",
+    "city": "Besançon / La Vèze"
+  },
+  "LFSA": {
+    "lat": 47.2731,
+    "lon": 6.0829,
+    "name": "Besançon - Thise Airport",
+    "city": "Besançon / Thise"
+  },
+  "LFSM": {
+    "lat": 47.487,
+    "lon": 6.7905,
+    "name": "Montbéliard – Courcelles Aerodrome",
+    "city": "Montbéliard / Courcelles-lès-Montbéliard"
+  },
+  "LFSP": {
+    "lat": 46.904,
+    "lon": 6.3268,
+    "name": "Pontarlier Airport",
+    "city": "Pontarlier"
+  },
+  "LFXH": {
+    "lat": 47.1667,
+    "lon": 6.35,
+    "name": "Valdahon Air Base",
+    "city": "Valdahon"
+  },
+  "LFJF": {
+    "lat": 44.6945,
+    "lon": 5.1511,
+    "name": "Aubenasson Aerodrome",
+    "city": "Aubenasson"
+  },
+  "LFJE": {
+    "lat": 44.4958,
+    "lon": 5.4028,
+    "name": "La Motte-Chalancon Aerodrome",
+    "city": "La Motte-Chalancon"
+  },
+  "LFLQ": {
+    "lat": 44.5799,
+    "lon": 4.7388,
+    "name": "Montélimar - Ancône Airport",
+    "city": "Montélimar / Ancône"
+  },
+  "LFHD": {
+    "lat": 44.3976,
+    "lon": 4.7176,
+    "name": "Pierrelate Airport",
+    "city": "Pierrelatte"
+  },
+  "LFHE": {
+    "lat": 45.0661,
+    "lon": 5.1033,
+    "name": "Romans - Saint-Paul Airport",
+    "city": "Romans-sur-Isère / Saint-Paul-lès-Romans"
+  },
+  "LFKE": {
+    "lat": 45.0278,
+    "lon": 5.31,
+    "name": "Saint-Jean-en-Royans Aerodrome",
+    "city": "Saint-Jean-en-Royans"
+  },
+  "LFLR": {
+    "lat": 45.2515,
+    "lon": 4.8264,
+    "name": "Saint-Rambert-d'Albon Airport",
+    "city": "Saint-Rambert-d'Albon"
+  },
+  "LFLU": {
+    "lat": 44.9216,
+    "lon": 4.9699,
+    "name": "Valence-Chabeuil Airport",
+    "city": "Valence / Chabeuil"
+  },
+  "LFPD": {
+    "lat": 49.1024,
+    "lon": 0.5659,
+    "name": "Bernay–St Martin Airport",
+    "city": "Bernay / Saint-Martin-du-Tilleul"
+  },
+  "LFFY": {
+    "lat": 49.3053,
+    "lon": 1.6379,
+    "name": "Étrépagny Aerodrome",
+    "city": "Étrépagny"
+  },
+  "LFOE": {
+    "lat": 49.0287,
+    "lon": 1.2199,
+    "name": "Évreux-Fauville Air Base",
+    "city": "Évreux / Fauville"
+  },
+  "LFFD": {
+    "lat": 48.8977,
+    "lon": 1.2508,
+    "name": "Saint-André-de-l'Eure Airport",
+    "city": "Saint-André-de-l'Eure"
+  },
+  "LFFL": {
+    "lat": 48.5158,
+    "lon": 1.64,
+    "name": "Bailleau-Armenonville Aerodrome",
+    "city": "Bailleau-Armenonville"
+  },
+  "LFOR": {
+    "lat": 48.4575,
+    "lon": 1.5198,
+    "name": "Chartres – Champhol Aerodrome",
+    "city": "Chartres / Champhol"
+  },
+  "LFOC": {
+    "lat": 48.0579,
+    "lon": 1.3793,
+    "name": "Châteaudun Airport",
+    "city": "Châteaudun"
+  },
+  "LFON": {
+    "lat": 48.7054,
+    "lon": 1.3612,
+    "name": "Vernouillet Airport",
+    "city": "Dreux / Vernouillet"
+  },
+  "LFRB": {
+    "lat": 48.4479,
+    "lon": -4.4185,
+    "name": "Brest Bretagne Airport",
+    "city": "Brest / Guipavas"
+  },
+  "LFRJ": {
+    "lat": 48.5303,
+    "lon": -4.1516,
+    "name": "Landivisiau Air Base",
+    "city": "Landivisiau"
+  },
+  "LFRL": {
+    "lat": 48.2817,
+    "lon": -4.445,
+    "name": "Lanvéoc - Poulmic Air Base",
+    "city": "Lanvéoc / Poulmic"
+  },
+  "LFRU": {
+    "lat": 48.6032,
+    "lon": -3.8158,
+    "name": "Morlaix – Ploujean Airport",
+    "city": "Morlaix / Ploujean"
+  },
+  "LFEC": {
+    "lat": 48.4632,
+    "lon": -5.0636,
+    "name": "Ushant Airport",
+    "city": "Ushant"
+  },
+  "LFRQ": {
+    "lat": 47.973,
+    "lon": -4.1697,
+    "name": "Quimper–Cornouaille Airport",
+    "city": "Quimper / Pluguffan"
+  },
+  "LFMS": {
+    "lat": 44.0697,
+    "lon": 4.1421,
+    "name": "Alès - Deaux Airport",
+    "city": "Alès / Deaux"
+  },
+  "LFNT": {
+    "lat": 43.9969,
+    "lon": 4.7556,
+    "name": "Avignon - Pujaut Aerodrome",
+    "city": "Avignon / Pujaut"
+  },
+  "LFTN": {
+    "lat": 44.2444,
+    "lon": 4.0122,
+    "name": "La Grand-Combe Aerodrome",
+    "city": "La Grand-Combe"
+  },
+  "LFME": {
+    "lat": 43.8539,
+    "lon": 4.4136,
+    "name": "Nîmes - Courbessac Airport",
+    "city": "Nîmes / Courbessac"
+  },
+  "LFTW": {
+    "lat": 43.7574,
+    "lon": 4.4164,
+    "name": "Nîmes–Alès–Camargue–Cévennes Airport",
+    "city": "Nîmes / Garons"
+  },
+  "LFNU": {
+    "lat": 44.0821,
+    "lon": 4.3939,
+    "name": "Uzès Aerodrome",
+    "city": "Uzès"
+  },
+  "LFCB": {
+    "lat": 42.8,
+    "lon": 0.6,
+    "name": "Bagnères-de-Luchon Airport",
+    "city": "Bagnères-de-Luchon"
+  },
+  "LFJH": {
+    "lat": 43.2022,
+    "lon": 1.0511,
+    "name": "Cazères - Palaminy Aerodrome",
+    "city": "Cazères / Palaminy"
+  },
+  "LFIT": {
+    "lat": 43.6122,
+    "lon": 1.7253,
+    "name": "Toulouse - Bourg-Saint-Bernard Aerodrome",
+    "city": "Toulouse / Bourg-Saint-Bernard"
+  },
+  "LFIO": {
+    "lat": 43.5689,
+    "lon": 1.4808,
+    "name": "Toulouse - Montaudran Airport",
+    "city": "Toulouse / Montaudran"
+  },
+  "LFBR": {
+    "lat": 43.4489,
+    "lon": 1.2633,
+    "name": "Muret – Lherm Aerodrome",
+    "city": "Muret / Lherm"
+  },
+  "LFMG": {
+    "lat": 43.4075,
+    "lon": 1.9903,
+    "name": "Montagne Noire Aerodrome",
+    "city": "Montagne Noire / Revel"
+  },
+  "LFIR": {
+    "lat": 43.4814,
+    "lon": 1.98,
+    "name": "Revel - Montgey Aerodrome",
+    "city": "Revel / Montgey"
+  },
+  "LFIM": {
+    "lat": 43.1074,
+    "lon": 0.6191,
+    "name": "Saint-Gaudens - Montréjeau Airport",
+    "city": "Saint-Gaudens / Montréjeau"
+  },
+  "LFBO": {
+    "lat": 43.6291,
+    "lon": 1.3638,
+    "name": "Toulouse–Blagnac Airport",
+    "city": "Toulouse / Blagnac"
+  },
+  "LFBF": {
+    "lat": 43.5456,
+    "lon": 1.3675,
+    "name": "Toulouse - Francazal Air Base",
+    "city": "Toulouse / Francazal"
+  },
+  "LFCL": {
+    "lat": 43.5868,
+    "lon": 1.4992,
+    "name": "Toulouse – Lasbordes Airport",
+    "city": "Toulouse / Balma"
+  },
+  "LFDH": {
+    "lat": 43.6836,
+    "lon": 0.5997,
+    "name": "Auch - Lamothe Airport",
+    "city": "Auch / Lamothe-Goas"
+  },
+  "LFID": {
+    "lat": 43.9103,
+    "lon": 0.3872,
+    "name": "Condom - Valence-sur-Baïse Airport",
+    "city": "Condom / Valence-sur-Baïse"
+  },
+  "LFCN": {
+    "lat": 43.7697,
+    "lon": -0.0328,
+    "name": "Nogaro Airport",
+    "city": "Nogaro"
+  },
+  "LFCD": {
+    "lat": 44.755,
+    "lon": -1.065,
+    "name": "Andernos-les-Bains Airport",
+    "city": "Andernos-les-Bains"
+  },
+  "LFCH": {
+    "lat": 44.5964,
+    "lon": -1.1108,
+    "name": "Arcachon – La Teste-de-Buch Airport",
+    "city": "Arcachon / La Teste-de-Buch"
+  },
+  "LFCS": {
+    "lat": 44.7003,
+    "lon": -0.5956,
+    "name": "Bordeaux - Leognan - Saucats Airport",
+    "city": "Bordeaux / Léognan / Saucats"
+  },
+  "LFBD": {
+    "lat": 44.8287,
+    "lon": -0.7154,
+    "name": "Bordeaux–Mérignac Airport",
+    "city": "Bordeaux / Mérignac"
+  },
+  "LFDO": {
+    "lat": 44.8511,
+    "lon": -0.8055,
+    "name": "Bordeaux - Souge Aerodrome",
+    "city": "Bordeaux / Souge"
+  },
+  "LFDY": {
+    "lat": 44.876,
+    "lon": -0.4804,
+    "name": "Bordeaux - Yvrac Aerodrome",
+    "city": "Bordeaux / Yvrac"
+  },
+  "LFDR": {
+    "lat": 44.5681,
+    "lon": -0.0561,
+    "name": "La Réole - Floudès Airport",
+    "city": "La Réole / Floudès"
+  },
+  "LFBC": {
+    "lat": 44.5333,
+    "lon": -1.125,
+    "name": "Cazaux Air Base",
+    "city": "Cazaux / La Teste-de-Buch"
+  },
+  "LFDU": {
+    "lat": 45.1978,
+    "lon": -0.8822,
+    "name": "Lesparre - Saint-Laurent-de-Médoc Airport",
+    "city": "Lesparre-Médoc / Saint-Laurent-Médoc"
+  },
+  "LFDI": {
+    "lat": 44.9835,
+    "lon": -0.1384,
+    "name": "Libourne - Artigues-de-Lussac Airport",
+    "city": "Libourne / Les Artigues-de-Lussac"
+  },
+  "LFDC": {
+    "lat": 45.2744,
+    "lon": -0.4522,
+    "name": "Montendre - Marcillac Airport",
+    "city": "Montendre / Marcillac"
+  },
+  "LFDK": {
+    "lat": 45.495,
+    "lon": -1.0822,
+    "name": "Soulac-sur-Mer Airport",
+    "city": "Soulac-sur-Mer"
+  },
+  "LFIV": {
+    "lat": 45.3806,
+    "lon": -1.1158,
+    "name": "Vendays-Montalivet Aerodrome",
+    "city": "Vendays-Montalivet"
+  },
+  "LFNX": {
+    "lat": 43.6408,
+    "lon": 3.1456,
+    "name": "Bédarieux - La Tour-sur-Orb Aerodrome",
+    "city": "Bédarieux / La Tour-sur-Orb"
+  },
+  "LFMU": {
+    "lat": 43.3235,
+    "lon": 3.3539,
+    "name": "Béziers Cap d'Agde Airport",
+    "city": "Béziers / Vias"
+  },
+  "LFNG": {
+    "lat": 43.6103,
+    "lon": 4.0703,
+    "name": "Montpellier - Candillargues Airport",
+    "city": "Montpellier / Candillargues"
+  },
+  "LFMT": {
+    "lat": 43.5762,
+    "lon": 3.963,
+    "name": "Montpellier–Méditerranée Airport",
+    "city": "Montpellier / Mauguio"
+  },
+  "LFNP": {
+    "lat": 43.5058,
+    "lon": 3.4136,
+    "name": "Pézenas - Nizas Aerodrome",
+    "city": "Pézenas / Nizas"
+  },
+  "LFNL": {
+    "lat": 43.8008,
+    "lon": 3.7825,
+    "name": "Saint-Martin-de-Londres Aerodrome",
+    "city": "Saint-Martin-de-Londres"
+  },
+  "LFRD": {
+    "lat": 48.5877,
+    "lon": -2.08,
+    "name": "Dinard–Pleurtuit–Saint-Malo Airport",
+    "city": "Dinard / Pleurtuit / Saint-Malo"
+  },
+  "LFER": {
+    "lat": 47.6994,
+    "lon": -2.0367,
+    "name": "Redon - Bains-sur-Oust Aerodrome",
+    "city": "Redon / Bains-sur-Oust"
+  },
+  "LFRN": {
+    "lat": 48.0695,
+    "lon": -1.7348,
+    "name": "Rennes–Saint-Jacques Airport",
+    "city": "Rennes / Saint-Jacques-de-la-Lande"
+  },
+  "LFEO": {
+    "lat": 48.6136,
+    "lon": -1.9736,
+    "name": "Saint-Servan Airport",
+    "city": "Saint-Servan / Saint-Malo"
+  },
+  "LFEG": {
+    "lat": 46.5963,
+    "lon": 1.6016,
+    "name": "Argenton-sur-Creuse Airport",
+    "city": "Argenton-sur-Creuse"
+  },
+  "LFLX": {
+    "lat": 46.8602,
+    "lon": 1.7283,
+    "name": "Châteauroux-Centre Marcel Dassault Airport",
+    "city": "Châteauroux / Déols"
+  },
+  "LFEJ": {
+    "lat": 46.8409,
+    "lon": 1.62,
+    "name": "Châteauroux - Villers Airport",
+    "city": "Châteauroux / Villers-les-Ormes"
+  },
+  "LFEK": {
+    "lat": 46.888,
+    "lon": 2.0399,
+    "name": "Issoudun - Le Fay Airport",
+    "city": "Issoudun / Le Fay"
+  },
+  "LFEL": {
+    "lat": 46.6208,
+    "lon": 1.0875,
+    "name": "Le Blanc Airport",
+    "city": "Le Blanc"
+  },
+  "LFEF": {
+    "lat": 47.3398,
+    "lon": 0.9459,
+    "name": "Amboise - Dierre Airport",
+    "city": "Amboise / Dierre"
+  },
+  "LFJT": {
+    "lat": 47.1493,
+    "lon": 0.7111,
+    "name": "Tours - Le Louroux Aerodrome",
+    "city": "Tours / Le Louroux"
+  },
+  "LFEN": {
+    "lat": 47.2661,
+    "lon": 0.6987,
+    "name": "Tours - Sorigny Airport",
+    "city": "Tours / Sorigny"
+  },
+  "LFOT": {
+    "lat": 47.4322,
+    "lon": 0.7276,
+    "name": "Tours Val de Loire Airport",
+    "city": "Tours / Loire Valley"
+  },
+  "LFLG": {
+    "lat": 45.218,
+    "lon": 5.8483,
+    "name": "Grenoble – Le Versoud Aerodrome",
+    "city": "Grenoble / Le Versoud"
+  },
+  "LFLS": {
+    "lat": 45.3629,
+    "lon": 5.3294,
+    "name": "Alpes–Isère Airport",
+    "city": "Grenoble / Saint-Étienne-de-Saint-Geoirs"
+  },
+  "LFHU": {
+    "lat": 45.0874,
+    "lon": 6.0836,
+    "name": "Alpe d'Huez Airport",
+    "city": "Alpe d'Huez"
+  },
+  "LFKP": {
+    "lat": 45.5549,
+    "lon": 5.3859,
+    "name": "La Tour-du-Pin - Cessieu Aerodrome",
+    "city": "La Tour-du-Pin / Cessieu"
+  },
+  "LFHI": {
+    "lat": 45.6869,
+    "lon": 5.4522,
+    "name": "Morestel Aerodrome",
+    "city": "Morestel"
+  },
+  "LFKH": {
+    "lat": 45.5167,
+    "lon": 5.6806,
+    "name": "Saint-Jean-d'Avelanne Aerodrome",
+    "city": "Saint-Jean-d'Avelanne"
+  },
+  "LFHH": {
+    "lat": 45.4624,
+    "lon": 4.8281,
+    "name": "Vienne - Reventin Airport",
+    "city": "Vienne / Reventin-Vaugris"
+  },
+  "LFGD": {
+    "lat": 46.92,
+    "lon": 5.76,
+    "name": "Arbois Aerodrome",
+    "city": "Arbois"
+  },
+  "LFGX": {
+    "lat": 46.763,
+    "lon": 5.8197,
+    "name": "Champagnole - Crotenay Aerodrome",
+    "city": "Champagnole / Crotenay"
+  },
+  "LFGJ": {
+    "lat": 47.039,
+    "lon": 5.4276,
+    "name": "Dole–Jura Airport",
+    "city": "Dole / Tavaux"
+  },
+  "LFGL": {
+    "lat": 46.675,
+    "lon": 5.4691,
+    "name": "Lons-le-Saunier - Courlaoux Airport",
+    "city": "Lons-le-Saunier / Courlaoux"
+  },
+  "LFKZ": {
+    "lat": 46.3847,
+    "lon": 5.7703,
+    "name": "Saint-Claude - Pratz Aerodrome",
+    "city": "Saint-Claude / Pratz"
+  },
+  "LFDA": {
+    "lat": 43.7094,
+    "lon": -0.2453,
+    "name": "Aire-sur-l'Adour Airport",
+    "city": "Aire-sur-l'Adour"
+  },
+  "LFBS": {
+    "lat": 44.3676,
+    "lon": -1.1339,
+    "name": "Biscarrosse – Parentis Airport",
+    "city": "Biscarrosse / Parentis-en-Born"
+  },
+  "LFBY": {
+    "lat": 43.6892,
+    "lon": -1.0689,
+    "name": "Dax - Seyresse Airport",
+    "city": "Dax / Seyresse"
+  },
+  "LFCZ": {
+    "lat": 44.1459,
+    "lon": -1.1643,
+    "name": "Mimizan Airport",
+    "city": "Mimizan"
+  },
+  "LFBM": {
+    "lat": 43.9117,
+    "lon": -0.5075,
+    "name": "Mont-de-Marsan Air Base",
+    "city": "Mont-de-Marsan"
+  },
+  "LFIL": {
+    "lat": 43.9158,
+    "lon": -0.9492,
+    "name": "Rion-des-Landes Aerodrome",
+    "city": "Rion-des-Landes"
+  },
+  "LFOQ": {
+    "lat": 47.6785,
+    "lon": 1.2088,
+    "name": "Blois - Le Breuil Airport",
+    "city": "Blois / Le Breuil"
+  },
+  "LFFM": {
+    "lat": 47.6556,
+    "lon": 1.9881,
+    "name": "Lamotte-Beuvron Aerodrome",
+    "city": "Lamotte-Beuvron"
+  },
+  "LFYR": {
+    "lat": 47.3175,
+    "lon": 1.691,
+    "name": "Romorantin - Pruniers Airport",
+    "city": "Romorantin-Lanthenay / Pruniers"
+  },
+  "LFLZ": {
+    "lat": 45.7062,
+    "lon": 4.1973,
+    "name": "Feurs - Chambéon Airport",
+    "city": "Feurs / Chambéon"
+  },
+  "LFLO": {
+    "lat": 46.0538,
+    "lon": 3.999,
+    "name": "Roanne Renaison Airport",
+    "city": "Roanne / Renaison"
+  },
+  "LFHG": {
+    "lat": 45.4919,
+    "lon": 4.5344,
+    "name": "Saint-Chamond - L'Horme Airport",
+    "city": "Saint-Chamond / L'Horme"
+  },
+  "LFMH": {
+    "lat": 45.5406,
+    "lon": 4.2964,
+    "name": "Saint-Étienne–Bouthéon Airport",
+    "city": "Saint-Étienne / Andrézieux-Bouthéon"
+  },
+  "LFKM": {
+    "lat": 45.6072,
+    "lon": 4.3058,
+    "name": "Saint-Galmier Aerodrome",
+    "city": "Saint-Galmier"
+  },
+  "LFHR": {
+    "lat": 45.3199,
+    "lon": 3.3616,
+    "name": "Brioude - Beaumont Airport",
+    "city": "Brioude / Beaumont"
+  },
+  "LFHP": {
+    "lat": 45.0807,
+    "lon": 3.7629,
+    "name": "Le Puy – Loudes Airport",
+    "city": "Le Puy-en-Velay / Loudes"
+  },
+  "LFFI": {
+    "lat": 47.4081,
+    "lon": -1.1775,
+    "name": "Ancenis Aerodrome",
+    "city": "Ancenis"
+  },
+  "LFRE": {
+    "lat": 47.2894,
+    "lon": -2.3464,
+    "name": "La Baule - Pornichet - Le Pouliguen Airport",
+    "city": "La Baule-Escoublac"
+  },
+  "LFRS": {
+    "lat": 47.1532,
+    "lon": -1.6107,
+    "name": "Nantes Atlantique Airport",
+    "city": "Nantes / Bouguenais"
+  },
+  "LFRZ": {
+    "lat": 47.3114,
+    "lon": -2.1526,
+    "name": "Saint-Nazaire Montoir Airport",
+    "city": "Saint-Nazaire / Montoir-de-Bretagne"
+  },
+  "LFEI": {
+    "lat": 47.6144,
+    "lon": 2.7819,
+    "name": "Briare - Châtillon Airport",
+    "city": "Briare / Châtillon-sur-Loire"
+  },
+  "LFEM": {
+    "lat": 47.9606,
+    "lon": 2.6858,
+    "name": "Montargis - Vimory Airport",
+    "city": "Montargis / Vimory"
+  },
+  "LFOJ": {
+    "lat": 47.9878,
+    "lon": 1.7606,
+    "name": "Orléans – Bricy Air Base",
+    "city": "Orléans / Bricy"
+  },
+  "LFOZ": {
+    "lat": 47.8978,
+    "lon": 2.1645,
+    "name": "Orléans – Saint-Denis-de-l'Hôtel Airport",
+    "city": "Orléans / Saint-Denis-de-l'Hôtel"
+  },
+  "LFFP": {
+    "lat": 48.1552,
+    "lon": 2.1876,
+    "name": "Pithiviers Aerodrome",
+    "city": "Pithiviers"
+  },
+  "LFCC": {
+    "lat": 44.3514,
+    "lon": 1.4753,
+    "name": "Cahors - Lalbenque Airport",
+    "city": "Cahors / Lalbenque"
+  },
+  "LFCF": {
+    "lat": 44.6733,
+    "lon": 1.7892,
+    "name": "Figeac - Livernon Airport",
+    "city": "Figeac / Livernon"
+  },
+  "LFBA": {
+    "lat": 44.1742,
+    "lon": 0.5931,
+    "name": "Agen La Garenne Airport",
+    "city": "Agen / La Garenne"
+  },
+  "LFDX": {
+    "lat": 44.4609,
+    "lon": 1.0067,
+    "name": "Fumel - Montayral Airport",
+    "city": "Fumel / Montayral"
+  },
+  "LFDM": {
+    "lat": 44.499,
+    "lon": 0.2005,
+    "name": "Marmande – Virazeil Airport",
+    "city": "Marmande / Virazeil"
+  },
+  "LFCW": {
+    "lat": 44.3969,
+    "lon": 0.7589,
+    "name": "Villeneuve-sur-Lot Airport",
+    "city": "Villeneuve-sur-Lot"
+  },
+  "LFNB": {
+    "lat": 44.5021,
+    "lon": 3.5328,
+    "name": "Mende - Brenoux Airport",
+    "city": "Mende / Brenoux"
+  },
+  "LFNO": {
+    "lat": 44.2864,
+    "lon": 3.4667,
+    "name": "Florac - Sainte-Enimie Aerodrome",
+    "city": "Florac / Sainte-Enimie"
+  },
+  "LFRA": {
+    "lat": 47.4992,
+    "lon": -0.5728,
+    "name": "Angers – Avrillé Airport",
+    "city": "Angers / Avrillé"
+  },
+  "LFJR": {
+    "lat": 47.5603,
+    "lon": -0.3122,
+    "name": "Angers – Loire Airport",
+    "city": "Angers / Marcé"
+  },
+  "LFTQ": {
+    "lat": 47.7396,
+    "lon": -1.1895,
+    "name": "Châteaubriant - Pouancé Aerodrome",
+    "city": "Châteaubriant / Pouancé"
+  },
+  "LFOU": {
+    "lat": 47.0821,
+    "lon": -0.8771,
+    "name": "Cholet - Le Pontreau Aerodrome",
+    "city": "Cholet / Le Pontreau"
+  },
+  "LFOD": {
+    "lat": 47.2568,
+    "lon": -0.1151,
+    "name": "Saumur - Saint-Hilaire - Saint-Florent Aerodrome",
+    "city": "Saumur / Saint-Florent-le-Vieil"
+  },
+  "LFRW": {
+    "lat": 48.6623,
+    "lon": -1.4037,
+    "name": "Avranches - Le Val-Saint-Père Aerodrome",
+    "city": "Avranches / Le Val-Saint-Père"
+  },
+  "LFRC": {
+    "lat": 49.6501,
+    "lon": -1.4703,
+    "name": "Cherbourg – Maupertus Airport",
+    "city": "Cherbourg-Octeville / Maupertus-sur-Mer"
+  },
+  "LFRF": {
+    "lat": 48.8831,
+    "lon": -1.5642,
+    "name": "Granville - Mont Saint-Michel Aerodrome",
+    "city": "Granville / Mont-Saint-Michel"
+  },
+  "LFOM": {
+    "lat": 49.2023,
+    "lon": -1.508,
+    "name": "Lessay Airport",
+    "city": "Lessay"
+  },
+  "LFAU": {
+    "lat": 49.6228,
+    "lon": -1.8307,
+    "name": "Vauville Aerodrome",
+    "city": "Vauville"
+  },
+  "LFQK": {
+    "lat": 48.9051,
+    "lon": 4.3527,
+    "name": "Châlons - Écury-sur-Coole Airport",
+    "city": "Châlons-en-Champagne / Écury-sur-Coole"
+  },
+  "LFOK": {
+    "lat": 48.7733,
+    "lon": 4.2061,
+    "name": "Châlons Vatry Airport",
+    "city": "Châlons-en-Champagne / Vatry"
+  },
+  "LFSW": {
+    "lat": 49.0045,
+    "lon": 4.0853,
+    "name": "Épernay - Plivot Airport",
+    "city": "Épernay / Plivot"
+  },
+  "LFYM": {
+    "lat": 48.6612,
+    "lon": 3.8356,
+    "name": "Marigny - Le Grand Airport",
+    "city": "Marigny / Le Grand"
+  },
+  "LFXM": {
+    "lat": 49.1114,
+    "lon": 4.3669,
+    "name": "Mourmelon Aerodrome",
+    "city": "Mourmelon-le-Grand"
+  },
+  "LFSR": {
+    "lat": 49.31,
+    "lon": 4.05,
+    "name": "Reims - Champagne Aerodrome",
+    "city": "Reims / Champagne-Ardenne"
+  },
+  "LFQA": {
+    "lat": 49.2087,
+    "lon": 4.1566,
+    "name": "Reims – Prunay Aerodrome",
+    "city": "Reims / Prunay"
+  },
+  "LFFZ": {
+    "lat": 48.7096,
+    "lon": 3.7633,
+    "name": "Sézanne - Saint-Remy Airport",
+    "city": "Sézanne / Saint-Remy-sous-Broyes"
+  },
+  "LFSK": {
+    "lat": 48.7024,
+    "lon": 4.6831,
+    "name": "Vitry-le-François - Vauclerc Airport",
+    "city": "Vitry-le-François / Vauclerc"
+  },
+  "LFJA": {
+    "lat": 48.0807,
+    "lon": 5.0477,
+    "name": "Quartier Général d'Aboville",
+    "city": "Chaumont / Semoutiers"
+  },
+  "LFFJ": {
+    "lat": 48.3851,
+    "lon": 5.1435,
+    "name": "Joinville - Mussey Aerodrome",
+    "city": "Joinville / Val-d'Ornain"
+  },
+  "LFSU": {
+    "lat": 47.9648,
+    "lon": 5.2937,
+    "name": "Langres - Rolampont Airport",
+    "city": "Langres / Rolampont"
+  },
+  "LFSI": {
+    "lat": 48.636,
+    "lon": 4.8994,
+    "name": "Saint-Dizier – Robinson Air Base",
+    "city": "Saint-Dizier"
+  },
+  "LFOV": {
+    "lat": 48.0322,
+    "lon": -0.744,
+    "name": "Laval - Entrammes Airport",
+    "city": "Laval / Entrammes"
+  },
+  "LFGR": {
+    "lat": 49.1522,
+    "lon": 5.9334,
+    "name": "Doncourt-lès-Conflans Airport",
+    "city": "Doncourt-lès-Conflans"
+  },
+  "LFGS": {
+    "lat": 49.4836,
+    "lon": 5.5719,
+    "name": "Longuyon - Villette Airport",
+    "city": "Longuyon / Villette"
+  },
+  "LFQC": {
+    "lat": 48.5933,
+    "lon": 6.5454,
+    "name": "Lunéville-Croismare Airport",
+    "city": "Lunéville / Croismare"
+  },
+  "LFEX": {
+    "lat": 48.5935,
+    "lon": 6.241,
+    "name": "Nancy - Azelot Aerodrome",
+    "city": "Nancy / Azelot"
+  },
+  "LFSN": {
+    "lat": 48.6921,
+    "lon": 6.2305,
+    "name": "Nancy-Essey Airport",
+    "city": "Nancy / Tomblaine"
+  },
+  "LFEZ": {
+    "lat": 48.7244,
+    "lon": 6.2078,
+    "name": "Nancy - Malzéville Aerodrome",
+    "city": "Nancy / Malzéville"
+  },
+  "LFSO": {
+    "lat": 48.5831,
+    "lon": 5.955,
+    "name": "Nancy – Ochey Air Base",
+    "city": "Nancy / Ochey"
+  },
+  "LFSV": {
+    "lat": 48.6001,
+    "lon": 6.0565,
+    "name": "Pont-Saint-Vincent Aerodrome",
+    "city": "Pont-Saint-Vincent"
+  },
+  "LFAW": {
+    "lat": 49.4104,
+    "lon": 5.8893,
+    "name": "Villerupt Aerodrome",
+    "city": "Villerupt"
+  },
+  "LFEU": {
+    "lat": 48.8675,
+    "lon": 5.1851,
+    "name": "Bar-le-Duc - Les Hauts-de-Chée Airport",
+    "city": "Bar-le-Duc / Les Hauts-de-Chée"
+  },
+  "LFQE": {
+    "lat": 49.2269,
+    "lon": 5.6722,
+    "name": "Étain - Rouvres Air Base",
+    "city": "Étain / Rouvres-en-Woëvre"
+  },
+  "LFYK": {
+    "lat": 49.4565,
+    "lon": 5.4138,
+    "name": "Montmédy - Marville Airport",
+    "city": "Montmédy / Marville"
+  },
+  "LFGW": {
+    "lat": 49.1224,
+    "lon": 5.4691,
+    "name": "Verdun-Le-Rozelier Airport",
+    "city": "Verdun / Le Rozelier"
+  },
+  "LFEA": {
+    "lat": 47.3253,
+    "lon": -3.2013,
+    "name": "Belle-Île Aerodrome",
+    "city": "Belle Île / Le Palais"
+  },
+  "LFXQ": {
+    "lat": 47.9431,
+    "lon": -2.1859,
+    "name": "Coëtquidan Air Base",
+    "city": "Coëtquidan / Guer"
+  },
+  "LFES": {
+    "lat": 48.0525,
+    "lon": -3.6647,
+    "name": "Guiscriff Scaer Airport",
+    "city": "Guiscriff"
+  },
+  "LFRH": {
+    "lat": 47.7606,
+    "lon": -3.44,
+    "name": "Lorient South Brittany Airport",
+    "city": "Lorient / Lann / Bihoué"
+  },
+  "LFRP": {
+    "lat": 48.0028,
+    "lon": -2.3772,
+    "name": "Ploërmel - Loyat Airport",
+    "city": "Ploërmel / Loyat"
+  },
+  "LFED": {
+    "lat": 48.0567,
+    "lon": -2.9208,
+    "name": "Pontivy Airport",
+    "city": "Pontivy"
+  },
+  "LFEQ": {
+    "lat": 47.4822,
+    "lon": -3.1,
+    "name": "Quiberon Aerodrome",
+    "city": "Quiberon"
+  },
+  "LFRV": {
+    "lat": 47.7233,
+    "lon": -2.7186,
+    "name": "Vannes Airport",
+    "city": "Vannes / Meucon"
+  },
+  "LFQZ": {
+    "lat": 48.7744,
+    "lon": 6.7141,
+    "name": "Dieuze - Gueblange Aerodrome",
+    "city": "Dieuze / Guéblange"
+  },
+  "LFSF": {
+    "lat": 49.0734,
+    "lon": 6.1329,
+    "name": "Metz-Frescaty Air Base",
+    "city": "Metz / Frescaty"
+  },
+  "LFJL": {
+    "lat": 48.9821,
+    "lon": 6.2513,
+    "name": "Metz–Nancy–Lorraine Airport",
+    "city": "Metz / Nancy"
+  },
+  "LFQP": {
+    "lat": 48.7662,
+    "lon": 7.2006,
+    "name": "Quartier La Horie",
+    "city": "Phalsbourg / Bourscheid"
+  },
+  "LFGT": {
+    "lat": 48.7169,
+    "lon": 7.0743,
+    "name": "Sarrebourg - Buhl Airport",
+    "city": "Sarrebourg / Buhl"
+  },
+  "LFGU": {
+    "lat": 49.1281,
+    "lon": 7.1083,
+    "name": "Sarreguemines - Neunkirch Airport",
+    "city": "Sarreguemines / Neunkirch"
+  },
+  "LFGV": {
+    "lat": 49.3547,
+    "lon": 6.2014,
+    "name": "Thionville - Yutz Airport",
+    "city": "Thionville / Yutz"
+  },
+  "LFJC": {
+    "lat": 47.4376,
+    "lon": 3.5074,
+    "name": "Clamecy Airport",
+    "city": "Clamecy"
+  },
+  "LFGH": {
+    "lat": 47.3609,
+    "lon": 2.9159,
+    "name": "Cosne-sur-Loire Airport",
+    "city": "Cosne-Cours-sur-Loire"
+  },
+  "LFQG": {
+    "lat": 47.0029,
+    "lon": 3.1131,
+    "name": "Nevers - Fourchambault Airport",
+    "city": "Nevers / Fourchambault"
+  },
+  "LFQI": {
+    "lat": 50.2218,
+    "lon": 3.1542,
+    "name": "Cambrai - Épinoy Air Base",
+    "city": "Cambrai / Épinoy"
+  },
+  "LFYG": {
+    "lat": 50.1405,
+    "lon": 3.2632,
+    "name": "Cambrai-Niergnies Airport",
+    "city": "Cambrai / Niergnies"
+  },
+  "LFAK": {
+    "lat": 51.0396,
+    "lon": 2.5491,
+    "name": "Dunkerque – Les Moëres Airport",
+    "city": "Dunkirk / Les Moëres"
+  },
+  "LFQQ": {
+    "lat": 50.5666,
+    "lon": 3.1024,
+    "name": "Lille Airport",
+    "city": "Lille / Lesquin"
+  },
+  "LFQO": {
+    "lat": 50.6872,
+    "lon": 3.0756,
+    "name": "Lille - Marcq-en-Baroeul Airport",
+    "city": "Lille / Marcq-en-Barœul"
+  },
+  "LFQJ": {
+    "lat": 50.3105,
+    "lon": 4.0331,
+    "name": "Maubeuge Aerodrome",
+    "city": "Maubeuge / Élesmes"
+  },
+  "LFQT": {
+    "lat": 50.6184,
+    "lon": 2.6422,
+    "name": "Merville–Calonne Airport",
+    "city": "Merville / Calonne-sur-la-Lys"
+  },
+  "LFAV": {
+    "lat": 50.3278,
+    "lon": 3.4611,
+    "name": "Valenciennes-Denain Airport",
+    "city": "Valenciennes / Denain"
+  },
+  "LFOB": {
+    "lat": 49.4544,
+    "lon": 2.1128,
+    "name": "Beauvais–Tillé Airport",
+    "city": "Beauvais / Tillé"
+  },
+  "LFAD": {
+    "lat": 49.4312,
+    "lon": 2.8015,
+    "name": "Compiègne - Margny Airport",
+    "city": "Compiègne / Margny-lès-Compiègne"
+  },
+  "LFPC": {
+    "lat": 49.2535,
+    "lon": 2.5191,
+    "name": "Creil Air Base",
+    "city": "Creil"
+  },
+  "LFPP": {
+    "lat": 49.1088,
+    "lon": 2.7361,
+    "name": "Plessis-Belleville Airport",
+    "city": "Le Plessis-Belleville"
+  },
+  "LFOF": {
+    "lat": 48.4466,
+    "lon": 0.108,
+    "name": "Alençon - Valframbert Aerodrome",
+    "city": "Alençon / Valframbert"
+  },
+  "LFAJ": {
+    "lat": 48.7095,
+    "lon": 0.0029,
+    "name": "Argentan Aerodrome",
+    "city": "Argentan"
+  },
+  "LFAO": {
+    "lat": 48.5458,
+    "lon": -0.3874,
+    "name": "Bagnoles-de-l'Orne - Couterne Airport",
+    "city": "Bagnoles-de-l'Orne / Rives d'Andaine"
+  },
+  "LFOG": {
+    "lat": 48.75,
+    "lon": -0.5939,
+    "name": "Flers - Saint-Paul Aerodrome",
+    "city": "Flers / La Lande-Patry"
+  },
+  "LFOL": {
+    "lat": 48.7585,
+    "lon": 0.6566,
+    "name": "L'Aigle - Saint-Michel Airport",
+    "city": "L'Aigle / Saint-Sulpice-sur-Risle"
+  },
+  "LFAX": {
+    "lat": 48.5392,
+    "lon": 0.532,
+    "name": "Mortagne Aerodrome",
+    "city": "Mortagne-au-Perche"
+  },
+  "LFQD": {
+    "lat": 50.3239,
+    "lon": 2.8028,
+    "name": "Arras – Roclincourt Airport",
+    "city": "Arras / Roclincourt"
+  },
+  "LFAM": {
+    "lat": 50.4231,
+    "lon": 1.5919,
+    "name": "Berck-sur-Mer Airport",
+    "city": "Berck"
+  },
+  "LFAC": {
+    "lat": 50.9621,
+    "lon": 1.9548,
+    "name": "Calais–Dunkerque Airport",
+    "city": "Calais / Dunkirk"
+  },
+  "LFAT": {
+    "lat": 50.5183,
+    "lon": 1.6217,
+    "name": "Le Touquet – Côte d'Opale Airport",
+    "city": "Le Touquet"
+  },
+  "LFQL": {
+    "lat": 50.4664,
+    "lon": 2.8197,
+    "name": "Lens - Bénifontaine Airport",
+    "city": "Lens / Bénifontaine"
+  },
+  "LFQN": {
+    "lat": 50.7275,
+    "lon": 2.2326,
+    "name": "Saint-Omer - Wizernes Airport",
+    "city": "Saint-Omer / Wizernes"
+  },
+  "LFQS": {
+    "lat": 50.3379,
+    "lon": 2.9907,
+    "name": "Vitry-En-Artois Airport",
+    "city": "Vitry-en-Artois"
+  },
+  "LFHT": {
+    "lat": 45.5162,
+    "lon": 3.7451,
+    "name": "Ambert - Le Poyet Airport",
+    "city": "Ambert / Le Poyet"
+  },
+  "LFLC": {
+    "lat": 45.7867,
+    "lon": 3.1692,
+    "name": "Clermont-Ferrand Auvergne Airport",
+    "city": "Clermont-Ferrand / Auvergne"
+  },
+  "LFHA": {
+    "lat": 45.515,
+    "lon": 3.2675,
+    "name": "Issoire - Le Broc Airport",
+    "city": "Issoire / Le Broc"
+  },
+  "LFBZ": {
+    "lat": 43.4684,
+    "lon": -1.5232,
+    "name": "Biarritz Pays Basque Airport",
+    "city": "Biarritz"
+  },
+  "LFIX": {
+    "lat": 43.3375,
+    "lon": -1.4222,
+    "name": "Itxassou Aerodrome",
+    "city": "Itxassou"
+  },
+  "LFCO": {
+    "lat": 43.1635,
+    "lon": -0.5615,
+    "name": "Oloron - Herrère Airport",
+    "city": "Oloron-Sainte-Marie / Herrère"
+  },
+  "LFBP": {
+    "lat": 43.38,
+    "lon": -0.4186,
+    "name": "Pau Pyrénées Airport",
+    "city": "Pau / Uzein"
+  },
+  "LFDQ": {
+    "lat": 43.2794,
+    "lon": 0.5217,
+    "name": "Castelnau-Magnoac Aerodrome",
+    "city": "Castelnau-Magnoac"
+  },
+  "LFIP": {
+    "lat": 42.7967,
+    "lon": 0.4365,
+    "name": "Peyresourde - Balestas Aerodrome",
+    "city": "Col de Peyresourde / Balestas"
+  },
+  "LFDT": {
+    "lat": 43.2153,
+    "lon": 0.0773,
+    "name": "Tarbes - Laloubère Airport",
+    "city": "Tarbes / Laloubère"
+  },
+  "LFBT": {
+    "lat": 43.1787,
+    "lon": -0.0064,
+    "name": "Tarbes–Lourdes–Pyrénées Airport",
+    "city": "Tarbes / Lourdes"
+  },
+  "LFNQ": {
+    "lat": 42.5436,
+    "lon": 2.12,
+    "name": "Mont-Louis - La Quillane Aerodrome",
+    "city": "Mont-Louis / La Quillane"
+  },
+  "LFMP": {
+    "lat": 42.7404,
+    "lon": 2.8707,
+    "name": "Perpignan–Rivesaltes Airport",
+    "city": "Perpignan / Rivesaltes"
+  },
+  "LFYS": {
+    "lat": 42.4472,
+    "lon": 2.0108,
+    "name": "Sainte-Léocadie Aerodrome",
+    "city": "Sainte-Léocadie"
+  },
+  "LFSH": {
+    "lat": 48.7948,
+    "lon": 7.8161,
+    "name": "Haguenau Airport",
+    "city": "Haguenau"
+  },
+  "LFQU": {
+    "lat": 48.9509,
+    "lon": 7.0785,
+    "name": "Sarre-Union Aerodrome",
+    "city": "Sarre-Union"
+  },
+  "LFQY": {
+    "lat": 48.7534,
+    "lon": 7.4254,
+    "name": "Saverne - Steinbourg Aerodrome",
+    "city": "Saverne / Steinbourg"
+  },
+  "LFST": {
+    "lat": 48.5383,
+    "lon": 7.6282,
+    "name": "Strasbourg Airport",
+    "city": "Strasbourg / Entzheim"
+  },
+  "LFGC": {
+    "lat": 48.5533,
+    "lon": 7.7766,
+    "name": "Strasbourg - Neuhof Airport",
+    "city": "Strasbourg / Neuhof"
+  },
+  "LFSB": {
+    "lat": 47.6007,
+    "lon": 7.5211,
+    "name": "EuroAirport Basel Mulhouse Freiburg",
+    "city": "Mulhouse"
+  },
+  "LFGA": {
+    "lat": 48.1099,
+    "lon": 7.359,
+    "name": "Colmar Airport",
+    "city": "Colmar / Houssen"
+  },
+  "LFSC": {
+    "lat": 47.922,
+    "lon": 7.3997,
+    "name": "Quartier Colonel Dio",
+    "city": "Colmar / Meyenheim"
+  },
+  "LFGB": {
+    "lat": 47.7413,
+    "lon": 7.4322,
+    "name": "Mulhouse–Habsheim Airport",
+    "city": "Mulhouse / Habsheim"
+  },
+  "LFHW": {
+    "lat": 46.1408,
+    "lon": 4.7138,
+    "name": "Belleville - Villié-Morgon Aerodrome",
+    "city": "Belleville / Villié-Morgon"
+  },
+  "LFKL": {
+    "lat": 45.7105,
+    "lon": 4.6967,
+    "name": "Lyon - Brindas Aerodrome",
+    "city": "Lyon / Brindas"
+  },
+  "LFLY": {
+    "lat": 45.7279,
+    "lon": 4.944,
+    "name": "Lyon–Bron Airport",
+    "city": "Lyon / Bron"
+  },
+  "LFHJ": {
+    "lat": 45.6542,
+    "lon": 4.9136,
+    "name": "Lyon - Corbas Aerodrome",
+    "city": "Lyon / Corbas"
+  },
+  "LFLL": {
+    "lat": 45.726,
+    "lon": 5.0901,
+    "name": "Lyon–Saint-Exupéry Airport",
+    "city": "Lyon / Colombier-Saugnieu"
+  },
+  "LFHV": {
+    "lat": 45.9183,
+    "lon": 4.6352,
+    "name": "Villefranche – Tarare Airport",
+    "city": "Villefranche-sur-Saône / Tarare"
+  },
+  "LFYH": {
+    "lat": 47.3329,
+    "lon": 5.5135,
+    "name": "Broyes-lès-Pesmes Airport",
+    "city": "Broye-Aubigney-Montseugny"
+  },
+  "LFEV": {
+    "lat": 47.4317,
+    "lon": 5.6178,
+    "name": "Gray - Saint-Adrien Airport",
+    "city": "Gray"
+  },
+  "LFYL": {
+    "lat": 47.7047,
+    "lon": 6.5458,
+    "name": "Lure - Malbouhans Airport",
+    "city": "Lure / Malbouhans"
+  },
+  "LFSX": {
+    "lat": 47.7877,
+    "lon": 6.3534,
+    "name": "Luxeuil - Saint-Sauveur Air Base",
+    "city": "Luxeuil-les-Bains / Saint-Sauveur"
+  },
+  "LFQW": {
+    "lat": 47.6386,
+    "lon": 6.2044,
+    "name": "Vesoul - Frotey Airfield",
+    "city": "Vesoul / Frotey"
+  },
+  "LFQF": {
+    "lat": 46.9673,
+    "lon": 4.2609,
+    "name": "Autun - Bellevue Aerodrome",
+    "city": "Autun / Bellevue"
+  },
+  "LFLH": {
+    "lat": 46.8258,
+    "lon": 4.8176,
+    "name": "Chalon – Champforgeuil Airport",
+    "city": "Chalon-sur-Saône / Champforgeuil"
+  },
+  "LFLM": {
+    "lat": 46.2951,
+    "lon": 4.796,
+    "name": "Mâcon - Charnay Airport",
+    "city": "Mâcon / Charnay-lès-Mâcon"
+  },
+  "LFGM": {
+    "lat": 46.6032,
+    "lon": 4.3382,
+    "name": "Montceau-les-Mines - Pouilloux Airport",
+    "city": "Montceau-les-Mines / Pouilloux"
+  },
+  "LFGN": {
+    "lat": 46.4658,
+    "lon": 4.1345,
+    "name": "Paray-le-Monial Airport",
+    "city": "Paray-le-Monial"
+  },
+  "LFLN": {
+    "lat": 46.414,
+    "lon": 4.0142,
+    "name": "Saint-Yan Airport",
+    "city": "Saint-Yan"
+  },
+  "LFFX": {
+    "lat": 46.5621,
+    "lon": 4.9756,
+    "name": "Tournus - Cruisery Aerodrome",
+    "city": "Tournus / Cuisery"
+  },
+  "LFAL": {
+    "lat": 47.6926,
+    "lon": -0.0022,
+    "name": "La Flèche - Thorée-les-Pins Aerodrome",
+    "city": "La Flèche / Thorée-les-Pins"
+  },
+  "LFRM": {
+    "lat": 47.9486,
+    "lon": 0.2017,
+    "name": "Le Mans - Arnage Aerodrome",
+    "city": "Le Mans / Arnage"
+  },
+  "LFKA": {
+    "lat": 45.626,
+    "lon": 6.3281,
+    "name": "Albertville Aerodrome",
+    "city": "Albertville"
+  },
+  "LFLE": {
+    "lat": 45.5611,
+    "lon": 5.9758,
+    "name": "Chambéry Aerodrome",
+    "city": "Chambéry / Challes-les-Eaux"
+  },
+  "LFLB": {
+    "lat": 45.6381,
+    "lon": 5.8802,
+    "name": "Chambéry Airport",
+    "city": "Chambéry / Aix-les-Bains"
+  },
+  "LFLJ": {
+    "lat": 45.3975,
+    "lon": 6.635,
+    "name": "Courchevel Altiport",
+    "city": "Courchevel / Saint-Bon-Tarentaise"
+  },
+  "LFKX": {
+    "lat": 45.4075,
+    "lon": 6.5776,
+    "name": "Méribel Altiport",
+    "city": "Méribel"
+  },
+  "LFKR": {
+    "lat": 45.3767,
+    "lon": 6.2769,
+    "name": "Saint-Rémy-de-Maurienne Aerodrome",
+    "city": "Saint-Rémy-de-Maurienne"
+  },
+  "LFKD": {
+    "lat": 45.2538,
+    "lon": 6.8011,
+    "name": "Sollières-Sardières Aerodrome",
+    "city": "Sollières-Sardières"
+  },
+  "LFLP": {
+    "lat": 45.9289,
+    "lon": 6.0987,
+    "name": "Annecy – Haute-Savoie – Mont Blanc Airport",
+    "city": "Annecy / Meythet"
+  },
+  "LFLI": {
+    "lat": 46.192,
+    "lon": 6.2684,
+    "name": "Annemasse Aerodrome",
+    "city": "Annemasse"
+  },
+  "LFHM": {
+    "lat": 45.823,
+    "lon": 6.6494,
+    "name": "Megève Altiport",
+    "city": "Megève"
+  },
+  "LFHZ": {
+    "lat": 45.9539,
+    "lon": 6.6392,
+    "name": "Sallanches Aerodrome",
+    "city": "Sallanches"
+  },
+  "LFPI": {
+    "lat": 48.833,
+    "lon": 2.273,
+    "name": "Paris - Issy-les-Moulineaux Heliport",
+    "city": "Paris / Issy-les-Moulineaux"
+  },
+  "LFAB": {
+    "lat": 49.8847,
+    "lon": 1.081,
+    "name": "Dieppe - Saint-Aubin Airport",
+    "city": "Dieppe / Saint-Aubin-sur-Scie"
+  },
+  "LFAE": {
+    "lat": 50.0682,
+    "lon": 1.4247,
+    "name": "Eu - Mers - Le Tréport Aerodrome",
+    "city": "Eu / Mers-les-Bains / Le Tréport"
+  },
+  "LFOH": {
+    "lat": 49.534,
+    "lon": 0.0884,
+    "name": "Le Havre – Octeville Airport",
+    "city": "Le Havre / Octeville-sur-Mer"
+  },
+  "LFOY": {
+    "lat": 49.5447,
+    "lon": 0.3604,
+    "name": "Le Havre - Saint-Romain Airport",
+    "city": "Le Havre / Saint-Romain-de-Colbosc"
+  },
+  "LFOP": {
+    "lat": 49.3849,
+    "lon": 1.1791,
+    "name": "Rouen Airport",
+    "city": "Rouen"
+  },
+  "LFOS": {
+    "lat": 49.8352,
+    "lon": 0.6553,
+    "name": "Saint-Valery - Vittefleur Airport",
+    "city": "Saint-Valery-en-Caux / Vittefleur"
+  },
+  "LFPH": {
+    "lat": 48.8966,
+    "lon": 2.6062,
+    "name": "Chelles - Le Pin Aerodrome",
+    "city": "Chelles / Le Pin"
+  },
+  "LFPK": {
+    "lat": 48.8396,
+    "lon": 3.0087,
+    "name": "Coulommiers – Voisins Aerodrome",
+    "city": "Coulommiers / Voisins"
+  },
+  "LFPQ": {
+    "lat": 48.7063,
+    "lon": 2.9028,
+    "name": "Fontenay-Trésigny Airport",
+    "city": "Fontenay-Trésigny"
+  },
+  "LFFG": {
+    "lat": 48.757,
+    "lon": 3.2781,
+    "name": "La Ferté-Gaucher Aerodrome",
+    "city": "La Ferté-Gaucher"
+  },
+  "LFPL": {
+    "lat": 48.821,
+    "lon": 2.626,
+    "name": "Lognes – Émerainville aerodrome",
+    "city": "Lognes / Émerainville"
+  },
+  "LFPE": {
+    "lat": 48.9275,
+    "lon": 2.8335,
+    "name": "Meaux - Esbly Aerodrome",
+    "city": "Meaux / Esbly"
+  },
+  "LFPM": {
+    "lat": 48.6047,
+    "lon": 2.6711,
+    "name": "Melun Villaroche Aerodrome",
+    "city": "Melun"
+  },
+  "LFPU": {
+    "lat": 48.3412,
+    "lon": 2.7985,
+    "name": "Moret - Episy Aerodrome",
+    "city": "Moret-sur-Loing / Épisy"
+  },
+  "LFAI": {
+    "lat": 48.5962,
+    "lon": 3.0068,
+    "name": "Nangis les Loges Aerodrome",
+    "city": "Nangis / Les Loges"
+  },
+  "LFPF": {
+    "lat": 48.8432,
+    "lon": 1.9063,
+    "name": "Beynes - Thiverval Aerodrome",
+    "city": "Beynes / Thiverval"
+  },
+  "LFPX": {
+    "lat": 48.8423,
+    "lon": 1.9805,
+    "name": "Aérodrome de Chavenay - Villepreux",
+    "city": "Chavenay / Villepreux"
+  },
+  "LFXU": {
+    "lat": 48.9983,
+    "lon": 1.9428,
+    "name": "Les Mureaux Airport",
+    "city": "Les Mureaux"
+  },
+  "LFPZ": {
+    "lat": 48.8125,
+    "lon": 2.0675,
+    "name": "Saint-Cyr-l'École Aerodrome",
+    "city": "Saint-Cyr-l'École"
+  },
+  "LFPN": {
+    "lat": 48.7519,
+    "lon": 2.1062,
+    "name": "Toussus-le-Noble Airport",
+    "city": "Toussus-le-Noble"
+  },
+  "LFPV": {
+    "lat": 48.7744,
+    "lon": 2.2031,
+    "name": "Vélizy – Villacoublay Air Base",
+    "city": "Vélizy-Villacoublay"
+  },
+  "LFJB": {
+    "lat": 46.9028,
+    "lon": -0.6978,
+    "name": "Mauléon Airport",
+    "city": "Mauléon"
+  },
+  "LFBN": {
+    "lat": 46.3135,
+    "lon": -0.3945,
+    "name": "Niort - Souché Airport",
+    "city": "Niort / Souché"
+  },
+  "LFCT": {
+    "lat": 46.9619,
+    "lon": -0.1528,
+    "name": "Thouars Airport",
+    "city": "Thouars"
+  },
+  "LFOI": {
+    "lat": 50.1435,
+    "lon": 1.8319,
+    "name": "Aerodrome Abbeville",
+    "city": "Abbeville / Buigny-Saint-Maclou"
+  },
+  "LFAQ": {
+    "lat": 49.97,
+    "lon": 2.6939,
+    "name": "Albert – Picardie Airport",
+    "city": "Albert / Bray-sur-Somme"
+  },
+  "LFAY": {
+    "lat": 49.873,
+    "lon": 2.3871,
+    "name": "Amiens – Glisy Aerodrome",
+    "city": "Amiens / Glisy"
+  },
+  "LFAR": {
+    "lat": 49.6721,
+    "lon": 2.5678,
+    "name": "Montdidier Aerodrome",
+    "city": "Montdidier"
+  },
+  "LFAG": {
+    "lat": 49.8689,
+    "lon": 3.0296,
+    "name": "Peronne-St Quentin Airport",
+    "city": "Péronne / Saint-Quentin"
+  },
+  "LFCI": {
+    "lat": 43.9139,
+    "lon": 2.1131,
+    "name": "Albi - Le Sequestre Aerodrome",
+    "city": "Albi / Le Sequestre"
+  },
+  "LFCK": {
+    "lat": 43.5563,
+    "lon": 2.2892,
+    "name": "Castres–Mazamet Airport",
+    "city": "Castres / Mazamet"
+  },
+  "LFDG": {
+    "lat": 43.8839,
+    "lon": 1.8756,
+    "name": "Gaillac - Lisle-sur-Tarn Airport",
+    "city": "Gaillac / Lisle-sur-Tarn"
+  },
+  "LFCQ": {
+    "lat": 43.7711,
+    "lon": 2.0108,
+    "name": "Graulhet - Montdragon Airport",
+    "city": "Graulhet / Montdragon"
+  },
+  "LFCX": {
+    "lat": 44.0864,
+    "lon": 1.1272,
+    "name": "Castelsarrazin - Moissac Airport",
+    "city": "Castelsarrasin / Moissac"
+  },
+  "LFDB": {
+    "lat": 44.0257,
+    "lon": 1.378,
+    "name": "Montauban Airport",
+    "city": "Montauban"
+  },
+  "LFTF": {
+    "lat": 43.2476,
+    "lon": 6.1267,
+    "name": "Cuers - Pierrefeu Airport",
+    "city": "Cuers / Pierrefeu"
+  },
+  "LFMF": {
+    "lat": 43.6096,
+    "lon": 6.6974,
+    "name": "Fayence-Tourrettes Airfield",
+    "city": "Fayence"
+  },
+  "LFTZ": {
+    "lat": 43.2054,
+    "lon": 6.482,
+    "name": "La Môle – Saint-Tropez Airport",
+    "city": "Saint-Tropez / La Môle"
+  },
+  "LFMQ": {
+    "lat": 43.2525,
+    "lon": 5.7852,
+    "name": "Le Castellet Airport",
+    "city": "Le Castellet"
+  },
+  "LFMC": {
+    "lat": 43.3847,
+    "lon": 6.3871,
+    "name": "Le Luc – Le Cannet Airport",
+    "city": "Le Luc / Le Cannet"
+  },
+  "LFTH": {
+    "lat": 43.0973,
+    "lon": 6.146,
+    "name": "Toulon–Hyères Airport",
+    "city": "Toulon / Hyères / Le Palyvestre"
+  },
+  "LFNF": {
+    "lat": 43.7378,
+    "lon": 5.7842,
+    "name": "Vinon Airport",
+    "city": "Vinon-sur-Verdon"
+  },
+  "LFMV": {
+    "lat": 43.9073,
+    "lon": 4.9018,
+    "name": "Avignon – Provence Airport",
+    "city": "Avignon / Caumont-sur-Durance"
+  },
+  "LFNH": {
+    "lat": 44.0277,
+    "lon": 5.0843,
+    "name": "Carpentras Airport",
+    "city": "Carpentras"
+  },
+  "LFMO": {
+    "lat": 44.1405,
+    "lon": 4.8667,
+    "name": "Orange-Caritat Air Base",
+    "city": "Orange / Caritat"
+  },
+  "LFND": {
+    "lat": 44.2694,
+    "lon": 4.6533,
+    "name": "Pont-Saint-Esprit Airport",
+    "city": "Pont-Saint-Esprit"
+  },
+  "LFXI": {
+    "lat": 44.0582,
+    "lon": 5.4947,
+    "name": "Saint-Christol Airport",
+    "city": "Saint-Christol"
+  },
+  "LFNV": {
+    "lat": 44.3357,
+    "lon": 4.9069,
+    "name": "Valréas - Visan Airport",
+    "city": "Valréas / Visan"
+  },
+  "LFFK": {
+    "lat": 46.4414,
+    "lon": -0.7928,
+    "name": "Fontenay-le-Comte Airport",
+    "city": "Fontenay-le-Comte"
+  },
+  "LFEY": {
+    "lat": 46.7176,
+    "lon": -2.3925,
+    "name": "Île d'Yeu Aerodrome",
+    "city": "Île d'Yeu"
+  },
+  "LFRI": {
+    "lat": 46.7019,
+    "lon": -1.3786,
+    "name": "La Roche-sur-Yon Aerodrome",
+    "city": "La Roche-sur-Yon / Les Ajoncs"
+  },
+  "LFOO": {
+    "lat": 46.4769,
+    "lon": -1.7228,
+    "name": "Les Sables-d'Olonne - Talmont Airport",
+    "city": "Les Sables-d'Olonne / Talmont-Saint-Hilaire"
+  },
+  "LFFW": {
+    "lat": 46.932,
+    "lon": -1.3279,
+    "name": "Montaigu - Saint-Georges Airport",
+    "city": "Montaigu / Saint-Georges-de-Montaigu"
+  },
+  "LFCA": {
+    "lat": 46.7826,
+    "lon": 0.5505,
+    "name": "Châtellerault - Targe Airport",
+    "city": "Châtellerault / Targe"
+  },
+  "LFDW": {
+    "lat": 46.5836,
+    "lon": 0.6425,
+    "name": "Chauvigny Airport",
+    "city": "Chauvigny"
+  },
+  "LFDV": {
+    "lat": 46.2728,
+    "lon": 0.1906,
+    "name": "Couhé - Vérac Airport",
+    "city": "Couhé / Vérac"
+  },
+  "LFDL": {
+    "lat": 47.0359,
+    "lon": 0.1006,
+    "name": "Loudun Airport",
+    "city": "Loudun"
+  },
+  "LFBI": {
+    "lat": 46.5877,
+    "lon": 0.3067,
+    "name": "Poitiers–Biard Airport",
+    "city": "Poitiers / Biard"
+  },
+  "LFBL": {
+    "lat": 45.8628,
+    "lon": 1.1794,
+    "name": "Limoges – Bellegarde Airport",
+    "city": "Limoges / Bellegarde"
+  },
+  "LFBJ": {
+    "lat": 45.9022,
+    "lon": 0.9182,
+    "name": "Saint-Junien Maryse Bastié Airport",
+    "city": "Saint-Junien"
+  },
+  "LFYD": {
+    "lat": 48.0863,
+    "lon": 5.6641,
+    "name": "Damblain Airport",
+    "city": "Damblain"
+  },
+  "LFSE": {
+    "lat": 48.2119,
+    "lon": 6.4492,
+    "name": "Épinal - Dogneville Airport",
+    "city": "Épinal / Dogneville"
+  },
+  "LFSG": {
+    "lat": 48.325,
+    "lon": 6.07,
+    "name": "Épinal – Mirecourt Airport",
+    "city": "Épinal / Mirecourt"
+  },
+  "LFFT": {
+    "lat": 48.359,
+    "lon": 5.7196,
+    "name": "Neufchâteau Airport",
+    "city": "Neufchâteau"
+  },
+  "LFGY": {
+    "lat": 48.2665,
+    "lon": 7.0074,
+    "name": "Saint-Dié - Remomeix Airport",
+    "city": "Saint-Dié-des-Vosges / Remomeix"
+  },
+  "LFSZ": {
+    "lat": 48.2239,
+    "lon": 5.9353,
+    "name": "Vittel - Champ-de-Courses Airport",
+    "city": "Vittel / Champ de Courses"
+  },
+  "LFXC": {
+    "lat": 48.2286,
+    "lon": 5.843,
+    "name": "Vittel - Auzainvilliers Airport",
+    "city": "Vittel / Auzainvilliers"
+  },
+  "LFLA": {
+    "lat": 47.8502,
+    "lon": 3.4971,
+    "name": "Auxerre – Branches Aerodrome",
+    "city": "Auxerre / Branches"
+  },
+  "LFGE": {
+    "lat": 47.5038,
+    "lon": 3.901,
+    "name": "Avallon Airport",
+    "city": "Avallon"
+  },
+  "LFGK": {
+    "lat": 47.9945,
+    "lon": 3.3927,
+    "name": "Joigny Airport",
+    "city": "Joigny"
+  },
+  "LFGO": {
+    "lat": 48.2916,
+    "lon": 3.2457,
+    "name": "Pont-sur-Yonne Airport",
+    "city": "Pont-sur-Yonne"
+  },
+  "LFGP": {
+    "lat": 47.9802,
+    "lon": 3.7756,
+    "name": "Saint-Florentin - Chéu Airport",
+    "city": "Saint-Florentin / Chéu"
+  },
+  "LFGG": {
+    "lat": 47.7007,
+    "lon": 6.8313,
+    "name": "Belfort Chaux Airport",
+    "city": "Belfort / Chaux"
+  },
+  "LFSQ": {
+    "lat": 47.6556,
+    "lon": 7.0108,
+    "name": "Belfort - Fontaine Aerodrome",
+    "city": "Belfort / Fontaine"
+  },
+  "LFPY": {
+    "lat": 48.5961,
+    "lon": 2.3322,
+    "name": "Brétigny-sur-Orge Air Base",
+    "city": "Brétigny-sur-Orge"
+  },
+  "LFFB": {
+    "lat": 48.3501,
+    "lon": 2.4244,
+    "name": "Buno-Bonnevaux Aerodrome",
+    "city": "Buno-Bonnevaux"
+  },
+  "LFOX": {
+    "lat": 48.3819,
+    "lon": 2.0753,
+    "name": "Étampes - Mondésir Aerodrome",
+    "city": "Étampes / Mondésir"
+  },
+  "LFFQ": {
+    "lat": 48.4986,
+    "lon": 2.3369,
+    "name": "La Ferté-Alais Aerodrome",
+    "city": "La Ferté-Alais"
+  },
+  "LFPB": {
+    "lat": 48.9623,
+    "lon": 2.4365,
+    "name": "Paris–Le Bourget Airport",
+    "city": "Paris / Le Bourget"
+  },
+  "LFPO": {
+    "lat": 48.7295,
+    "lon": 2.359,
+    "name": "Orly Airport",
+    "city": "Paris / Orly"
+  },
+  "LFFE": {
+    "lat": 49.046,
+    "lon": 2.354,
+    "name": "Enghien Moisselles Airport",
+    "city": "Enghien-les-Bains / Moisselles"
+  },
+  "LFFC": {
+    "lat": 49.0788,
+    "lon": 1.6883,
+    "name": "Mantes - Chérence Aerodrome",
+    "city": "Mantes-la-Jolie / Chérence"
+  },
+  "LFPG": {
+    "lat": 49.009,
+    "lon": 2.5541,
+    "name": "Charles de Gaulle Airport",
+    "city": "Paris / Roissy"
+  },
+  "LFPA": {
+    "lat": 49.1658,
+    "lon": 2.3131,
+    "name": "Persan-Beaumont Airport",
+    "city": "Persan / Beaumont-sur-Oise"
+  },
+  "LFPT": {
+    "lat": 49.0961,
+    "lon": 2.0355,
+    "name": "Pontoise – Cormeilles Aerodrome",
+    "city": "Pontoise / Cormeilles-en-Vexin"
+  }
+}

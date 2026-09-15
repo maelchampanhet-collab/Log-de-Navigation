@@ -6,6 +6,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Application web mono-fichier pour préparer un vol VFR (aéroclub) : plan de vol / log de nav, gestion du hangar (flotte d'avions), masse et centrage, carburant, NOTAM/METAR, carte interactive de construction de route, tableau de bord.
 
+## Modules fonctionnels — état d'avancement
+
+Sept modules composent l'appli, un par onglet, tous **développés et fonctionnels** :
+
+| # | Module | Onglet | État |
+|---|--------|--------|------|
+| 1 | Préparation (terrains, autocomplete OACI, liens carte VAC) | `tabPanel1` | OK |
+| 2 | Log de navigation (étapes, vent, cap vrai/magnétique, temps, carburant) | `tabPanel2` | OK |
+| 3 | Masse et centrage (enveloppe réelle par avion, limite avant interpolée) | `tabPanel3` | OK |
+| 4 | Bilan carburant réglementaire (Part-NCO OP.125) | `tabPanel3` | OK |
+| 5 | NOTAM & METAR | `tabPanel4` | OK (METAR auto via AVWX ; NOTAM en copier-coller, cf. ci-dessous) |
+| 6 | Simulation de route (carte OACI-VFR interactive, points éditables, export vers le log) | `tabPanel5` | OK |
+| 7 | Tableau de bord (jauge carburant SVG, enveloppe masse/centrage, synthèse route) | `tabPanel0` | OK |
+
+Fonctions transverses (hors onglets) également en place : hangar partagé, vols enregistrés (personnels), onboarding, impression/PDF.
+
+**Reste à faire / limites connues :**
+- **Point de non-retour (PNR)** : demandé, pas encore implémenté. Spécification retenue : carburant embarqué moins réserve finale intouchable (30 min VFR jour / 45 min VFR nuit, sélecteur à ajouter), vitesse sol aller et vitesse sol retour recalculée avec le vent inversé ; affichage en marqueur sur la carte **et** en ligne du tableau du log de nav, avec heure et position estimées.
+- **`AD_NOTES` très partiel** : seuls 5 terrains (LFLQ, LFNA, LFLU, LFMV, LFHD) ont des données vérifiées à la main sur ~456 dans `AIRPORTS`. À étendre au cas par cas, uniquement avec des sources vérifiées (voir conventions).
+- **NOTAM automatiques : impossible**, pas un "à faire" — SOFIA Briefing bloque le cross-origin (CORS) et son formulaire est derrière un compte. Testé, documenté dans le code, on reste sur la saisie manuelle.
+
 ## Commandes
 
 Pas de build, pas de package.json, pas de linter ni de suite de tests — `log-nav-vfr.html` s'exécute tel quel dans un navigateur.
@@ -21,6 +42,8 @@ Pas de build, pas de package.json, pas de linter ni de suite de tests — `log-n
 ## Structure du projet
 
 Le projet tient (pour l'instant) dans un seul fichier : **`log-nav-vfr.html`** (2961 lignes). Il n'y a pas d'autre code applicatif — pas besoin d'aller chercher ailleurs.
+
+(`coords-terrains-france.json` est l'archive de la source des coordonnées GPS — données déjà intégrées dans l'objet `COORDS` du HTML, l'appli ne lit jamais ce fichier.)
 
 - **Lignes 1–611** : `<head>` + `<style>` (tout le CSS — palette "cockpit" sombre, polices Titillium Web / IBM Plex Sans / IBM Plex Mono ; icônes via Phosphor Icons chargé en CDN, `<i class="ph-bold ph-...">`, jamais d'emoji comme icône)
 - **Lignes 613–1005** : corps HTML (markup)
@@ -63,10 +86,24 @@ Le projet tient (pour l'instant) dans un seul fichier : **`log-nav-vfr.html`** (
 - **SOFIA Briefing** (NOTAM) : pas d'API — le site bloque le cross-origin (CORS) et son formulaire est derrière un compte. L'appli se contente de préparer les codes terrain à copier-coller ; aucune tentative de contournement automatique n'a fonctionné (testé et documenté dans le code).
 - ~~OpenAIP (analyse des zones réglementées)~~ : intégré puis entièrement retiré à la demande de l'utilisateur ("je n'aime pas la partie zone sur la route").
 
+## Conventions de code
+
+- **Vanilla JS, pas de framework, pas de build** : fonctions déclarées au niveau global dans un unique `<script>`, pas de modules ES, pas de classes. Seules dépendances externes : Leaflet et Phosphor Icons, chargés en CDN.
+- **État en variables globales de module** : `legs`/`legId`, `routePoints`, `fleet`, `savedLogs`, plus trois caches de résultats (`lastNavTotals`, `lastWbStatus`, `lastFuelPlan`) alimentés respectivement par `recompute()`, `computeWB()` et `computeFuelPlan()`.
+- **Un seul sens de calcul** : les modules de calcul écrivent dans ces globales ; le tableau de bord (`renderDashboard`) ne fait que les relire. Ne jamais recalculer une valeur dans l'affichage, sinon les onglets divergent.
+- **Rendu par template strings + `innerHTML`**, puis re-câblage des écouteurs via `querySelectorAll(...).forEach(addEventListener)` après chaque rendu (pas de délégation d'événements). Si tu régénères un bloc, re-câble ses boutons.
+- **Nommage des `id` par préfixe** : `t_` terrains, `f_` infos vol, `hg_` hangar, `wb_` masse et centrage, `fuel_` bilan carburant, `ob_` onboarding, `btn` boutons, `ac_`/`hint_`/`links_` autocomplete terrain.
+- **CSS** : variables `--navy-*`, `--amber`, `--cyan`, `--ink*`, `--rule*`, `--alert`, `--grass` définies dans `:root`. Pas de framework CSS. Valeurs numériques toujours en `IBM Plex Mono`.
+- **Icônes** : Phosphor uniquement (`<i class="ph-bold ph-...">`). Jamais d'emoji comme icône.
+- **Langue** : interface, commentaires et messages en français.
+- **Indentation** : 2 espaces.
+- **Données aéronautiques : jamais inventées.** Fréquences, altitudes terrain et particularités ne sont affichées que si elles sont dans `AD_NOTES`, renseignées à la main depuis une source vérifiée (carte VAC officielle, AIP, Légifrance) et datées dans le champ `special` quand la fraîcheur est incertaine. Sinon on affiche explicitement "non vérifiées ici — voir la carte VAC". Cette règle prime sur toute volonté de "compléter" l'affichage.
+- **L'appli est une aide à la préparation, pas une source certifiée** : les avertissements en ce sens dans l'UI (footnote du tableau, mentions carte VAC/NOTAM) font partie du produit, ne pas les retirer.
+
 ## Notes pour Claude Code
 
 - Un seul fichier à lire/éditer : privilégier `Read log-nav-vfr.html` avec `offset`/`limit` ciblés sur la section concernée plutôt que relire tout le fichier. Les tableaux `AIRPORTS` et `COORDS` (lignes 1237–1770) sont chacun sur une seule ligne très longue — éviter de les lire en entier, chercher par grep sur le code OACI voulu.
 - `window.storage` est une API fournie par l'environnement d'exécution de l'appli (pas définie dans ce fichier) — ne pas chercher son implémentation ici.
 - Le skill `graphify` est installé (`.claude/skills/graphify/`) mais n'apporte rien tant que le projet tient en un seul fichier (le graphe généré est vide, faute de relations inter-fichiers). Il redeviendra utile si le JS est un jour éclaté en plusieurs fichiers.
-- Ce fichier doit rester synchronisé avec `~/Desktop/log-nav-vfr.html`, qui est la copie de travail réelle utilisée en session — vérifier laquelle est la plus à jour avant de modifier l'une ou l'autre (comparer avec `diff` ou le nombre de lignes).
+- **Ce dépôt est la seule copie du projet.** Il a existé un temps un doublon dans `~/Desktop/` qui prenait silencieusement du retard ; il a été supprimé. Ne pas recréer de copie de travail ailleurs : éditer `log-nav-vfr.html` directement ici.
 - Jamais d'emoji comme icône (nav, boutons, alertes) : utiliser Phosphor Icons (`<i class="ph-bold ph-...">`, déjà chargé en CDN dans le `<head>`).
