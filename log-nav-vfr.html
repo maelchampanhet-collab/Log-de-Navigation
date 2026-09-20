@@ -404,7 +404,7 @@ table.navtable tr.pnr-row .pnr-sub{
 
 /* ---- Récap A5 : page (prévisualisation à l'écran + base de l'impression) ---- */
 .recap-page{
-  max-width:420px; margin:0 auto;
+  max-width:1100px; margin:0 auto;
   background:#fff; color:#111;
   padding:22px 20px; border-radius:2px;
   font-family:'IBM Plex Sans',sans-serif; font-size:12.5px; line-height:1.5;
@@ -551,11 +551,9 @@ table.recap-table td.recap-split-cell .rs-plan{
   table.recap-table{font-size:8.5px;}
   .recap-page-break{border-top:none; margin-top:0; padding-top:0; break-before:page; page-break-before:always;}
 
-  /* Log de nav format aéroclub : seule la feuille (clonée dans #aeroPrintHost) s'imprime, en A4 paysage */
-  body.print-aerolog > *:not(#aeroPrintHost){display:none!important;}
-  body.print-aerolog #aeroPrintHost{display:block; background:#fff;}
-  body.print-aerolog .al-wrap{padding:0; width:var(--alw,262mm); break-inside:avoid; page-break-inside:avoid;}
-  body.print-aerolog .al-top,body.print-aerolog .al-foot{font-size:8px; margin:1mm 0;}
+  /* Feuille aéroclub dans le Récap : tient sur une A4 paysage (largeur calculée en JS, --alw) */
+  .recap-page .al-wrap{padding:0; width:var(--alw,262mm); break-inside:avoid; page-break-inside:avoid;}
+  .recap-page .al-top,.recap-page .al-foot{font-size:8px; margin:1mm 0;}
   .al-ed:focus{background:none;}
 }
 .print-title{display:none;}
@@ -1469,16 +1467,11 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
   <div class="panel">
     <div class="panel-head no-print">Table de navigation
       <button type="button" class="btn-mini" id="btnRealWind" style="float:right;"><i class="ph-bold ph-arrows-clockwise"></i> Recalcul vent réel</button>
-      <button type="button" class="btn-mini" id="btnAeroPrint" style="float:right;margin-right:8px;"><i class="ph-bold ph-printer"></i> Imprimer (A4)</button>
-      <button type="button" class="btn-mini" id="btnAeroReset" style="float:right;margin-right:8px;"><i class="ph-bold ph-arrow-counter-clockwise"></i> Effacer mes modifications</button>
     </div>
     <div class="panel-body">
       <div id="realWindStatus" class="no-print" style="font-size:11px;color:var(--ink-dim);margin-bottom:8px;"></div>
       <div class="output-summary" id="summaryBox"></div>
-      <div id="aeroLogHost"></div>
-      <details class="no-print" style="margin-top:14px;">
-        <summary style="cursor:pointer;color:var(--ink-dim);font-size:12px;">Détail des calculs (cap vrai, dérive, vent réel, carburant, PNR)</summary>
-        <div class="table-scroll">
+      <div class="table-scroll">
         <table class="navtable">
           <thead>
             <tr>
@@ -1492,7 +1485,6 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
           <tfoot id="navFoot"></tfoot>
         </table>
       </div>
-      </details>
       <p class="footnote">Cap magnétique = cap vrai − variation (Est positif). Déviation compas non appliquée — à ajouter localement si besoin. Vérifie toujours ces calculs avant le vol : cet outil est une aide à la préparation, pas une source certifiée.</p>
     </div>
   </div>
@@ -1755,16 +1747,15 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
   <div id="tabPanel8" style="display:none;">
 
   <div class="panel no-print">
-    <div class="panel-head"><i class="ph-bold ph-file-pdf"></i> Récap — page A5 portrait imprimable</div>
+    <div class="panel-head"><i class="ph-bold ph-file-pdf"></i> Récap — log de navigation A4 paysage imprimable</div>
     <div class="panel-body">
       <div class="recap-toolbar">
         <button type="button" class="btn-print" id="btnRecapPrint"><i class="ph-bold ph-printer"></i> Imprimer</button>
         <button type="button" class="btn-ghost" id="btnRecapSave"><i class="ph-bold ph-floppy-disk"></i> Enregistrer</button>
         <span class="recap-toolbar-sep"></span>
-        <button type="button" class="btn-recap-toggle" id="btnRecapSimplify"><i class="ph-bold ph-funnel-simple"></i> Simplifier</button>
-        <button type="button" class="btn-recap-toggle" id="btnRecapResetAll"><i class="ph-bold ph-arrow-counter-clockwise"></i> Tout réafficher</button>
+        <button type="button" class="btn-recap-toggle" id="btnAeroReset"><i class="ph-bold ph-arrow-counter-clockwise"></i> Effacer mes modifications</button>
       </div>
-      <p class="recap-hint">Page 1 : le tableau du log. Page 2, si coché ci-dessous : résumé, fréquences, PNR, carburant, M&amp;C, météo, NOTAM, checklist.</p>
+      <p class="recap-hint">Page 1 : la feuille du log (clique dans une case pour la modifier). Page 2, si coché ci-dessous : résumé, fréquences, PNR, carburant, M&amp;C, météo, NOTAM, checklist.</p>
 
       <div class="rc-check-section">
         <div class="rc-check-title">Blocs à inclure</div>
@@ -1803,30 +1794,11 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
           <label class="rc-check"><input type="checkbox" id="rc_h_alt" checked> Altitude de croisière</label>
         </div>
       </div>
-
-      <div class="rc-check-section">
-        <div class="rc-check-title">Log de navigation — colonnes</div>
-        <div class="rc-check-grid">
-          <label class="rc-check"><input type="checkbox" id="rc_f_rv"> Route vraie (Rv°)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_dist" checked> Distance (NM)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_wind"> Vent</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_wca"> Dérive (°)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_cv"> Cap vrai (Cv°)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_cm" checked> Cap magnétique (Cm°)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_gs"> Vitesse sol (kt)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_time" checked> Temps d'étape (case diagonale à compléter en vol)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_fuel"> Carburant (étape + cumulé)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_eta" checked> Heure estimée (case diagonale à compléter en vol)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_alt" checked> Altitude</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_freq" checked> Fréquence (décocher = colonne vide à remplir en vol)</label>
-          <label class="rc-check"><input type="checkbox" id="rc_f_obs" checked> Observation (case vide à remplir en vol)</label>
-        </div>
-      </div>
     </div>
   </div>
 
   <div class="panel" style="margin-top:22px;">
-    <div class="panel-head no-print">Prévisualisation — A5 portrait</div>
+    <div class="panel-head no-print">Prévisualisation — A4 paysage</div>
     <div class="panel-body">
       <div id="recapPreview" class="recap-page"></div>
     </div>
@@ -2202,7 +2174,6 @@ function recompute(){
   updateTabValidation();
   lastNavTotals = {cumDist, cumTime, cumFuel, fuelOnboard, dep, eobt};
   lastNavRows = rows; // lu par l'onglet Récap (renderRecap) — jamais recalculé là-bas, cf. convention
-  renderAeroLog();
   if(document.getElementById('tabPanel0').style.display !== 'none') renderDashboard();
   if(document.getElementById('tabPanel8').style.display !== 'none') renderRecap();
 }
@@ -6148,54 +6119,7 @@ function renderRecapFrequencies(){
 }
 
 function renderRecapNavTable(){
-  // Colonne "Fréquence" : décocher ne retire jamais la colonne (contrairement aux autres),
-  // seulement les valeurs qu'elle affiche — la case reste comme espace à écrire à la main,
-  // même logique que la colonne Observation.
-  let cols = [
-    ['rv', 'Rv°', r=>r.rv!==''?fmtNum(r.rv,0):'—'],
-    ['dist', 'Dist', r=>r.dist!==''?fmtNum(r.dist,1):'—'],
-    ['wind', 'Vent', r=>r.wind],
-    ['wca', 'Dér.°', r=>r.wca!==null?fmtNum(r.wca,1):'—'],
-    ['cv', 'Cv°', r=>r.cv!==null?fmtNum(r.cv,0):'—'],
-    ['cm', 'Cm°', r=>r.cm!==null?fmtNum(r.cm,0):'—'],
-    ['gs', 'Vs', r=>r.gs!==null?fmtNum(r.gs,0):'—'],
-    ['time', 'Temps', r=>fmtMinCompact(r.timeMin)],
-    ['fuel', 'Fuel/tot', r=>`${r.fuel!==null?fmtNum(r.fuel,1):'—'}<br>${r.cumFuel!==null?fmtNum(r.cumFuel,1):'—'}`],
-    ['eta', 'Heure', r=>r.eta!==null?fmtHM(r.eta):'—'],
-    ['alt', 'Alt', r=>r.alt || '—'],
-    ['freq', 'Fréq', r=>document.getElementById('rc_f_freq').checked ? (r.freq ? `<span class="recap-freq">${r.freq}</span>` : '—') : ''],
-    ['obs', 'Observ.', ()=>'']
-  ].filter(c=>c[0]==='freq' ? true : document.getElementById('rc_f_'+c[0]).checked);
-  // Mode "Simplifier" (recapSimplified) : ordre fixe demandé par l'utilisateur, différent
-  // de l'ordre logique du tableau complet (Rv → Vent → Dérive → Cv → Cm → Vs → ...).
-  if(recapSimplified){
-    const order = ['cm','dist','time','eta','alt','freq','obs'];
-    cols = cols.slice().sort((a,b)=>order.indexOf(a[0]) - order.indexOf(b[0]));
-  }
-  const splitCols = new Set(['time','eta']);
-
-  let body = `<h2>Log de navigation</h2>`;
-  if(lastNavRows.length===0){
-    body += `<div class="recap-empty">Aucune étape dans le log de nav.</div>`;
-    return recapSectionHtml(body);
-  }
-  // Largeurs fixes pour les colonnes courtes (tableau en table-layout:fixed) afin de laisser
-  // le plus de place possible à "Observation", seule colonne sans largeur imposée ci-dessous.
-  const colWidthPx = { rv:24, dist:30, wind:38, wca:24, cv:24, cm:24, gs:22, time:30, fuel:34, eta:34, alt:30, freq:58 };
-  body += `<table class="recap-table"><thead><tr><th style="width:56px;">Étape</th>${cols.map(c=>{
-    const w = colWidthPx[c[0]];
-    return `<th${w?` style="width:${w}px;"`:''}>${c[1]}</th>`;
-  }).join('')}</tr></thead><tbody>`;
-  lastNavRows.forEach(r=>{
-    body += `<tr><td>${r.label}</td>${cols.map(c=>{
-      const val = c[2](r);
-      return splitCols.has(c[0])
-        ? `<td class="recap-split-cell"><span class="rs-plan">${val}</span></td>`
-        : `<td>${val}</td>`;
-    }).join('')}</tr>`;
-  });
-  body += `</tbody></table>`;
-  return `<div class="recap-section" style="grid-template-columns:1fr;"><div>${body}</div></div>`;
+  return `<div class="recap-section" style="grid-template-columns:1fr;"><div>${aeroLogHtml()}</div></div>`;
 }
 
 function renderRecapWb(){
@@ -6385,42 +6309,10 @@ function renderRecap(){
     const title = `<h1>${dep} → ${arr}</h1><div class="recap-sub">${date || 'Date non renseignée'} — récapitulatif de vol</div>`;
     html += `<div class="recap-page-break"><div class="recap-page-break-label no-print">Page 2 →</div>${title}${extras}</div>`;
   }
-  html += `<div class="recap-section" style="grid-template-columns:1fr;"><div class="recap-notes-col" style="min-height:120px;border-left:none;padding-left:0;"></div></div>`;
+  if(!document.getElementById('rc_b_navtable').checked) html += `<div class="recap-section" style="grid-template-columns:1fr;"><div class="recap-notes-col" style="min-height:120px;border-left:none;padding-left:0;"></div></div>`;
 
   box.innerHTML = html;
 }
-
-// "Simplifier" : ne garde que les colonnes du tableau utiles à un suivi minimal en vol
-// (+ la colonne Observation, vide, pour annoter à la main) et décoche tous les autres
-// blocs pour n'imprimer que la page 1 (le tableau seul).
-const RECAP_DEFAULTS = {
-  blocks: { summary:true, navtable:true, freq:true, wb:false, fuel:true, pnr:true, metar:true, taf:false, wintem:false, temsi:false, sigmet:false, notam:true, checklist:false },
-  cols: { rv:true, dist:true, wind:true, wca:true, cv:false, cm:true, gs:true, time:true, fuel:true, eta:true, alt:true, freq:true, obs:false }
-};
-// Actif tant que l'utilisateur ne clique pas sur "Tout réafficher" : impose l'ordre de
-// colonnes fixe demandé (Étape, Cap, Distance, Temps, Heure, Altitude, Fréquence, Observation)
-// à la place de l'ordre logique du tableau complet — cf. renderRecapNavTable. Le mode
-// simplifié est aussi l'état par défaut à l'arrivée sur l'onglet (cf. cases cochées en HTML).
-let recapSimplified = true;
-
-document.getElementById('btnRecapSimplify').addEventListener('click', ()=>{
-  const keepCols = new Set(['cm', 'dist', 'time', 'eta', 'alt', 'freq', 'obs']);
-  Object.keys(RECAP_DEFAULTS.cols).forEach(id=>{
-    document.getElementById('rc_f_'+id).checked = keepCols.has(id);
-  });
-  Object.keys(RECAP_DEFAULTS.blocks).forEach(id=>{
-    document.getElementById('rc_b_'+id).checked = (id==='navtable');
-  });
-  recapSimplified = true;
-  renderRecap();
-});
-
-document.getElementById('btnRecapResetAll').addEventListener('click', ()=>{
-  Object.entries(RECAP_DEFAULTS.cols).forEach(([id,v])=>{ document.getElementById('rc_f_'+id).checked = v; });
-  Object.entries(RECAP_DEFAULTS.blocks).forEach(([id,v])=>{ document.getElementById('rc_b_'+id).checked = v; });
-  recapSimplified = false;
-  renderRecap();
-});
 
 document.getElementById('btnRecapSave').addEventListener('click', saveCurrentFlightLog);
 
@@ -6430,12 +6322,12 @@ document.querySelectorAll('#tabPanel8 input[type="checkbox"], #tabPanel8 select'
 
 document.getElementById('btnRecapPrint').addEventListener('click', ()=>{
   renderRecap();
-  document.getElementById('printPageSize').textContent = '@page{ size:A5 portrait; margin:10mm 8mm; }';
+  document.getElementById('printPageSize').textContent = '@page{ size:A4 landscape; margin:8mm; }';
   window.print();
   awardGalons(5, 'Récap imprimé');
 });
 
-// ---------- Log de nav format aéroclub (A4 paysage, dans l'onglet, pré-rempli et éditable) ----------
+// ---------- Log de nav format aéroclub (A4 paysage, dans le Récap, pré-rempli et éditable) ----------
 // Gabarit papier à remplir en vol. Positions en pixels du PDF d'origine (largeur 1498), converties en % :
 // la feuille reste proportionnelle à l'écran comme à l'impression. Le nombre de lignes suit les étapes
 // du log (N étapes = N lignes à gauche, N+1 positions au centre, minimum 3). Lit uniquement
@@ -6443,9 +6335,7 @@ document.getElementById('btnRecapPrint').addEventListener('click', ()=>{
 // l'appli ne connaît pas l'altitude de sécurité ni les radiales. Une case modifiée à la main (aeroEdits,
 // session uniquement) prend le pas sur la valeur calculée jusqu'à "Effacer mes modifications".
 let aeroEdits = {};
-function renderAeroLog(){
-  const host = document.getElementById('aeroLogHost');
-  if(!host) return;
+function aeroLogHtml(){
   const rows = lastNavRows || [];
   const tot = lastNavTotals || {};
   const val = id=>document.getElementById(id).value;
@@ -6532,31 +6422,17 @@ function renderAeroLog(){
 
   // Largeur d'impression : la feuille doit tenir sur une A4 paysage (marges 8 mm → 281×194 mm, moins les légendes)
   const printW = Math.min(262, 181*W/H).toFixed(1);
-  host.innerHTML = `<div class="al-wrap" style="--alw:${printW}mm;">
+  return `<div class="al-wrap" style="--alw:${printW}mm;">
       <div class="al-top">Log de navigation VFR</div>
       <div class="al-sheet" style="aspect-ratio:${W}/${H};">${html}</div>
       <div class="al-foot">Aide à la préparation — non certifiée. Vérifier données et cartes officielles.</div>
     </div>`;
 }
-document.getElementById('aeroLogHost').addEventListener('input', e=>{
+document.getElementById('recapPreview').addEventListener('input', e=>{
   const k = e.target.dataset && e.target.dataset.k;
   if(k) aeroEdits[k] = e.target.innerText.replace(/\n$/,'');
 });
-document.getElementById('btnAeroReset').addEventListener('click', ()=>{ aeroEdits = {}; renderAeroLog(); });
-document.getElementById('btnAeroPrint').addEventListener('click', ()=>{
-  const wrap = document.querySelector('#aeroLogHost .al-wrap');
-  if(!wrap) return;
-  const old = document.getElementById('aeroPrintHost'); if(old) old.remove();
-  const ph = document.createElement('div');
-  ph.id = 'aeroPrintHost';
-  ph.appendChild(wrap.cloneNode(true));
-  document.body.appendChild(ph);
-  document.getElementById('printPageSize').textContent = '@page{ size:A4 landscape; margin:8mm; }';
-  document.body.classList.add('print-aerolog');
-  window.print();
-  document.body.classList.remove('print-aerolog');
-  ph.remove();
-});
+document.getElementById('btnAeroReset').addEventListener('click', ()=>{ aeroEdits = {}; renderRecap(); });
 
 function computeWB(){
   const sel = document.getElementById('wb_aircraft');
