@@ -486,9 +486,7 @@ table.recap-table td.recap-split-cell .rs-plan{
 
 
 /* ---- Log de nav format aéroclub (A4 paysage, cellules éditables) ---- */
-#aeroLogOverlay{position:fixed; inset:0; z-index:150; background:rgba(6,12,18,0.85); overflow:auto; padding:18px;}
-.al-toolbar{max-width:1200px; margin:0 auto 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--ink-dim); font-size:12px;}
-.al-wrap{max-width:1200px; margin:0 auto; background:#fff; padding:14px 16px 10px; color:#111; font-family:'IBM Plex Sans',Arial,sans-serif;}
+.al-wrap{width:100%; background:#fff; padding:14px 16px 10px; color:#111; font-family:'IBM Plex Sans',Arial,sans-serif;}
 .al-top{font-size:12px; margin-bottom:3px;}
 .al-foot{font-size:11px; text-align:center; margin-top:6px;}
 .al-sheet{position:relative; width:100%; aspect-ratio:1498/1034; container-type:inline-size; border-left:1px solid #666; border-top:1px solid #666;}
@@ -506,7 +504,7 @@ table.recap-table td.recap-split-cell .rs-plan{
 .al-l.b{font-weight:700; font-size:1.1cqw;}
 .al-l small{display:block; font-size:.95cqw; font-style:italic; font-weight:400;}
 .al-sub{font-size:.85cqw; font-weight:400; color:#c00;}
-.al-ed{flex:1; min-width:1ch; min-height:1em; outline:none; font-family:'IBM Plex Mono',monospace; font-weight:500; color:#111; font-size:1.1cqw; word-break:break-word;}
+.al-ed{flex:1; min-width:1ch; min-height:1em; outline:none; font-family:'IBM Plex Mono',monospace; font-weight:500; color:#111; font-size:1.1cqw; word-break:break-word; white-space:pre-wrap;}
 .al-c.col .al-ed{flex:1;}
 .al-ed:focus{background:#fff8d6;}
 .al-c.num .al-ed{text-align:center; width:100%; white-space:nowrap; font-size:1cqw;}
@@ -553,12 +551,10 @@ table.recap-table td.recap-split-cell .rs-plan{
   table.recap-table{font-size:8.5px;}
   .recap-page-break{border-top:none; margin-top:0; padding-top:0; break-before:page; page-break-before:always;}
 
-  /* Log de nav format aéroclub : seule la feuille s'imprime, en A4 paysage */
-  body.print-aerolog > *:not(#aeroLogOverlay){display:none!important;}
-  body.print-aerolog #aeroLogOverlay{position:static; background:#fff; padding:0; overflow:visible;}
-  body.print-aerolog .al-toolbar{display:none!important;}
-  body.print-aerolog .al-wrap{max-width:none; padding:0; width:262mm;}
-  body.print-aerolog .al-wrap{break-inside:avoid; page-break-inside:avoid;}
+  /* Log de nav format aéroclub : seule la feuille (clonée dans #aeroPrintHost) s'imprime, en A4 paysage */
+  body.print-aerolog > *:not(#aeroPrintHost){display:none!important;}
+  body.print-aerolog #aeroPrintHost{display:block; background:#fff;}
+  body.print-aerolog .al-wrap{padding:0; width:var(--alw,262mm); break-inside:avoid; page-break-inside:avoid;}
   body.print-aerolog .al-top,body.print-aerolog .al-foot{font-size:8px; margin:1mm 0;}
   .al-ed:focus{background:none;}
 }
@@ -1473,12 +1469,16 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
   <div class="panel">
     <div class="panel-head no-print">Table de navigation
       <button type="button" class="btn-mini" id="btnRealWind" style="float:right;"><i class="ph-bold ph-arrows-clockwise"></i> Recalcul vent réel</button>
-      <button type="button" class="btn-mini" id="btnAeroLog" style="float:right;margin-right:8px;"><i class="ph-bold ph-file-text"></i> Log format aéroclub (A4)</button>
+      <button type="button" class="btn-mini" id="btnAeroPrint" style="float:right;margin-right:8px;"><i class="ph-bold ph-printer"></i> Imprimer (A4)</button>
+      <button type="button" class="btn-mini" id="btnAeroReset" style="float:right;margin-right:8px;"><i class="ph-bold ph-arrow-counter-clockwise"></i> Effacer mes modifications</button>
     </div>
     <div class="panel-body">
       <div id="realWindStatus" class="no-print" style="font-size:11px;color:var(--ink-dim);margin-bottom:8px;"></div>
       <div class="output-summary" id="summaryBox"></div>
-      <div class="table-scroll">
+      <div id="aeroLogHost"></div>
+      <details class="no-print" style="margin-top:14px;">
+        <summary style="cursor:pointer;color:var(--ink-dim);font-size:12px;">Détail des calculs (cap vrai, dérive, vent réel, carburant, PNR)</summary>
+        <div class="table-scroll">
         <table class="navtable">
           <thead>
             <tr>
@@ -1492,6 +1492,7 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
           <tfoot id="navFoot"></tfoot>
         </table>
       </div>
+      </details>
       <p class="footnote">Cap magnétique = cap vrai − variation (Est positif). Déviation compas non appliquée — à ajouter localement si besoin. Vérifie toujours ces calculs avant le vol : cet outil est une aide à la préparation, pas une source certifiée.</p>
     </div>
   </div>
@@ -2201,6 +2202,7 @@ function recompute(){
   updateTabValidation();
   lastNavTotals = {cumDist, cumTime, cumFuel, fuelOnboard, dep, eobt};
   lastNavRows = rows; // lu par l'onglet Récap (renderRecap) — jamais recalculé là-bas, cf. convention
+  renderAeroLog();
   if(document.getElementById('tabPanel0').style.display !== 'none') renderDashboard();
   if(document.getElementById('tabPanel8').style.display !== 'none') renderRecap();
 }
@@ -6433,13 +6435,17 @@ document.getElementById('btnRecapPrint').addEventListener('click', ()=>{
   awardGalons(5, 'Récap imprimé');
 });
 
-// ---------- Log de nav format aéroclub (A4 paysage, pré-rempli et éditable) ----------
-// Gabarit papier à remplir en vol. Positions en pixels du PDF d'origine (1498×1034), converties en % :
-// la feuille reste proportionnelle quelle que soit la largeur d'affichage/impression. Lit uniquement
-// lastNavRows/lastNavTotals (jamais un recalcul, cf. conventions) ; toutes les cellules sont éditables.
-// "z sécu" et "Radio Nav" restent vides : l'appli ne connaît pas l'altitude de sécurité ni les radiales.
-function openAeroLog(){
-  recompute();
+// ---------- Log de nav format aéroclub (A4 paysage, dans l'onglet, pré-rempli et éditable) ----------
+// Gabarit papier à remplir en vol. Positions en pixels du PDF d'origine (largeur 1498), converties en % :
+// la feuille reste proportionnelle à l'écran comme à l'impression. Le nombre de lignes suit les étapes
+// du log (N étapes = N lignes à gauche, N+1 positions au centre, minimum 3). Lit uniquement
+// lastNavRows/lastNavTotals (jamais un recalcul, cf. conventions). "z sécu" et "Radio Nav" restent vides :
+// l'appli ne connaît pas l'altitude de sécurité ni les radiales. Une case modifiée à la main (aeroEdits,
+// session uniquement) prend le pas sur la valeur calculée jusqu'à "Effacer mes modifications".
+let aeroEdits = {};
+function renderAeroLog(){
+  const host = document.getElementById('aeroLogHost');
+  if(!host) return;
   const rows = lastNavRows || [];
   const tot = lastNavTotals || {};
   const val = id=>document.getElementById(id).value;
@@ -6448,12 +6454,17 @@ function openAeroLog(){
   const hm = m=>{ m=Math.round(m); return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); };
   const hhmm = m=>{ m=((Math.round(m)%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
   const esc = t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-  const X0=40, Y0=51, W=1498, H=1034;
+  const N = Math.max(rows.length, 3);
+  const lh = 60.8;
+  const Le = 363 + N*lh;          // bas des lignes d'étape (colonne gauche)
+  const Ce = 333 + (N+1)*lh;      // bas des lignes de position (colonne centrale)
+  const Ybot = Le + 176;
+  const X0=40, Y0=51, W=1498, H=Ybot-Y0;
   let html = '';
   const cell = (x0,y0,x1,y1,cls,inner)=>{
     html += `<div class="al-c ${cls||''}" style="left:${(x0-X0)/W*100}%;top:${(y0-Y0)/H*100}%;width:${(x1-x0)/W*100}%;height:${(y1-y0)/H*100}%;">${inner||''}</div>`;
   };
-  const ed = v=>`<div class="al-ed" contenteditable="true" spellcheck="false">${esc(v)}</div>`;
+  const ed = (k,v)=>`<div class="al-ed" contenteditable="true" spellcheck="false" data-k="${k}">${esc(aeroEdits[k]!==undefined?aeroEdits[k]:v)}</div>`;
   const lab = t=>`<span class="al-l">${t}</span>`;
 
   const dep = val('t_dep'), arr = val('t_arr');
@@ -6461,93 +6472,91 @@ function openAeroLog(){
   const avion = [val('f_immat'), val('f_type')].filter(Boolean).join(' ');
 
   // En-tête
-  cell(40,51,313,164,'col', lab('Météo terrain de départ :')+ed(''));
+  cell(40,51,313,164,'col', lab('Météo terrain de départ :')+ed('meteo',''));
   cell(313,51,435,164,'ctr', '<i class="ph-bold ph-airplane-tilt" style="font-size:4cqw;"></i><span class="al-l b">LOG NAV VFR</span>');
   cell(435,51,1163,164,'gray','PARTIE GRISE À DÉCOUPER POUR UTILISER SUR UNE PLANCHETTE A5');
   cell(1163,51,1538,164,'ctr','<span class="al-l" style="font-weight:700;font-size:1.7cqw;">OBSERVATIONS</span>');
-  cell(40,164,313,223,'', lab('ÉTAPE →')+ed([dep,arr].filter(Boolean).join(' → ')));
-  cell(40,223,313,283,'', lab('AVION')+ed(avion));
-  cell(313,164,435,223,'', lab('Bloc départ')+ed(''));
-  cell(313,223,435,283,'', lab('Bloc arrivée')+ed(''));
-  cell(435,164,633,223,'', lab('Date')+ed(dateFr));
-  cell(435,223,633,283,'', lab('Temps de vol')+ed(tot.cumTime?hm(tot.cumTime):''));
+  cell(40,164,313,223,'', lab('ÉTAPE →')+ed('etape',[dep,arr].filter(Boolean).join(' → ')));
+  cell(40,223,313,283,'', lab('AVION')+ed('avion',avion));
+  cell(313,164,435,223,'', lab('Bloc départ')+ed('blocdep',''));
+  cell(313,223,435,283,'', lab('Bloc arrivée')+ed('blocarr',''));
+  cell(435,164,633,223,'', lab('Date')+ed('date',dateFr));
+  cell(435,223,633,283,'', lab('Temps de vol')+ed('tvol',tot.cumTime?hm(tot.cumTime):''));
   cell(633,164,721,283,'ctr','<span class="al-l b">Radio</span><span class="al-l" style="font-size:.9cqw;">Fréquence</span>');
   cell(721,164,802,283,'ctr','<span class="al-l b">Radio<br>Nav</span><span class="al-l" style="font-size:.8cqw;">Fréq. et radial</span>');
-  cell(802,164,1538,1085,'obs',
+  cell(802,164,1538,Ybot,'obs',
     '<div style="text-align:center;font-size:1.2cqw;"><u>C/L Point Tournant :</u><br>1-TOP 2-Cap 3-Altitude 4-Estimées 5-Radio 6-RadioNav 7-MED <span style="font-size:1cqw;">(Moteur, Essence, Directionnel)</span></div>'
-    +'<div class="al-ed" contenteditable="true" spellcheck="false" style="position:absolute;left:.6cqw;right:.6cqw;top:4.5cqw;bottom:.6cqw;"></div>');
-  cell(633,283,721,1085,'',''); cell(721,283,802,1085,'','');
+    +`<div class="al-ed" contenteditable="true" spellcheck="false" data-k="obs" style="position:absolute;left:.6cqw;right:.6cqw;top:4.5cqw;bottom:.6cqw;">${esc(aeroEdits.obs||'')}</div>`);
+  cell(633,283,721,Ybot,'',''); cell(721,283,802,Ybot,'','');
 
-  // Colonne gauche : 9 étapes
-  const legRows = rows.slice(0,9);
+  // Colonne gauche : N étapes
   cell(40,283,120,363,'ctr','<span class="al-l b" style="font-size:1.2cqw;">z sécu</span><span class="al-l"><i>ft</i></span>');
   cell(120,283,196,363,'ctr','<span class="al-l b" style="font-size:1.2cqw;">Rm</span><span class="al-l"><i>Deg</i></span>');
   cell(196,283,242,363,'ctr','<span class="al-l b" style="font-size:1.1cqw;">Dist</span><span class="al-l"><i>Nm</i></span>');
   cell(242,283,313,363,'ctr','<span class="al-l b" style="font-size:1.2cqw;">Temps</span><span class="al-l"><i>min</i></span>');
-  const lh = (910-363)/9;
-  for(let i=0;i<9;i++){
-    const r = legRows[i], y0=363+i*lh, y1=y0+lh;
+  for(let i=0;i<N;i++){
+    const r = rows[i], y0=363+i*lh, y1=y0+lh;
     const rm = (r && r.rv!=='' && !isNaN(Number(r.rv))) ? Math.round(norm360(Number(r.rv)-variation)) : '';
-    cell(40,y0,120,y1,'num', ed(''));
-    cell(120,y0,196,y1,'num', ed(rm));
-    cell(196,y0,242,y1,'num', ed(r && r.dist!=='' ? r.dist : ''));
-    cell(242,y0,313,y1,'num', ed(r && r.timeMin!=null ? Math.round(r.timeMin) : ''));
+    cell(40,y0,120,y1,'num', ed('z'+i,''));
+    cell(120,y0,196,y1,'num', ed('rm'+i,rm));
+    cell(196,y0,242,y1,'num', ed('d'+i,r && r.dist!=='' ? r.dist : ''));
+    cell(242,y0,313,y1,'num', ed('t'+i,r && r.timeMin!=null ? Math.round(r.timeMin) : ''));
   }
-  cell(40,910,196,966,'', lab('Total :'));
-  cell(196,910,242,966,'num', ed(tot.cumDist ? Math.round(tot.cumDist*10)/10 : ''));
-  cell(242,910,313,966,'num', ed(tot.cumTime ? Math.round(tot.cumTime) : ''));
-  cell(40,966,313,1024,'red col', '<span class="al-l b" style="font-size:1.02cqw;">Réserve additionnelle à l’atterrissage :</span><span class="al-sub">= /H. Fin de vol/ – /H. Atterrissage/</span>'+ed(''));
-  cell(40,1024,313,1086,'red col', '<span class="al-l b" style="font-size:1.15cqw;">Heure du briefing arrivée :</span><span class="al-sub">= /H. Atterrissage/ – 10 à 15min</span>'+ed(''));
+  cell(40,Le,196,Le+56,'', lab('Total :'));
+  cell(196,Le,242,Le+56,'num', ed('totd',tot.cumDist ? Math.round(tot.cumDist*10)/10 : ''));
+  cell(242,Le,313,Le+56,'num', ed('tott',tot.cumTime ? Math.round(tot.cumTime) : ''));
+  cell(40,Le+56,313,Le+114,'red col', '<span class="al-l b" style="font-size:1.02cqw;">Réserve additionnelle à l’atterrissage :</span><span class="al-sub">= /H. Fin de vol/ – /H. Atterrissage/</span>'+ed('res',''));
+  cell(40,Le+114,313,Ybot,'red col', '<span class="al-l b" style="font-size:1.15cqw;">Heure du briefing arrivée :</span><span class="al-sub">= /H. Atterrissage/ – 10 à 15min</span>'+ed('brief',''));
 
-  // Colonne centrale : 10 positions
+  // Colonne centrale : N+1 positions
   cell(313,283,435,333,'ctr','<span class="al-l" style="font-size:1.3cqw;">Position</span>');
   cell(435,283,534,333,'ctr','<span class="al-l" style="font-size:1.2cqw;">H estimée</span>');
   cell(534,283,633,333,'ctr','<span class="al-l" style="font-size:1.2cqw;">H réelle</span>');
-  const ph = (941-333)/10;
-  for(let i=0;i<10;i++){
-    const y0=333+i*ph, y1=y0+ph;
-    const r = i===0 ? null : legRows[i-1];
+  for(let i=0;i<=N;i++){
+    const y0=333+i*lh, y1=y0+lh;
+    const r = i===0 ? null : rows[i-1];
     const pos = i===0 ? dep : (r ? (legs[r.legIndex] && legs[r.legIndex].point || '') : '');
-    cell(313,y0,435,y1,'', ed(pos));
-    cell(435,y0,534,y1, i===0 ? 'cross' : 'num', i===0 ? '' : ed(r && r.eta!=null ? hhmm(r.eta) : ''));
-    cell(534,y0,633,y1,'num', ed(''));
-    cell(633,y0,721,y1,'nb num', ed(r && r.freq ? r.freq : ''));
-    cell(721,y0,802,y1,'nb num', ed(''));
+    cell(313,y0,435,y1,'', ed('p'+i,pos));
+    cell(435,y0,534,y1, i===0 ? 'cross' : 'num', i===0 ? '' : ed('he'+i,r && r.eta!=null ? hhmm(r.eta) : ''));
+    cell(534,y0,633,y1,'num', ed('hr'+i,''));
+    cell(633,y0,721,y1,'nb num', ed('rad'+i,r && r.freq ? r.freq : ''));
+    cell(721,y0,802,y1,'nb num', ed('nav'+i,''));
   }
   const auto = (tot.fuelOnboard!=='' && tot.fuelOnboard!=null && conso>0) ? hm(Number(tot.fuelOnboard)/conso*60) : '';
-  cell(313,941,435,989,'', lab('Autonomie'));
-  cell(435,941,633,989,'', ed(auto));
-  cell(313,989,435,1035,'', lab('Heure d’arrêt du moteur'));
-  cell(435,989,633,1035,'', ed(''));
-  cell(313,1035,460,1086,'red ctr','<span class="al-l b" style="font-size:1.15cqw;">Heure de<br>FIN DE VOL</span>');
-  cell(460,1035,633,1086,'red col','<span class="al-sub">= /H. Arrêt moteur/ – /Réserve finale/</span>'+ed(''));
+  cell(313,Ce,435,Ce+48,'', lab('Autonomie'));
+  cell(435,Ce,633,Ce+48,'', ed('auto',auto));
+  cell(313,Ce+48,435,Ce+94,'', lab('Heure d’arrêt du moteur'));
+  cell(435,Ce+48,633,Ce+94,'', ed('arret',''));
+  cell(313,Ce+94,460,Ybot,'red ctr','<span class="al-l b" style="font-size:1.15cqw;">Heure de<br>FIN DE VOL</span>');
+  cell(460,Ce+94,633,Ybot,'red col','<span class="al-sub">= /H. Arrêt moteur/ – /Réserve finale/</span>'+ed('fin',''));
 
-  let ov = document.getElementById('aeroLogOverlay');
-  if(!ov){ ov = document.createElement('div'); ov.id='aeroLogOverlay'; document.body.appendChild(ov); }
-  const extra = rows.length>9 ? `<span style="color:var(--amber);"><i class="ph-bold ph-warning"></i> ${rows.length-9} étape(s) au-delà de 9 non affichée(s) : le gabarit n’a que 9 lignes.</span>` : '';
-  ov.innerHTML = `
-    <div class="al-toolbar">
-      <button type="button" class="btn-print" id="btnAeroPrint"><i class="ph-bold ph-printer"></i> Imprimer</button>
-      <button type="button" class="btn-ghost" id="btnAeroRegen"><i class="ph-bold ph-arrow-counter-clockwise"></i> Repartir des valeurs de l’appli</button>
-      <button type="button" class="btn-ghost" id="btnAeroClose"><i class="ph-bold ph-x"></i> Fermer</button>
-      <span>Clique dans une case pour la modifier. Les modifications ne sont pas enregistrées.</span> ${extra}
-    </div>
-    <div class="al-wrap">
+  // Largeur d'impression : la feuille doit tenir sur une A4 paysage (marges 8 mm → 281×194 mm, moins les légendes)
+  const printW = Math.min(262, 181*W/H).toFixed(1);
+  host.innerHTML = `<div class="al-wrap" style="--alw:${printW}mm;">
       <div class="al-top">Log de navigation VFR</div>
-      <div class="al-sheet">${html}</div>
+      <div class="al-sheet" style="aspect-ratio:${W}/${H};">${html}</div>
       <div class="al-foot">Aide à la préparation — non certifiée. Vérifier données et cartes officielles.</div>
     </div>`;
-  ov.style.display = 'block';
-  document.getElementById('btnAeroClose').addEventListener('click', ()=>{ ov.style.display='none'; });
-  document.getElementById('btnAeroRegen').addEventListener('click', openAeroLog);
-  document.getElementById('btnAeroPrint').addEventListener('click', ()=>{
-    document.getElementById('printPageSize').textContent = '@page{ size:A4 landscape; margin:8mm; }';
-    document.body.classList.add('print-aerolog');
-    window.print();
-    document.body.classList.remove('print-aerolog');
-  });
 }
-document.getElementById('btnAeroLog').addEventListener('click', openAeroLog);
+document.getElementById('aeroLogHost').addEventListener('input', e=>{
+  const k = e.target.dataset && e.target.dataset.k;
+  if(k) aeroEdits[k] = e.target.innerText.replace(/\n$/,'');
+});
+document.getElementById('btnAeroReset').addEventListener('click', ()=>{ aeroEdits = {}; renderAeroLog(); });
+document.getElementById('btnAeroPrint').addEventListener('click', ()=>{
+  const wrap = document.querySelector('#aeroLogHost .al-wrap');
+  if(!wrap) return;
+  const old = document.getElementById('aeroPrintHost'); if(old) old.remove();
+  const ph = document.createElement('div');
+  ph.id = 'aeroPrintHost';
+  ph.appendChild(wrap.cloneNode(true));
+  document.body.appendChild(ph);
+  document.getElementById('printPageSize').textContent = '@page{ size:A4 landscape; margin:8mm; }';
+  document.body.classList.add('print-aerolog');
+  window.print();
+  document.body.classList.remove('print-aerolog');
+  ph.remove();
+});
 
 function computeWB(){
   const sel = document.getElementById('wb_aircraft');
