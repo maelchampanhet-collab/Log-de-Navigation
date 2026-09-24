@@ -1,7 +1,7 @@
 // Service worker de l'appli Log VFR : permet l'installation sur l'écran d'accueil
 // et l'ouverture hors ligne (appli + bibliothèques + tuiles de carte déjà vues).
 // Changer VERSION à chaque mise à jour de log-nav-vfr.html pour purger l'ancien cache.
-const VERSION = 'logvfr-v2';
+const VERSION = 'logvfr-v3';
 const APP_CACHE = VERSION + '-app';
 const RUNTIME_CACHE = VERSION + '-runtime';
 const TILE_CACHE = 'logvfr-tuiles';
@@ -44,9 +44,11 @@ self.addEventListener('fetch', e => {
   if(url.hostname.endsWith('avwx.rest') || url.hostname.endsWith('aviationweather.gov')) return;
 
   // Appli elle-même : réseau d'abord (pour recevoir les mises à jour), cache si hors ligne.
+  // cache:'no-cache' contourne le cache HTTP de 10 min de GitHub Pages, sinon une mise à jour
+  // publiée met jusqu'à 10 min à arriver sur le téléphone.
   if(url.origin === self.location.origin){
     e.respondWith(
-      fetch(req)
+      fetch(url.href, { cache:'no-cache', credentials:'same-origin' })
         .then(res => {
           if(res.ok){ const copy = res.clone(); caches.open(APP_CACHE).then(c => c.put(req, copy)); }
           return res;
