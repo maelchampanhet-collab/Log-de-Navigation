@@ -1,7 +1,7 @@
 // Service worker de l'appli Log VFR : permet l'installation sur l'écran d'accueil
 // et l'ouverture hors ligne (appli + bibliothèques + tuiles de carte déjà vues).
 // Changer VERSION à chaque mise à jour de log-nav-vfr.html pour purger l'ancien cache.
-const VERSION = 'logvfr-v4';
+const VERSION = 'logvfr-v5';
 const APP_CACHE = VERSION + '-app';
 const RUNTIME_CACHE = VERSION + '-runtime';
 const TILE_CACHE = 'logvfr-tuiles';
