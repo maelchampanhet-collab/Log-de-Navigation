@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Log de navigation VFR</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Appli installable (PWA) : icône écran d'accueil, plein écran, hors ligne -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B1520">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Log VFR">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <style>
@@ -608,6 +617,108 @@ table.navtable tfoot td{
   padding:6px 8px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;border-radius:2px;resize:vertical;
 }
 .rp-notes-list:focus{outline:none;border-color:var(--cyan);}
+
+#routeMap{height:520px;}
+.lbl-short, .mobile-only, .appbar-title{display:none;}
+.btn-icon{
+  background:transparent; border:1px solid var(--rule); color:var(--ink);
+  width:40px; height:40px; padding:0; font-size:18px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+
+/* ================= TÉLÉPHONE (appli installée ou navigateur mobile) ================= */
+@media (max-width:760px){
+  body{
+    padding:0 0 calc(64px + env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{max-width:none;}
+  .shell{display:block;}
+  .main{padding:0 12px 16px;}
+
+  /* Barre latérale -> barre d'onglets fixée en bas de l'écran */
+  .sidebar{
+    position:fixed; left:0; right:0; bottom:0; top:auto; z-index:50;
+    border-radius:0; border:none; border-top:1px solid var(--rule);
+    padding:0 0 env(safe-area-inset-bottom); gap:0;
+    background:var(--navy-panel);
+  }
+  .sidebar .brand, .sidebar .sidebar-actions{display:none;}
+  .navlist{flex-direction:row; gap:0;}
+  .navitem{
+    flex:1 1 0; min-width:0; flex-direction:column; justify-content:center; gap:3px;
+    padding:8px 2px 7px; min-height:58px; border-radius:0;
+    font-size:10.5px; font-weight:600; text-align:center;
+  }
+  .navitem .ic{width:auto; font-size:21px;}
+  .navitem .lbl{display:none;}
+  .navitem .lbl-short{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
+  .navitem .tab-dot{position:absolute; top:7px; left:calc(50% + 10px); margin:0; width:7px; height:7px;}
+  .navitem.active{background:transparent; color:var(--amber);}
+  .navitem.active::before{left:22%; right:22%; top:0; bottom:auto; width:auto; height:3px; border-radius:0 0 3px 3px;}
+  .navitem:hover:not(.active){background:transparent;}
+
+  /* Barre d'appli en haut : titre de l'onglet + actions en icônes */
+  .main-top{
+    position:sticky; top:0; z-index:40;
+    margin:0 -12px 12px; padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
+    background:var(--navy-deep); border-bottom:1px solid var(--rule);
+    align-items:center; gap:5px;
+  }
+  .appbar-title{
+    display:block; margin-right:auto; min-width:0;
+    font-family:'Titillium Web',sans-serif; font-weight:700; font-size:17px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .mobile-only{display:inline-flex;}
+  .main-top .btn-txt{display:none;}
+  .main-top .btn-ghost, .main-top .btn-print, .main-top .btn-icon{
+    width:38px; height:38px; padding:0; font-size:18px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+
+  /* Formulaires : 16px minimum sinon iOS zoome à chaque saisie ; cibles tactiles 44px */
+  .field input, .field select, .leaflet-popup-content input, .leaflet-popup-content textarea, .rp-notes-list{font-size:16px;}
+  .field input, .field select{min-height:44px;}
+  .field-row{grid-template-columns:1fr;gap:0;}
+  .modal-box .field-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .add-aircraft-grid{grid-template-columns:1fr;}
+  .btn-mini, .btn-mini-del{min-height:40px; padding:8px 12px; font-size:13px;}
+  .add-leg, .leg-remove{min-height:44px; font-size:14px;}
+  .terrain-grid{grid-template-columns:1fr; gap:18px;}
+  .terrain-links a.btn-vac{padding:10px 14px;}
+  .ac-item{padding:12px 10px; font-size:14px;}
+
+  .panel{border-radius:10px; overflow:hidden;}
+  .panel-head{padding:12px 14px;}
+  .panel-body{padding:14px;}
+  .head-aside{float:none!important; display:flex; flex-wrap:wrap; margin-top:6px; text-transform:none; letter-spacing:0;}
+  .panel[style*="margin-top:22px"], #hangarPanel, #savedLogsPanel{margin-top:14px!important; margin-bottom:14px!important;}
+  .dash-cols{gap:14px; margin-top:14px;}
+
+  /* Résumés 4 colonnes -> 2 colonnes */
+  .output-summary{grid-template-columns:repeat(2,1fr);}
+  .sum-cell:nth-child(4n){border-right:1px solid var(--rule);}
+  .sum-cell:nth-child(2n){border-right:none;}
+
+  /* Table de nav : défilement horizontal au doigt, colonne "Étape" figée à gauche */
+  .table-scroll{-webkit-overflow-scrolling:touch; margin:0 -14px; padding:0 14px;}
+  table.navtable{min-width:860px; font-size:13px;}
+  table.navtable th:first-child, table.navtable td:first-child{
+    position:sticky; left:0; z-index:1; background:var(--navy-panel-2);
+    max-width:130px; overflow:hidden; text-overflow:ellipsis;
+    box-shadow:2px 0 0 var(--rule);
+  }
+
+  /* Carte : occupe l'écran disponible */
+  #routeMap{height:calc(100vh - 250px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); min-height:320px; margin:0 -14px;}
+  .leaflet-touch .leaflet-bar a{width:40px; height:40px; line-height:40px;}
+
+  .modal-overlay{align-items:flex-end; padding:0;}
+  .modal-box{max-height:92vh; border-radius:16px 16px 0 0; padding:22px 18px calc(22px + env(safe-area-inset-bottom));}
+  .hangar-card .hc-actions, .savedlog-card .sc-actions{width:100%;}
+  .hangar-card .hc-actions > *, .savedlog-card .sc-actions > *{flex:1;}
+}
 </style>
 </head>
 <body>
@@ -627,12 +738,12 @@ table.navtable tfoot td{
       <div class="brand-text">Log VFR<small>Préparation de vol</small></div>
     </div>
     <nav class="navlist">
-      <div class="navitem active" data-tab="0"><span class="ic"><i class="ph-bold ph-gauge"></i></span> Tableau de bord</div>
-      <div class="navitem" data-tab="1"><span class="ic"><i class="ph-bold ph-clipboard-text"></i></span> Préparation <span class="tab-dot" id="tabDot1"></span></div>
-      <div class="navitem" data-tab="2"><span class="ic"><i class="ph-bold ph-table"></i></span> Log de navigation <span class="tab-dot" id="tabDot2"></span></div>
-      <div class="navitem" data-tab="3"><span class="ic"><i class="ph-bold ph-scales"></i></span> Masse &amp; carburant <span class="tab-dot" id="tabDot3"></span></div>
-      <div class="navitem" data-tab="4"><span class="ic"><i class="ph-bold ph-cloud"></i></span> NOTAM &amp; METAR</div>
-      <div class="navitem" data-tab="5"><span class="ic"><i class="ph-bold ph-compass"></i></span> Simulation de route</div>
+      <div class="navitem active" data-tab="0" data-title="Tableau de bord"><span class="ic"><i class="ph-bold ph-gauge"></i></span> <span class="lbl">Tableau de bord</span><span class="lbl-short">Bord</span></div>
+      <div class="navitem" data-tab="1" data-title="Préparation"><span class="ic"><i class="ph-bold ph-clipboard-text"></i></span> <span class="lbl">Préparation</span><span class="lbl-short">Prépa</span> <span class="tab-dot" id="tabDot1"></span></div>
+      <div class="navitem" data-tab="2" data-title="Log de nav"><span class="ic"><i class="ph-bold ph-table"></i></span> <span class="lbl">Log de navigation</span><span class="lbl-short">Log</span> <span class="tab-dot" id="tabDot2"></span></div>
+      <div class="navitem" data-tab="3" data-title="Masse &amp; carbu"><span class="ic"><i class="ph-bold ph-scales"></i></span> <span class="lbl">Masse &amp; carburant</span><span class="lbl-short">Masse</span> <span class="tab-dot" id="tabDot3"></span></div>
+      <div class="navitem" data-tab="4" data-title="NOTAM &amp; METAR"><span class="ic"><i class="ph-bold ph-cloud"></i></span> <span class="lbl">NOTAM &amp; METAR</span><span class="lbl-short">Météo</span></div>
+      <div class="navitem" data-tab="5" data-title="Route"><span class="ic"><i class="ph-bold ph-compass"></i></span> <span class="lbl">Simulation de route</span><span class="lbl-short">Carte</span></div>
     </nav>
     <div class="sidebar-actions">
       <button class="btn-ghost" id="btnHangar"><i class="ph-bold ph-house"></i> Hangar</button>
@@ -643,8 +754,13 @@ table.navtable tfoot td{
 
   <main class="main">
     <div class="main-top no-print">
-      <button class="btn-ghost" id="btnSaveLog"><i class="ph-bold ph-floppy-disk"></i> Enregistrer</button>
-      <button class="btn-print" id="btnPrint">Imprimer / PDF</button>
+      <!-- Barre d'appli mobile : titre + raccourcis vers les boutons de la barre latérale (masquée sur téléphone) -->
+      <div class="appbar-title" id="appbarTitle">Tableau de bord</div>
+      <button class="btn-icon mobile-only" data-proxy="btnHangar" title="Hangar" aria-label="Hangar"><i class="ph-bold ph-house"></i></button>
+      <button class="btn-icon mobile-only" data-proxy="btnSavedLogs" title="Mes vols" aria-label="Mes vols"><i class="ph-bold ph-folder-open"></i></button>
+      <button class="btn-ghost" id="btnSaveLog" aria-label="Enregistrer"><i class="ph-bold ph-floppy-disk"></i><span class="btn-txt"> Enregistrer</span></button>
+      <button class="btn-print" id="btnPrint" aria-label="Imprimer / PDF"><i class="ph-bold ph-printer mobile-only"></i><span class="btn-txt">Imprimer / PDF</span></button>
+      <button class="btn-icon mobile-only" data-proxy="btnReset" title="Réinitialiser" aria-label="Réinitialiser"><i class="ph-bold ph-arrow-counter-clockwise"></i></button>
     </div>
 
   <div class="print-title" id="printTitle"></div>
@@ -680,7 +796,7 @@ table.navtable tfoot td{
 
   <!-- ===== HANGAR ===== -->
   <div class="panel no-print" id="hangarPanel" style="margin-bottom:22px; display:none;">
-    <div class="panel-head"><i class="ph-bold ph-house"></i> Hangar — avions du club <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
+    <div class="panel-head"><i class="ph-bold ph-house"></i> Hangar — avions du club <span class="head-aside" style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
     <div class="panel-body">
       <div id="hangarList"></div>
       <div class="add-aircraft-grid">
@@ -717,7 +833,7 @@ table.navtable tfoot td{
 
   <!-- ===== VOLS ENREGISTRÉS ===== -->
   <div class="panel no-print" id="savedLogsPanel" style="margin-bottom:22px; display:none;">
-    <div class="panel-head"><i class="ph-bold ph-folder-open"></i> Mes vols enregistrés <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
+    <div class="panel-head"><i class="ph-bold ph-folder-open"></i> Mes vols enregistrés <span class="head-aside" style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
     <div class="panel-body">
       <div id="savedLogsList"></div>
       <div class="storage-status" id="savedLogsStatus"></div>
@@ -969,7 +1085,7 @@ table.navtable tfoot td{
   <div class="panel no-print">
     <div class="panel-head">
       <i class="ph-bold ph-compass"></i> Construction de la route
-      <span style="float:right;font-weight:400;font-size:11px;display:flex;gap:12px;">
+      <span class="head-aside" style="float:right;font-weight:400;font-size:11px;display:flex;gap:12px;">
         <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="oaci" checked style="width:auto;"> OACI-VFR</label>
         <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="scan25" style="width:auto;"> Plan IGN détaillé (non aéro.)</label>
       </span>
@@ -978,7 +1094,7 @@ table.navtable tfoot td{
       <div style="font-size:11.5px;color:var(--ink-dim);margin-bottom:10px;">
         Clique sur un aérodrome pour l'ajouter à la route ; clique ailleurs pour poser un point libre (coordonnées). Clique sur un point déjà posé pour le nommer, lui donner une altitude, ou le retirer.
       </div>
-      <div id="routeMap" style="height:520px;"></div>
+      <div id="routeMap"></div>
       <div style="margin-top:8px;font-size:10.5px;color:var(--ink-dim);">
         Fond de carte © IGN (carte OACI-VFR 2026, données SIA-DGAC, ou Plan IGN détaillé). Vue d'ensemble — vérifie toujours les infos à jour sur la carte VAC et NOTAM avant le vol.
       </div>
@@ -2400,14 +2516,27 @@ document.getElementById('btnReset').addEventListener('click', ()=>{
 // Hangar = partagé (shared:true) : la flotte est commune à qui utilise cette appli.
 // Profil pilote + vols enregistrés = personnels (shared:false), propres à chaque utilisateur.
 
+// Hors de l'environnement qui fournit window.storage (appli installée sur téléphone, navigateur),
+// repli sur le localStorage de l'appareil : tout est alors local, y compris le hangar.
+const HAS_WINDOW_STORAGE = !!(window.storage && window.storage.get);
+function localKey(key, shared){ return 'logvfr:' + (shared ? 'shared:' : 'perso:') + key; }
+
 async function storageGetSafe(key, shared){
   try{
+    if(!HAS_WINDOW_STORAGE){
+      const v = localStorage.getItem(localKey(key, shared));
+      return v ? JSON.parse(v) : null;
+    }
     const r = await window.storage.get(key, shared);
     return r ? JSON.parse(r.value) : null;
   }catch(e){ return null; }
 }
 async function storageSetSafe(key, value, shared){
   try{
+    if(!HAS_WINDOW_STORAGE){
+      localStorage.setItem(localKey(key, shared), JSON.stringify(value));
+      return true;
+    }
     await window.storage.set(key, JSON.stringify(value), shared);
     return true;
   }catch(e){ return false; }
@@ -2609,12 +2738,23 @@ document.getElementById('btnHangar').addEventListener('click', ()=>{
   const panel = document.getElementById('hangarPanel');
   panel.style.display = panel.style.display==='none' ? 'block' : 'none';
   document.getElementById('savedLogsPanel').style.display = 'none';
+  if(panel.style.display==='block') window.scrollTo({ top:0, behavior:'smooth' });
 });
 document.getElementById('btnSavedLogs').addEventListener('click', ()=>{
   const panel = document.getElementById('savedLogsPanel');
   panel.style.display = panel.style.display==='none' ? 'block' : 'none';
   document.getElementById('hangarPanel').style.display = 'none';
+  if(panel.style.display==='block') window.scrollTo({ top:0, behavior:'smooth' });
 });
+
+// Barre d'appli mobile : ses icônes déclenchent les boutons de la barre latérale (masquée sur téléphone)
+document.querySelectorAll('[data-proxy]').forEach(btn=>{
+  btn.addEventListener('click', ()=>document.getElementById(btn.dataset.proxy).click());
+});
+// Hangar local à l'appareil quand il n'y a pas de stockage partagé : ne pas afficher "partagé"
+if(!HAS_WINDOW_STORAGE){
+  document.querySelector('#hangarPanel .head-aside').textContent = 'enregistré sur cet appareil';
+}
 
 // ==================== ONGLETS ====================
 function switchTab(n){
@@ -2623,7 +2763,9 @@ function switchTab(n){
   }
   document.querySelectorAll('.navitem[data-tab]').forEach(item=>{
     item.classList.toggle('active', Number(item.dataset.tab) === n);
+    if(Number(item.dataset.tab) === n) document.getElementById('appbarTitle').textContent = item.dataset.title;
   });
+  window.scrollTo(0, 0);
 
   if(n===0) renderDashboard();
   if(n===3) populateWbAircraftSelect();
@@ -2956,6 +3098,11 @@ updateTabValidation();
 loadHangar();
 loadSavedLogsFromStorage();
 initOnboarding();
+
+// Appli installable : le service worker n'est actif que servi en http(s), pas en file://
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>
