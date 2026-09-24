@@ -632,18 +632,26 @@ table.navtable tfoot td{
 /* ================= TÉLÉPHONE (appli installée ou navigateur mobile) ================= */
 @media (max-width:760px){
   body{
-    padding:0 0 calc(64px + env(safe-area-inset-bottom));
+    padding:0 0 calc(54px + var(--home-gap));
     -webkit-tap-highlight-color:transparent;
   }
+  /* Espace réservé à la barre de geste iPhone, réduit au minimum (elle se superpose sans gêner) */
+  :root{--home-gap:max(calc(env(safe-area-inset-bottom) - 16px), 2px);}
   .wrap{max-width:none;}
   .shell{display:block;}
-  .main{padding:0 12px 16px;}
+  .main{padding:0 max(8px, env(safe-area-inset-right)) 10px max(8px, env(safe-area-inset-left));}
+
+  /* Bande fixe derrière l'heure/la batterie : le contenu défile sous l'encoche sans se mélanger à la barre d'état */
+  body::before{
+    content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top);
+    background:var(--navy-deep); z-index:60;
+  }
 
   /* Barre latérale -> barre d'onglets fixée en bas de l'écran */
   .sidebar{
     position:fixed; left:0; right:0; bottom:0; top:auto; z-index:50;
     border-radius:0; border:none; border-top:1px solid var(--rule);
-    padding:0 0 env(safe-area-inset-bottom); gap:0;
+    padding:0 env(safe-area-inset-right) var(--home-gap) env(safe-area-inset-left); gap:0;
     background:var(--navy-panel);
   }
   .sidebar .brand, .sidebar .sidebar-actions{display:none;}
@@ -654,26 +662,31 @@ table.navtable tfoot td{
   }
   .navlist::-webkit-scrollbar{display:none;}
   .navitem{
-    flex:1 0 76px; min-width:76px; scroll-snap-align:start;
-    flex-direction:column; justify-content:center; gap:3px;
-    padding:8px 2px 7px; min-height:58px; border-radius:0;
-    font-size:10.5px; font-weight:600; text-align:center;
+    flex:1 0 70px; min-width:70px; scroll-snap-align:start;
+    flex-direction:column; justify-content:center; gap:1px;
+    padding:6px 2px 4px; min-height:50px; border-radius:0;
+    font-size:10px; font-weight:600; text-align:center;
   }
-  .navitem .ic{width:auto; font-size:21px;}
+  .navitem .ic{width:auto; font-size:20px;}
   .navitem .lbl{display:none;}
   .navitem .lbl-short{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
-  .navitem .tab-dot{position:absolute; top:7px; left:calc(50% + 10px); margin:0; width:7px; height:7px;}
+  .navitem .tab-dot{position:absolute; top:5px; left:calc(50% + 10px); margin:0; width:7px; height:7px;}
   .navitem.active{background:transparent; color:var(--amber);}
   .navitem.active::before{left:22%; right:22%; top:0; bottom:auto; width:auto; height:3px; border-radius:0 0 3px 3px;}
   .navitem:hover:not(.active){background:transparent;}
 
-  /* Barre d'appli en haut : titre de l'onglet + actions en icônes */
+  /* Barre d'appli en haut, collée à l'encoche ; elle s'efface en défilant vers le bas
+     (classe .bar-hidden posée par le JS) et revient dès qu'on remonte */
   .main-top{
     position:sticky; top:0; z-index:40;
-    margin:0 -12px 12px; padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
+    margin:0 min(-8px, calc(-1 * env(safe-area-inset-right))) 8px min(-8px, calc(-1 * env(safe-area-inset-left)));
+    padding:env(safe-area-inset-top) max(8px, env(safe-area-inset-right)) 0 max(8px, env(safe-area-inset-left));
+    min-height:calc(44px + env(safe-area-inset-top));
     background:var(--navy-deep); border-bottom:1px solid var(--rule);
-    align-items:center; gap:5px;
+    align-items:center; gap:4px;
+    transition:transform .22s ease;
   }
+  body.bar-hidden .main-top{transform:translateY(-100%);}
   .appbar-title{
     display:block; margin-right:auto; min-width:0;
     font-family:'Titillium Web',sans-serif; font-weight:700; font-size:17px;
@@ -682,9 +695,10 @@ table.navtable tfoot td{
   .mobile-only{display:inline-flex;}
   .main-top .btn-txt{display:none;}
   .main-top .btn-ghost, .main-top .btn-print, .main-top .btn-icon{
-    width:38px; height:38px; padding:0; font-size:18px;
+    width:36px; height:36px; padding:0; font-size:18px; border-color:transparent;
     display:inline-flex; align-items:center; justify-content:center;
   }
+  .main-top .btn-print{border-radius:8px;}
 
   /* Formulaires : 16px minimum sinon iOS zoome à chaque saisie ; cibles tactiles 44px */
   .field input, .field select, .leaflet-popup-content input, .leaflet-popup-content textarea, .rp-notes-list{font-size:16px;}
@@ -699,11 +713,12 @@ table.navtable tfoot td{
   .ac-item{padding:12px 10px; font-size:14px;}
 
   .panel{border-radius:10px; overflow:hidden;}
-  .panel-head{padding:12px 14px;}
-  .panel-body{padding:14px;}
+  .panel-head{padding:9px 12px;}
+  .panel-body{padding:12px;}
+  .field{margin-bottom:10px;}
   .head-aside{float:none!important; display:flex; flex-wrap:wrap; margin-top:6px; text-transform:none; letter-spacing:0;}
-  .panel[style*="margin-top:22px"], #hangarPanel, #savedLogsPanel{margin-top:14px!important; margin-bottom:14px!important;}
-  .dash-cols{gap:14px; margin-top:14px;}
+  .panel[style*="margin-top:22px"], .panel[style*="margin-bottom:22px"], #hangarPanel, #savedLogsPanel{margin-top:8px!important; margin-bottom:8px!important;}
+  .dash-cols{gap:8px; margin-top:8px;}
 
   /* Résumés 4 colonnes -> 2 colonnes */
   .output-summary{grid-template-columns:repeat(2,1fr);}
@@ -711,7 +726,7 @@ table.navtable tfoot td{
   .sum-cell:nth-child(2n){border-right:none;}
 
   /* Table de nav : défilement horizontal au doigt, colonne "Étape" figée à gauche */
-  .table-scroll{-webkit-overflow-scrolling:touch; margin:0 -14px; padding:0 14px;}
+  .table-scroll{-webkit-overflow-scrolling:touch; margin:0 -12px; padding:0 12px;}
   table.navtable{min-width:860px; font-size:13px;}
   table.navtable th:first-child, table.navtable td:first-child{
     position:sticky; left:0; z-index:1; background:var(--navy-panel-2);
@@ -719,12 +734,12 @@ table.navtable tfoot td{
     box-shadow:2px 0 0 var(--rule);
   }
 
-  /* Carte : occupe l'écran disponible */
-  #routeMap{height:calc(100vh - 250px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); min-height:320px; margin:0 -14px;}
+  /* Carte : toute la hauteur entre la barre du haut et la barre d'onglets */
+  #routeMap{height:calc(100dvh - 44px - env(safe-area-inset-top) - 54px - var(--home-gap) - 16px); min-height:320px; margin:0 -12px;}
   .leaflet-touch .leaflet-bar a{width:40px; height:40px; line-height:40px;}
 
   .modal-overlay{align-items:flex-end; padding:0;}
-  .modal-box{max-height:92vh; border-radius:16px 16px 0 0; padding:22px 18px calc(22px + env(safe-area-inset-bottom));}
+  .modal-box{max-height:calc(100dvh - env(safe-area-inset-top) - 8px); border-radius:16px 16px 0 0; padding:20px 16px calc(16px + env(safe-area-inset-bottom));}
   .hangar-card .hc-actions, .savedlog-card .sc-actions{width:100%;}
   .hangar-card .hc-actions > *, .savedlog-card .sc-actions > *{flex:1;}
 }
@@ -2778,6 +2793,7 @@ function switchTab(n){
     }
   });
   window.scrollTo(0, 0);
+  document.body.classList.remove('bar-hidden');
 
   if(n===0) renderDashboard();
   if(n===3) populateWbAircraftSelect();
@@ -3110,6 +3126,20 @@ updateTabValidation();
 loadHangar();
 loadSavedLogsFromStorage();
 initOnboarding();
+
+// Mobile : la barre du haut s'efface quand on descend (plus de place pour le contenu)
+// et revient dès qu'on remonte ou qu'on arrive en haut de page
+(function(){
+  const mq = window.matchMedia('(max-width:760px)');
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', ()=>{
+    const y = window.scrollY;
+    if(!mq.matches || y < 60) document.body.classList.remove('bar-hidden');
+    else if(y > lastY + 6) document.body.classList.add('bar-hidden');
+    else if(y < lastY - 6) document.body.classList.remove('bar-hidden');
+    if(Math.abs(y - lastY) > 6 || y < 60) lastY = y;
+  }, { passive:true });
+})();
 
 // Appli installable : le service worker n'est actif que servi en http(s), pas en file://
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
