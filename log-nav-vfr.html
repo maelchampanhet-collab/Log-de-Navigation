@@ -619,6 +619,9 @@ table.navtable tfoot td{
 .rp-notes-list:focus{outline:none;border-color:var(--cyan);}
 
 #routeMap{height:520px;}
+/* Leaflet empile ses calques jusqu'à z-index 1000 : on les confine dans la carte
+   pour qu'ils ne passent jamais au-dessus des barres de l'appli */
+.leaflet-container{position:relative; z-index:0; isolation:isolate;}
 .lbl-short, .mobile-only, .appbar-title{display:none;}
 .btn-icon{
   background:transparent; border:1px solid var(--rule); color:var(--ink);
@@ -644,9 +647,15 @@ table.navtable tfoot td{
     background:var(--navy-panel);
   }
   .sidebar .brand, .sidebar .sidebar-actions{display:none;}
-  .navlist{flex-direction:row; gap:0;}
+  /* Barre défilante au doigt : tous les onglets restent accessibles quelle que soit la largeur */
+  .navlist{
+    flex-direction:row; gap:0; overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .navlist::-webkit-scrollbar{display:none;}
   .navitem{
-    flex:1 1 0; min-width:0; flex-direction:column; justify-content:center; gap:3px;
+    flex:1 0 76px; min-width:76px; scroll-snap-align:start;
+    flex-direction:column; justify-content:center; gap:3px;
     padding:8px 2px 7px; min-height:58px; border-radius:0;
     font-size:10.5px; font-weight:600; text-align:center;
   }
@@ -2763,7 +2772,10 @@ function switchTab(n){
   }
   document.querySelectorAll('.navitem[data-tab]').forEach(item=>{
     item.classList.toggle('active', Number(item.dataset.tab) === n);
-    if(Number(item.dataset.tab) === n) document.getElementById('appbarTitle').textContent = item.dataset.title;
+    if(Number(item.dataset.tab) === n){
+      document.getElementById('appbarTitle').textContent = item.dataset.title;
+      item.scrollIntoView({ block:'nearest', inline:'nearest' });
+    }
   });
   window.scrollTo(0, 0);
 
