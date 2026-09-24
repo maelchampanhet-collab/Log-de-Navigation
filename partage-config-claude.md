@@ -63,5 +63,11 @@ Ensuite :
 - Le skill `graphify` est installé sur mon Mac (`.claude/skills/graphify/`) mais
   n'est pas dans ce dépôt. Pour le partager : lui envoyer ce dossier à placer
   dans `~/.claude/skills/graphify/` chez elle.
+- Le skill `impeccable` (design d'interface, de pbakaus) n'est pas non plus dans
+  ce dépôt, mais il est public : pas besoin de l'envoyer. Ton amie l'installe
+  elle-même depuis le dossier de son projet :
+  `npx -y skills add pbakaus/impeccable --skill impeccable --agent claude-code`
+  (il s'installe dans `.claude/skills/` de ce projet). Source :
+  https://github.com/pbakaus/impeccable
 - Les règles propres au log de nav VFR (AD_NOTES, onglets, AVWX...) restent dans
   le `CLAUDE.md` de ce dépôt : elles ne concernent que ce projet.
