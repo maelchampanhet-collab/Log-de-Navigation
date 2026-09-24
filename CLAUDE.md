@@ -36,7 +36,7 @@ Pas de build, pas de package.json, pas de linter ni de suite de tests — `log-n
   python3 -m http.server 8000
   ```
   puis ouvrir `http://localhost:8000/log-nav-vfr.html`. Le service worker (PWA) ne s'active qu'en http(s), jamais en `file://`.
-- **Tester la version mobile** : Chromium DevTools en mode appareil (ou Playwright avec `devices['iPhone 13']`), largeur ≤ 760 px.
+- **Tester la version mobile** : skill projet `mobile-encoche` (`.claude/skills/mobile-encoche/`) — règles de mise en page téléphone et script `test-encoche.js` qui simule l'encoche / Dynamic Island / barre de geste (iPhone portrait et paysage) et signale les éléments mal placés. À lancer après toute modification visible sur mobile.
 - **Vérifier la syntaxe JS** après une édition (aucun tooling dédié dans le repo) : extraire le contenu du tag `<script>` applicatif (celui qui suit le `<script src="...leaflet...">`) dans un fichier `.js` et lancer `node --check` dessus.
 - **Tester une fonctionnalité** : il n'y a pas de suite de tests — vérifier manuellement dans un navigateur (via le serveur local ci-dessus) en interagissant réellement avec l'UI concernée.
 
@@ -52,7 +52,7 @@ L'installation exige un hébergement HTTPS (ex. GitHub Pages) : sur iPhone Safar
 
 (`coords-terrains-france.json` est l'archive de la source des coordonnées GPS — données déjà intégrées dans l'objet `COORDS` du HTML, l'appli ne lit jamais ce fichier.)
 
-- **Lignes 1–722** : `<head>` (méta PWA/iOS, manifest, apple-touch-icon) + `<style>` (tout le CSS — palette "cockpit" sombre, polices Titillium Web / IBM Plex Sans / IBM Plex Mono ; icônes via Phosphor Icons chargé en CDN, `<i class="ph-bold ph-...">`, jamais d'emoji comme icône). Le bloc `@media (max-width:760px)` en fin de `<style>` est la **version téléphone** : barre latérale transformée en barre d'onglets fixée en bas (libellés courts `.lbl-short`), barre d'appli collante en haut (`.appbar-title` + boutons icônes `.mobile-only`), champs à 16 px (sinon zoom iOS), cibles tactiles ≥ 40 px, table de nav avec colonne « Étape » figée, carte plein écran, marges `env(safe-area-inset-*)` pour l'encoche.
+- **Lignes 1–722** : `<head>` (méta PWA/iOS, manifest, apple-touch-icon) + `<style>` (tout le CSS — palette "cockpit" sombre, polices Titillium Web / IBM Plex Sans / IBM Plex Mono ; icônes via Phosphor Icons chargé en CDN, `<i class="ph-bold ph-...">`, jamais d'emoji comme icône). Le bloc `@media (max-width:760px), (max-height:500px) and (pointer:coarse)` en fin de `<style>` est la **version téléphone** (portrait et paysage) : barre latérale transformée en barre d'onglets fixée en bas (libellés courts `.lbl-short`), barre d'appli collante en haut (`.appbar-title` + boutons icônes `.mobile-only`), champs à 16 px (sinon zoom iOS), cibles tactiles ≥ 40 px, table de nav avec colonne « Étape » figée, carte plein écran, zones d'encoche via les variables `--sat/--sar/--sab/--sal` (jamais `env()` directement, cf. skill `mobile-encoche`), barre du haut qui s'efface au défilement.
 - **Lignes 724–1121** : corps HTML (markup)
   - Barre latérale de navigation (`sidebar`, ~728–753) : logo, liste des onglets (chaque `navitem` porte `data-title`, titre affiché dans la barre d'appli mobile), boutons Hangar/Mes vols/Réinitialiser
   - Barre `main-top` (~756–765) : Enregistrer / Imprimer ; sur mobile s'y ajoutent le titre d'onglet et des boutons `data-proxy="btnXxx"` qui cliquent les boutons de la barre latérale (masquée)
