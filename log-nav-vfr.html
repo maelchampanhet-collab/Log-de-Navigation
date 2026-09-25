@@ -2007,6 +2007,17 @@ function refreshLegPointSideEffects(id, cardEl){
     card.querySelector('[data-field="rv"]').value = l.rv;
     card.querySelector('[data-field="dist"]').value = l.dist;
   });
+  patchLegFreqInputs();
+}
+
+// Fréquences posées automatiquement (cf. autoFillLegFreqs) : patch direct des champs, sans re-rendre
+// toute la liste des étapes (pour ne pas faire sauter le curseur de la saisie en cours).
+function patchLegFreqInputs(){
+  const c = document.getElementById('legsContainer');
+  legs.forEach(l=>{
+    const fi = c.querySelector(`input[data-id="${l.id}"][data-field="freq"]`);
+    if(fi && fi !== document.activeElement && fi.value !== l.freq) fi.value = l.freq;
+  });
 }
 
 // Menu déroulant d'aérodromes sur le champ "Point" de chaque étape du log de nav (mêmes classes
@@ -2357,7 +2368,6 @@ async function recalcRealWind(){
   const arrCode = document.getElementById('t_arr').value;
   // Repli sur les points tracés sur la carte (ancien fonctionnement, cf. btnExportRoute) seulement si
   // leur alignement d'origine est respecté — sinon on ne compte que sur les codes des repères eux-mêmes.
-  const routeAligned = routePoints.length === legs.length+1;
 
   btn.disabled = true;
   status.textContent = 'Interrogation d\'Open-Meteo (vent en altitude, par étape)...';
@@ -2375,7 +2385,8 @@ async function recalcRealWind(){
       // route sur la carte. Repli sur routePoints uniquement si l'alignement d'origine tient encore.
       let a = fromCoordsForLeg(i, depCode);
       let b = toCoordsForLeg(i, arrCode);
-      if(routeAligned){ a = a || routePoints[i]; b = b || routePoints[i+1]; }
+      const seg = routeSegmentForLeg(i);
+      if(seg){ a = a || seg[0]; b = b || seg[1]; }
       if(!a || !b){ results[i] = { error:'no-coords' }; noCoords++; continue; }
 
       const midLat = (a.lat+b.lat)/2, midLon = (a.lon+b.lon)/2;
@@ -2596,7 +2607,7 @@ function findAirport(code){
 // Types de fréquence pour le regroupement dans le sélecteur (menu de bulles carte + tableau du log
 // de nav, cf. freqPickerHtml) : AUTRE sert aussi de type par défaut pour toute fréquence saisie
 // manuellement par l'utilisateur (jamais vérifiée, donc jamais classée AFIS/TOUR/APPROCHE).
-const FREQ_TYPES = ['AFIS','TOUR','APPROCHE','AUTRE'];
+const FREQ_TYPES = ['ATIS','AFIS','TOUR','A/A','SOL','PRÉVOL','APPROCHE','FIS','RAI','AUTRE'];
 
 // Altitude terrain (AMSL) et fréquences confirmées par recoupement pour les aérodromes déjà
 // demandés. "type" (cf. FREQ_TYPES) reprend tel quel ce que dit déjà le "label" vérifié (ex. "TWR"
@@ -2622,6 +2633,444 @@ const AD_NOTES = {
     special: "Zone réglementée LF-R 329 Pierrelatte (créée par arrêté du 16/02/2018, source Légifrance) : liée à une activité de drones (confirmé par la carte VAC elle-même), s'étendrait du sol jusqu'à 150 m/492 ft selon une source secondaire non confirmée par l'AIP — contacter le gestionnaire et vérifier l'activation avant vol. Egalement zone interdite P19 Tricastin (site nucléaire) à proximité immédiate, et zones d'activité au sol : parachutage n°438, voltige n°6803, aéromodélisme n°9815. Limites précises et horaires : voir AIP ENR 5.1, non trouvées ici."
   }
 };
+
+// Fréquences de 409 terrains, lues sur les cartes VAC officielles du SIA (cycle AIRAC du 03 SEP 2026,
+// cf. AIRAC_ATLAS) : en-tête de la page carte (lignes ATIS/FIS/APP/TWR/AFIS/A/A/GND/DELIVERY/RAI),
+// extraction automatique par OCR (outil : tools/vac-freqs/). Deux lectures OCR indépendantes à des
+// résolutions différentes (trois en cas de désaccord, vote 2 sur 3) : seule une fréquence lue à
+// l'identique est gardée ; canaux hors 118–137 MHz ou non conformes au nommage 8,33/25 kHz rejetés ;
+// recoupé avec OurAirports et chaque écart de chiffre relu à l'œil sur l'image de la VAC (LFLX et LFMT
+// corrigés à la main). "(S)" = fréquence de secours. Une fréquence sert une seule fois : le canal A/A
+// identique à la TOUR/AFIS ("Absence ATS : A/A (…)") n'est pas redoublé. Toujours présentée comme
+// "à vérifier sur la VAC" : l'OCR reste une lecture automatique, et la table vieillit à chaque cycle
+// AIRAC (28 jours) — la régénérer avec tools/vac-freqs/ au changement de AIRAC_ATLAS.
+const VAC_FREQS_CYCLE = '03 SEP 2026';
+const VAC_FREQS = {
+  LFAB:['A/A 119.005'],
+  LFAC:['AFIS 119.485','APPROCHE 120.275','FIS 132.540'],
+  LFAD:['A/A 122.305'],
+  LFAE:['A/A 123.500'],
+  LFAF:['A/A 123.355'],
+  LFAG:['A/A 129.805'],
+  LFAI:['A/A 127.980'],
+  LFAJ:['A/A 123.500'],
+  LFAK:['A/A 123.500','APPROCHE 121.055'],
+  LFAL:['A/A 123.500'],
+  LFAM:['A/A 123.500'],
+  LFAO:['A/A 123.500'],
+  LFAP:['A/A 123.500'],
+  LFAQ:['AFIS 136.360','TOUR 136.360','APPROCHE 129.360'],
+  LFAR:['A/A 123.500'],
+  LFAS:['A/A 123.180'],
+  LFAT:['ATIS 123.130','TOUR 118.455','SOL 121.755','APPROCHE 120.275'],
+  LFAU:['A/A 122.505'],
+  LFAV:['AFIS 122.605'],
+  LFAW:['A/A 123.500'],
+  LFAX:['A/A 123.500'],
+  LFAY:['A/A 119.890'],
+  LFBA:['ATIS 129.605','TOUR 121.305','APPROCHE 120.355'],
+  LFBD:['ATIS 131.155','TOUR 118.305','SOL 121.730','SOL 121.905','APPROCHE 119.275','APPROCHE 126.730 (S)','APPROCHE 129.880','FIS 120.575'],
+  LFBE:['ATIS 127.480','TOUR 119.805','APPROCHE 119.275'],
+  LFBF:['AFIS 118.805'],
+  LFBG:['TOUR 120.075','TOUR 122.100','TOUR 132.450','APPROCHE 132.450'],
+  LFBH:['ATIS 126.880','TOUR 118.005','APPROCHE 124.205','FIS 124.205'],
+  LFBI:['ATIS 121.780','TOUR 118.505','APPROCHE 134.100','FIS 124.000'],
+  LFBJ:['A/A 119.510'],
+  LFBK:['AFIS 118.405'],
+  LFBL:['ATIS 128.080','TOUR 119.555','APPROCHE 118.080','FIS 124.050'],
+  LFBN:['AFIS 119.105'],
+  LFBO:['ATIS 123.130','AFIS 121.830','TOUR 118.105','SOL 121.905','PRÉVOL 121.705','APPROCHE 120.355','APPROCHE 121.105','APPROCHE 123.850','APPROCHE 123.930','APPROCHE 124.975 (S)','APPROCHE 125.180','APPROCHE 129.305','FIS 121.250'],
+  LFBP:['ATIS 128.480','TOUR 124.150','SOL 121.755','APPROCHE 121.175 (S)','APPROCHE 128.800','FIS 126.525'],
+  LFBR:['ATIS 124.580','TOUR 123.200','SOL 121.750','APPROCHE 125.180'],
+  LFBS:['TOUR 118.040'],
+  LFBT:['ATIS 125.955','TOUR 119.055','SOL 121.805','APPROCHE 121.175 (S)','APPROCHE 128.800'],
+  LFBU:['ATIS 130.090','AFIS 123.155','APPROCHE 118.080'],
+  LFBX:['AFIS 118.780','APPROCHE 119.275'],
+  LFBY:['TOUR 118.325','SOL 121.775','APPROCHE 122.050'],
+  LFBZ:['ATIS 128.230','TOUR 118.705','SOL 121.955','APPROCHE 125.605','FIS 119.180'],
+  LFCA:['A/A 120.055','APPROCHE 134.100'],
+  LFCB:['A/A 123.500'],
+  LFCC:['AFIS 119.230','APPROCHE 133.725'],
+  LFCD:['A/A 120.405'],
+  LFCE:['A/A 120.190'],
+  LFCF:['A/A 119.635'],
+  LFCG:['A/A 118.255'],
+  LFCH:['AFIS 119.080'],
+  LFCI:['AFIS 118.955','APPROCHE 123.850'],
+  LFCJ:['A/A 118.155'],
+  LFCK:['AFIS 118.505','APPROCHE 123.850'],
+  LFCL:['ATIS 128.105','TOUR 122.705'],
+  LFCM:['A/A 120.805'],
+  LFCN:['A/A 119.505','RAI 119.700'],
+  LFCO:['A/A 118.780'],
+  LFCP:['A/A 119.885','APPROCHE 132.450'],
+  LFCQ:['A/A 119.655'],
+  LFCR:['ATIS 129.780','TOUR 118.125','APPROCHE 133.725','FIS 133.725'],
+  LFCS:['A/A 119.005'],
+  LFCT:['A/A 123.355'],
+  LFCU:['A/A 118.755'],
+  LFCV:['A/A 123.500'],
+  LFCW:['A/A 123.605'],
+  LFCX:['A/A 121.055'],
+  LFCY:['AFIS 118.805','APPROCHE 129.875'],
+  LFCZ:['A/A 118.905'],
+  LFDA:['A/A 118.980'],
+  LFDB:['A/A 120.605','APPROCHE 125.180','APPROCHE 129.305'],
+  LFDC:['A/A 119.785'],
+  LFDE:['A/A 123.500'],
+  LFDF:['A/A 120.160'],
+  LFDG:['A/A 119.955'],
+  LFDH:['AFIS 123.005','APPROCHE 128.800'],
+  LFDI:['A/A 120.655'],
+  LFDJ:['AFIS 118.180','APPROCHE 120.355'],
+  LFDK:['A/A 118.455'],
+  LFDL:['A/A 123.500'],
+  LFDM:['A/A 120.055'],
+  LFDN:['AFIS 119.305','APPROCHE 124.205'],
+  LFDP:['A/A 120.205'],
+  LFDQ:['A/A 119.530'],
+  LFDR:['A/A 123.355'],
+  LFDS:['A/A 118.155'],
+  LFDT:['A/A 122.605'],
+  LFDU:['A/A 123.500'],
+  LFDV:['A/A 119.230'],
+  LFDW:['A/A 120.060'],
+  LFDX:['A/A 119.565'],
+  LFDY:['A/A 119.955'],
+  LFEA:['AFIS 118.755'],
+  LFEB:['TOUR 120.150','A/A 119.765','APPROCHE 126.950'],
+  LFEC:['AFIS 118.105'],
+  LFED:['A/A 129.755'],
+  LFEF:['A/A 118.780'],
+  LFEG:['A/A 123.500'],
+  LFEH:['A/A 124.280'],
+  LFEI:['A/A 118.755'],
+  LFEJ:['TOUR 125.880','A/A 122.730'],
+  LFEK:['A/A 119.885'],
+  LFEL:['A/A 123.355'],
+  LFEM:['A/A 123.355'],
+  LFEN:['A/A 120.090'],
+  LFEP:['A/A 123.500'],
+  LFEQ:['AFIS 119.605'],
+  LFER:['A/A 119.930'],
+  LFES:['A/A 129.805','APPROCHE 125.860'],
+  LFET:['A/A 120.060'],
+  LFEU:['A/A 123.500','FIS 119.450'],
+  LFEV:['A/A 118.840'],
+  LFEW:['A/A 123.500','FIS 120.675'],
+  LFEX:['A/A 120.090'],
+  LFEY:['AFIS 118.905'],
+  LFEZ:['A/A 136.105'],
+  LFFB:['A/A 123.155'],
+  LFFC:['A/A 134.155'],
+  LFFD:['A/A 118.980'],
+  LFFE:['A/A 121.255'],
+  LFFG:['A/A 123.355'],
+  LFFH:['A/A 120.380'],
+  LFFI:['A/A 118.205','APPROCHE 119.400 (S)','APPROCHE 124.250'],
+  LFFJ:['A/A 123.500','FIS 120.325'],
+  LFFK:['A/A 119.765'],
+  LFFL:['A/A 122.055'],
+  LFFN:['A/A 123.425'],
+  LFFP:['A/A 123.500'],
+  LFFQ:['A/A 129.755'],
+  LFFR:['A/A 123.500'],
+  LFFT:['A/A 123.500'],
+  LFFU:['A/A 123.500'],
+  LFFV:['A/A 125.255'],
+  LFFW:['A/A 123.500','APPROCHE 119.400 (S)','APPROCHE 124.250','FIS 119.400 (S)','FIS 130.275'],
+  LFFX:['A/A 123.500'],
+  LFFY:['A/A 120.110'],
+  LFFZ:['A/A 123.500'],
+  LFGA:['ATIS 126.135','AFIS 119.000','TOUR 119.000','SOL 121.880'],
+  LFGB:['A/A 125.255','FIS 130.900'],
+  LFGC:['A/A 126.880','APPROCHE 120.410'],
+  LFGE:['A/A 123.500'],
+  LFGF:['A/A 119.910'],
+  LFGG:['A/A 119.515','FIS 130.900'],
+  LFGH:['A/A 123.500'],
+  LFGI:['A/A 119.555'],
+  LFGJ:['ATIS 121.605','AFIS 130.775','TOUR 130.775','APPROCHE 125.415'],
+  LFGK:['A/A 123.500'],
+  LFGL:['A/A 123.500'],
+  LFGM:['A/A 119.890','APPROCHE 119.505','APPROCHE 123.405'],
+  LFGN:['TOUR 122.300','A/A 123.500','APPROCHE 123.405','FIS 120.675'],
+  LFGO:['A/A 118.180'],
+  LFGP:['A/A 120.040'],
+  LFGQ:['A/A 123.500'],
+  LFGR:['A/A 119.765'],
+  LFGS:['A/A 123.500'],
+  LFGT:['A/A 123.500'],
+  LFGU:['A/A 120.110'],
+  LFGW:['A/A 125.255'],
+  LFGX:['A/A 123.500'],
+  LFGY:['A/A 119.910'],
+  LFGZ:['A/A 123.500'],
+  LFHA:['A/A 118.155'],
+  LFHC:['A/A 119.785'],
+  LFHD:['A/A 118.980'],
+  LFHE:['A/A 118.805'],
+  LFHF:['A/A 123.500'],
+  LFHG:['A/A 123.500'],
+  LFHH:['A/A 123.500'],
+  LFHI:['A/A 120.065'],
+  LFHJ:['A/A 119.055'],
+  LFHL:['A/A 123.500'],
+  LFHM:['A/A 132.055'],
+  LFHN:['A/A 123.500'],
+  LFHO:['A/A 119.855'],
+  LFHP:['AFIS 118.005'],
+  LFHQ:['A/A 120.055'],
+  LFHR:['A/A 123.500'],
+  LFHS:['A/A 118.455'],
+  LFHT:['A/A 123.500'],
+  LFHU:['A/A 120.605'],
+  LFHV:['A/A 118.255'],
+  LFHW:['A/A 123.500'],
+  LFHX:['A/A 123.355'],
+  LFHY:['AFIS 125.205','APPROCHE 119.505 (S)','APPROCHE 123.405'],
+  LFIB:['A/A 123.500'],
+  LFID:['A/A 119.765'],
+  LFIF:['A/A 123.500'],
+  LFIG:['A/A 123.500'],
+  LFIH:['A/A 119.530'],
+  LFIK:['A/A 123.500'],
+  LFIL:['A/A 119.510'],
+  LFIM:['A/A 120.430'],
+  LFIP:['A/A 118.755'],
+  LFIR:['A/A 119.580'],
+  LFIT:['A/A 118.855'],
+  LFIV:['A/A 123.500'],
+  LFIX:['A/A 119.885'],
+  LFIY:['A/A 120.240'],
+  LFJA:['A/A 118.780','RAI 118.780'],
+  LFJB:['A/A 123.500'],
+  LFJC:['A/A 123.500'],
+  LFJD:['A/A 130.000'],
+  LFJE:['A/A 130.000'],
+  LFJF:['A/A 123.500'],
+  LFJH:['A/A 123.500'],
+  LFJI:['A/A 120.310'],
+  LFJL:['ATIS 136.580','TOUR 122.075','SOL 121.705','APPROCHE 119.125'],
+  LFJR:['AFIS 124.705'],
+  LFJS:['A/A 120.380'],
+  LFJT:['A/A 119.785'],
+  LFJU:['A/A 123.500'],
+  LFKA:['A/A 123.500'],
+  LFKB:['ATIS 125.930','TOUR 118.000','SOL 121.830','APPROCHE 123.825','APPROCHE 127.255 (S)','FIS 124.725'],
+  LFKC:['ATIS 131.180','TOUR 123.200','SOL 121.705','APPROCHE 123.825'],
+  LFKD:['A/A 123.500'],
+  LFKE:['A/A 123.500'],
+  LFKF:['ATIS 118.730','TOUR 120.300','SOL 121.805','APPROCHE 121.050'],
+  LFKG:['TOUR 118.350','APPROCHE 119.900'],
+  LFKH:['A/A 123.500'],
+  LFKJ:['ATIS 126.930','TOUR 118.075','SOL 121.705','APPROCHE 121.050','APPROCHE 127.780','FIS 119.825'],
+  LFKL:['A/A 123.500'],
+  LFKM:['TOUR 119.250','A/A 123.500','APPROCHE 120.500'],
+  LFKO:['A/A 118.505'],
+  LFKP:['A/A 119.615'],
+  LFKR:['A/A 123.500'],
+  LFKT:['A/A 123.500'],
+  LFKX:['A/A 118.755'],
+  LFKY:['A/A 123.500','FIS 123.700'],
+  LFLA:['AFIS 129.805'],
+  LFLB:['ATIS 127.100','TOUR 118.305','A/A 123.705','APPROCHE 121.205','FIS 123.705'],
+  LFLC:['ATIS 136.405','TOUR 118.625','SOL 121.950','APPROCHE 119.375','APPROCHE 122.225','FIS 122.225'],
+  LFLD:['AFIS 119.605'],
+  LFLE:['A/A 118.405'],
+  LFLG:['ATIS 125.230','TOUR 121.000','SOL 121.655'],
+  LFLH:['AFIS 118.605'],
+  LFLI:['ATIS 135.580','A/A 125.880','APPROCHE 131.330','APPROCHE 136.255','FIS 126.350'],
+  LFLJ:['AFIS 120.080'],
+  LFLL:['ATIS 126.180','TOUR 120.455','SOL 121.830','APPROCHE 131.315','APPROCHE 132.005 (S)','APPROCHE 136.075','FIS 135.200','FIS 135.530'],
+  LFLM:['A/A 119.005'],
+  LFLN:['ATIS 132.480','TOUR 122.300','A/A 132.480','SOL 121.805','APPROCHE 119.505 (S)','APPROCHE 123.405'],
+  LFLO:['AFIS 120.905','APPROCHE 119.505 (S)','APPROCHE 123.405'],
+  LFLP:['AFIS 118.205','SOL 121.730','APPROCHE 121.205','FIS 123.705'],
+  LFLQ:['A/A 119.885'],
+  LFLR:['A/A 119.510'],
+  LFLS:['ATIS 133.855','TOUR 119.305','SOL 121.930','APPROCHE 125.430'],
+  LFLT:['A/A 123.500'],
+  LFLU:['AFIS 120.105'],
+  LFLV:['AFIS 121.405','APPROCHE 122.225'],
+  LFLW:['AFIS 118.330'],
+  LFLX:['AFIS 125.880','AFIS 133.805 (S)','TOUR 125.880','TOUR 133.805 (S)','APPROCHE 134.100'],
+  LFLY:['ATIS 128.130','AFIS 118.100','TOUR 118.100','TOUR 120.450','SOL 121.705','APPROCHE 131.315 (S)','APPROCHE 136.075','FIS 135.200','FIS 135.530'],
+  LFLZ:['A/A 123.500'],
+  LFMA:['ATIS 136.230','TOUR 118.750','SOL 121.605','APPROCHE 124.350'],
+  LFMC:['ATIS 128.650','TOUR 123.000','SOL 121.850','APPROCHE 122.200'],
+  LFMD:['ATIS 130.480','TOUR 118.625','TOUR 120.780','SOL 121.805','APPROCHE 120.655'],
+  LFME:['A/A 118.255'],
+  LFMF:['A/A 119.055'],
+  LFMG:['A/A 134.155'],
+  LFMH:['ATIS 132.805','AFIS 119.250','TOUR 119.250','APPROCHE 120.500'],
+  LFMI:['TOUR 123.600','SOL 121.850','APPROCHE 131.000'],
+  LFMK:['ATIS 120.030','TOUR 134.505','APPROCHE 123.850'],
+  LFML:['ATIS 125.355','TOUR 123.725 (S)','TOUR 133.100','SOL 121.905','PRÉVOL 121.730','APPROCHE 124.350','APPROCHE 132.300','FIS 124.350','FIS 126.260','FIS 132.300','FIS 132.950'],
+  LFMN:['ATIS 129.605','ATIS 136.580','TOUR 118.700','TOUR 122.380','TOUR 123.150 (S)','SOL 121.705','PRÉVOL 121.780','APPROCHE 124.180','APPROCHE 125.580 (S)','APPROCHE 134.475','FIS 120.850','FIS 122.925','FIS 124.425'],
+  LFMP:['ATIS 127.880','TOUR 118.300','SOL 121.780','APPROCHE 130.855'],
+  LFMQ:['AFIS 119.005','APPROCHE 124.350'],
+  LFMR:['A/A 123.500'],
+  LFMS:['A/A 130.205'],
+  LFMT:['ATIS 124.130','TOUR 118.200','TOUR 118.775','SOL 121.955','APPROCHE 120.375 (S)','APPROCHE 127.280','APPROCHE 130.855','APPROCHE 131.055','FIS 125.900','FIS 134.375','FIS 136.625'],
+  LFMU:['ATIS 127.530','TOUR 120.175','APPROCHE 130.855','APPROCHE 131.055'],
+  LFMV:['ATIS 120.830','TOUR 122.600','SOL 121.755','APPROCHE 118.925','APPROCHE 124.350','APPROCHE 132.300'],
+  LFMW:['A/A 118.905'],
+  LFMX:['A/A 122.305'],
+  LFMY:['TOUR 122.100','TOUR 130.300','APPROCHE 135.150'],
+  LFMZ:['AFIS 121.205'],
+  LFNA:['ATIS 129.330','AFIS 119.105'],
+  LFNB:['AFIS 119.605'],
+  LFNC:['A/A 123.500'],
+  LFNE:['A/A 119.580','FIS 124.350','FIS 132.300'],
+  LFNF:['A/A 118.155'],
+  LFNG:['A/A 120.605'],
+  LFNH:['A/A 118.180'],
+  LFNJ:['A/A 123.500'],
+  LFNL:['A/A 122.505'],
+  LFNO:['A/A 120.430'],
+  LFNQ:['A/A 119.910'],
+  LFNR:['ATIS 125.355','TOUR 133.100','APPROCHE 124.350','APPROCHE 135.150'],
+  LFNS:['A/A 120.055'],
+  LFNT:['A/A 123.355','APPROCHE 118.925','APPROCHE 132.300'],
+  LFNU:['A/A 119.540'],
+  LFNV:['A/A 120.060'],
+  LFNW:['A/A 120.005'],
+  LFNX:['A/A 123.500'],
+  LFNZ:['ATIS 120.830','ATIS 125.355','A/A 118.455','FIS 132.300'],
+  LFOB:['ATIS 118.380','TOUR 121.405','TOUR 123.985 (S)','APPROCHE 121.405 (S)','APPROCHE 123.985','FIS 119.800'],
+  LFOC:['A/A 125.625'],
+  LFOD:['A/A 120.605'],
+  LFOF:['A/A 118.330'],
+  LFOG:['A/A 123.500'],
+  LFOH:['AFIS 135.205','APPROCHE 120.350'],
+  LFOI:['A/A 120.060'],
+  LFOJ:['TOUR 122.100','TOUR 124.800','APPROCHE 122.700'],
+  LFOK:['ATIS 136.380','AFIS 129.405','TOUR 129.405','APPROCHE 118.890'],
+  LFOL:['A/A 126.855'],
+  LFOM:['A/A 128.930'],
+  LFON:['A/A 118.205'],
+  LFOO:['A/A 123.355'],
+  LFOP:['ATIS 120.730','TOUR 120.200','A/A 120.730','APPROCHE 134.825'],
+  LFOQ:['AFIS 118.455'],
+  LFOR:['A/A 119.205'],
+  LFOS:['A/A 119.510'],
+  LFOT:['AFIS 124.400','TOUR 124.400','APPROCHE 134.875'],
+  LFOU:['AFIS 120.405','APPROCHE 119.400 (S)','APPROCHE 124.250'],
+  LFOV:['AFIS 120.805'],
+  LFOW:['A/A 123.500'],
+  LFOX:['A/A 119.050'],
+  LFOY:['A/A 123.500'],
+  LFOZ:['AFIS 122.405'],
+  LFPA:['A/A 119.505'],
+  LFPB:['ATIS 120.005','TOUR 118.405 (S)','TOUR 118.930','SOL 121.905','PRÉVOL 121.955','APPROCHE 118.155','APPROCHE 119.855','APPROCHE 121.155','APPROCHE 124.355'],
+  LFPD:['A/A 119.230'],
+  LFPE:['ATIS 126.725','TOUR 120.150'],
+  LFPF:['A/A 120.430'],
+  LFPG:['ATIS 127.130','ATIS 128.230','TOUR 118.655','TOUR 119.255','TOUR 119.630 (S)','TOUR 120.655 (S)','TOUR 120.905','TOUR 123.605','TOUR 125.330 (S)','SOL 121.610','SOL 121.780','SOL 121.810','SOL 121.980','PRÉVOL 121.730','PRÉVOL 121.840','APPROCHE 118.155','APPROCHE 119.855','APPROCHE 121.155','APPROCHE 124.355','APPROCHE 125.830','APPROCHE 126.430','APPROCHE 126.580 (S)','APPROCHE 131.205','APPROCHE 133.380','APPROCHE 136.280'],
+  LFPH:['A/A 123.930'],
+  LFPK:['A/A 122.205'],
+  LFPL:['ATIS 125.030','TOUR 118.605','SOL 122.130'],
+  LFPM:['ATIS 128.180','AFIS 121.105','TOUR 121.105','APPROCHE 118.050','FIS 134.300'],
+  LFPN:['ATIS 127.480','TOUR 120.755','SOL 122.130'],
+  LFPO:['ATIS 126.505','ATIS 131.355','TOUR 118.700','TOUR 120.500 (S)','SOL 121.705','SOL 121.815 (S)','PRÉVOL 120.500 (S)','PRÉVOL 121.555','APPROCHE 118.855 (S)','APPROCHE 123.875','APPROCHE 124.450'],
+  LFPP:['A/A 120.405'],
+  LFPQ:['A/A 120.230'],
+  LFPT:['ATIS 124.125','TOUR 121.200','APPROCHE 118.805'],
+  LFPU:['A/A 120.055'],
+  LFPX:['ATIS 125.275','TOUR 129.525','SOL 121.900'],
+  LFPZ:['ATIS 131.025','TOUR 118.000','SOL 121.950'],
+  LFQA:['AFIS 134.930'],
+  LFQB:['AFIS 123.730','FIS 120.325'],
+  LFQC:['A/A 123.500'],
+  LFQD:['A/A 123.500'],
+  LFQE:['TOUR 118.950','APPROCHE 120.125'],
+  LFQF:['A/A 123.500','APPROCHE 123.405'],
+  LFQG:['AFIS 120.605','APPROCHE 119.700'],
+  LFQH:['A/A 123.500'],
+  LFQJ:['A/A 121.005'],
+  LFQK:['A/A 118.980'],
+  LFQL:['A/A 123.355'],
+  LFQM:['AFIS 122.205'],
+  LFQN:['A/A 123.500'],
+  LFQO:['A/A 122.005'],
+  LFQP:['TOUR 129.800','APPROCHE 118.450','FIS 118.450'],
+  LFQQ:['ATIS 119.330','TOUR 118.555','SOL 121.855','APPROCHE 120.275','APPROCHE 126.480','APPROCHE 134.825','FIS 120.275','FIS 126.480','FIS 134.825'],
+  LFQT:['ATIS 127.905','TOUR 119.080','SOL 121.680','APPROCHE 120.275','APPROCHE 126.480'],
+  LFQU:['A/A 123.500'],
+  LFQV:['A/A 126.855'],
+  LFQW:['A/A 118.155','APPROCHE 129.925'],
+  LFQX:['A/A 123.500'],
+  LFQY:['A/A 123.500'],
+  LFQZ:['A/A 123.500'],
+  LFRB:['ATIS 129.355','TOUR 120.105','APPROCHE 122.400','APPROCHE 125.860','FIS 119.575'],
+  LFRC:['AFIS 119.630'],
+  LFRD:['ATIS 124.580','TOUR 120.155','APPROCHE 126.950'],
+  LFRE:['AFIS 121.405'],
+  LFRF:['A/A 118.105'],
+  LFRG:['ATIS 119.180','TOUR 118.305','APPROCHE 120.350'],
+  LFRH:['ATIS 129.125','AFIS 122.700','TOUR 119.700 (S)','TOUR 122.700','SOL 119.700','APPROCHE 122.700 (S)','APPROCHE 123.000'],
+  LFRI:['AFIS 119.905','APPROCHE 119.400 (S)','APPROCHE 124.430'],
+  LFRJ:['TOUR 119.200','TOUR 119.700 (S)','APPROCHE 119.700 (S)','APPROCHE 122.400'],
+  LFRK:['ATIS 123.080','TOUR 134.530','SOL 121.790','APPROCHE 120.350'],
+  LFRL:['TOUR 123.200','APPROCHE 119.300 (S)','APPROCHE 120.600'],
+  LFRM:['AFIS 125.905'],
+  LFRN:['ATIS 136.405','TOUR 120.505','SOL 121.730','APPROCHE 126.950','APPROCHE 134.000','APPROCHE 134.200','FIS 126.950','FIS 134.000','FIS 134.200'],
+  LFRO:['AFIS 118.405','APPROCHE 122.400','APPROCHE 125.860'],
+  LFRP:['A/A 118.255'],
+  LFRQ:['TOUR 118.625','APPROCHE 125.860'],
+  LFRS:['ATIS 126.930','TOUR 118.655','TOUR 119.400 (S)','SOL 119.400 (S)','SOL 121.655','APPROCHE 119.400 (S)','APPROCHE 124.250','APPROCHE 124.430','FIS 119.400 (S)','FIS 130.275'],
+  LFRT:['AFIS 118.455'],
+  LFRU:['AFIS 118.505','APPROCHE 122.400','APPROCHE 125.860'],
+  LFRV:['AFIS 122.605'],
+  LFRW:['A/A 119.785'],
+  LFRZ:['TOUR 118.950','APPROCHE 119.400 (S)','APPROCHE 124.430'],
+  LFSA:['A/A 123.500'],
+  LFSB:['ATIS 127.880','TOUR 118.305','SOL 121.605','PRÉVOL 121.955','APPROCHE 129.250 (S)','APPROCHE 130.905','APPROCHE 133.510','FIS 130.905','FIS 135.855','RAI 134.680'],
+  LFSD:['AFIS 118.330','APPROCHE 125.415','FIS 135.850'],
+  LFSE:['A/A 123.500'],
+  LFSG:['AFIS 120.205','APPROCHE 127.250'],
+  LFSH:['A/A 120.630'],
+  LFSJ:['A/A 123.500'],
+  LFSK:['A/A 123.500'],
+  LFSL:['AFIS 121.130','TOUR 121.130','APPROCHE 118.080'],
+  LFSM:['AFIS 132.030','APPROCHE 133.510'],
+  LFSN:['AFIS 119.605','APPROCHE 127.250'],
+  LFSP:['A/A 135.705'],
+  LFST:['ATIS 126.930','TOUR 119.250','SOL 121.805','APPROCHE 119.580','APPROCHE 120.410','APPROCHE 133.100 (S)','FIS 119.580','FIS 120.410'],
+  LFSU:['A/A 123.500','FIS 135.850'],
+  LFSV:['A/A 119.785'],
+  LFSW:['A/A 120.185'],
+  LFTF:['TOUR 122.700','RAI 118.275'],
+  LFTH:['ATIS 129.650','TOUR 121.000','TOUR 121.800 (S)','SOL 121.800','APPROCHE 118.825','APPROCHE 126.325','FIS 118.825'],
+  LFTM:['A/A 123.500'],
+  LFTN:['A/A 123.500'],
+  LFTP:['A/A 123.500'],
+  LFTQ:['A/A 123.500'],
+  LFTW:['ATIS 129.355','TOUR 123.200','SOL 121.800','APPROCHE 131.055','FIS 119.475'],
+  LFTZ:['AFIS 118.130','APPROCHE 122.925','APPROCHE 125.580 (S)','APPROCHE 134.475'],
+  LFXA:['TOUR 122.100','A/A 129.755','APPROCHE 120.230','APPROCHE 125.430','APPROCHE 131.315','APPROCHE 133.150','APPROCHE 136.075'],
+  LFXB:['A/A 122.400','APPROCHE 132.450','FIS 124.200'],
+  LFXU:['A/A 122.955'],
+  LFYG:['A/A 122.930'],
+  LFYR:['A/A 119.075'],
+  LFYS:['A/A 118.625']
+};
+
+// Fréquences d'un terrain, sous une forme unique {type, label, mhz, secours, src} : d'abord la VAC du
+// cycle en cours (VAC_FREQS), sinon celles saisies à la main dans AD_NOTES. Jamais inventées.
+function airportFreqs(code){
+  const c = (code||'').trim().toUpperCase();
+  if(VAC_FREQS[c]) return VAC_FREQS[c].map(str=>{
+    const m = str.match(/^(\S+) (\S+)( \(S\))?$/);
+    return { type: m[1], label: m[1] + (m[3] ? ' secours' : ''), mhz: m[2], secours: !!m[3], src: 'vac' };
+  });
+  const note = AD_NOTES[c];
+  if(note && note.freqs && note.freqs.length) return note.freqs.map(f=>Object.assign({secours:false, src:'manuel'}, f));
+  return [];
+}
+function formatFreq(f){ return `${f.type} ${f.mhz}${f.secours ? ' (S)' : ''}`; }
+function allFrequenciesText(code){ return airportFreqs(code).map(formatFreq).join(' · '); }
 
 // Coordonnées GPS (WGS84, degrés décimaux) de tous les terrains de AIRPORTS.
 // Source : OurAirports (jeu de données public, https://ourairports.com/data/) — arrondi à 4 décimales (~11 m).
@@ -3136,7 +3585,33 @@ function toCoordsForLeg(i, arrCode){
 // refreshLegPointSideEffects, qui ne patche que les 1-2 cartes concernées) et à l'export depuis
 // Préparation (cf. exportPrepToLog/applyPrepStop) — jamais en continu sur rv/dist eux-mêmes, qui
 // restent des champs manuels comme les autres.
+// Code OACI représenté par l'étape i : son champ Point s'il est reconnu, sinon (cartes Départ /
+// Aéroport arrivée, qui affichent une ville) t_dep / t_arr — même règle que from/toCoordsForLeg.
+function legAirportCode(i){
+  const p = (legs[i].point||'').trim().toUpperCase();
+  if(p && findAirport(p)) return p;
+  if(legs.length>=2 && i===0) return document.getElementById('t_dep').value.trim().toUpperCase();
+  if(legs.length>=2 && i===legs.length-1) return document.getElementById('t_arr').value.trim().toUpperCase();
+  return '';
+}
+
+// Dès qu'une étape correspond à un terrain, son champ fréquence reçoit TOUTES les fréquences connues
+// de ce terrain (cf. airportFreqs). leg.freqAuto mémorise ce qui a été posé automatiquement : tant que
+// le champ n'a pas été retouché à la main (leg.freq === leg.freqAuto, ou vide), il suit le terrain
+// (changement de point = nouvelles fréquences) ; une saisie manuelle n'est jamais écrasée.
+function autoFillLegFreqs(){
+  legs.forEach((leg, i)=>{
+    const untouched = !leg.freq || leg.freq === leg.freqAuto;
+    if(!untouched) return;
+    const code = legAirportCode(i);
+    const txt = code && findAirport(code) ? allFrequenciesText(code) : '';
+    if(txt){ leg.freq = txt; leg.freqAuto = txt; }
+    else if(leg.freqAuto && leg.freq === leg.freqAuto){ leg.freq = ''; leg.freqAuto = ''; }
+  });
+}
+
 function recalcAllLegs(){
+  autoFillLegFreqs();
   if(legs.length === 0) return;
   const depCode = document.getElementById('t_dep').value;
   const arrCode = document.getElementById('t_arr').value;
@@ -3523,8 +3998,10 @@ function airportInfoHtml(code){
   const links = vacLinks(code);
   const lines = [`${airport.city || '?'} · ${airport.usage || '?'}`];
   if(note && note.elevFt!==undefined) lines.push(`Altitude terrain : ${note.elevFt} ft (${note.elevM} m)`);
-  if(note && note.freqs && note.freqs.length){
-    lines.push('Fréquences : ' + note.freqs.map(f=>`<span class="freq-type">${f.type}</span>${f.label} ${f.mhz}`).join(' · '));
+  const freqs = airportFreqs(code);
+  if(freqs.length){
+    const src = freqs[0].src==='vac' ? ` <span style="color:var(--ink-dim);">(VAC SIA ${VAC_FREQS_CYCLE}, lecture automatique — à vérifier sur la carte)</span>` : '';
+    lines.push('Fréquences : ' + freqs.map(f=>`<span class="freq-type">${f.type}</span>${f.mhz}${f.secours?' (S)':''}`).join(' · ') + src);
   } else {
     lines.push('Fréquences : non vérifiées ici — voir la carte VAC');
   }
@@ -3626,7 +4103,7 @@ function syncPrepFromRoute(){
       arrInput.dispatchEvent(new Event('input'));
     }
   }
-  isSyncingRoutePrep = false;
+  isSyncingRoutePrep = false;  autoSyncLegsFromRoute();
 }
 
 function renderRouteMarkers(){
@@ -3856,15 +4333,28 @@ function destinationPoint(lat, lon, bearingDeg, distNm){
   return { lat: toDeg(φ2), lon: ((toDeg(λ2)+540)%360)-180 };
 }
 
+// Segment de carte [a, b] correspondant à l'étape i du log, ou null si la route ne correspond pas aux
+// étapes. Deux alignements possibles : avec la carte "Départ" en tête des étapes (export depuis la
+// carte ou depuis Préparation : routePoints.length === legs.length, l'étape i va de routePoints[i-1] à
+// routePoints[i], la carte Départ elle-même n'a pas de segment) ; ancien export sans carte Départ
+// (routePoints.length === legs.length+1, l'étape i va de routePoints[i] à routePoints[i+1]).
+function routeSegmentForLeg(i){
+  if(legs.length>=2 && routePoints.length === legs.length){
+    return i===0 ? null : [routePoints[i-1], routePoints[i]];
+  }
+  if(routePoints.length === legs.length+1) return [routePoints[i], routePoints[i+1]];
+  return null;
+}
+
 // Position géographique du PNR : il faut que la route tracée sur la carte corresponde aux étapes
 // du log (un segment de carte par étape, ce que produit l'export), sinon on ne sait pas à quel
 // segment rattacher l'étape du PNR et aucun marqueur n'est posé.
 function pnrLatLon(){
   const p = lastPnr;
   if(!p || p.status!=='ok') return null;
-  if(routePoints.length !== legs.length+1) return null;
-  const a = routePoints[p.legIndex], b = routePoints[p.legIndex+1];
-  if(!a || !b) return null;
+  const seg = routeSegmentForLeg(p.legIndex);
+  if(!seg || !seg[0] || !seg[1]) return null;
+  const a = seg[0], b = seg[1];
   const gc = greatCircle(a.lat, a.lon, b.lat, b.lon);
   return destinationPoint(a.lat, a.lon, gc.bearing, gc.dist * p.fractionOfLeg);
 }
@@ -4041,10 +4531,8 @@ document.getElementById('btnClearRoute').addEventListener('click', ()=>{
 // Fréquence "connue" pour un aérodrome : uniquement celles vérifiées dans AD_NOTES (rare), jamais
 // devinée. Préfixée par son type (cf. FREQ_TYPES) comme partout ailleurs où une fréquence s'affiche.
 function primaryFrequency(code){
-  const note = AD_NOTES[code];
-  if(!note || !note.freqs || !note.freqs.length) return '';
-  const f = note.freqs[0];
-  return `${f.type} ${f.mhz}`;
+  const f = airportFreqs(code)[0];
+  return f ? formatFreq(f) : '';
 }
 
 // Sélecteur de fréquences vérifiées par type (AFIS/TOUR/APPROCHE), avec option de saisie libre
@@ -4056,14 +4544,14 @@ function primaryFrequency(code){
 // Chaque fréquence ajoutée reste préfixée par son type, y compris en saisie libre (toujours "AUTRE").
 function freqPickerHtml(code, opts){
   opts = opts || {};
-  const note = AD_NOTES[code];
-  if(!note || !note.freqs || !note.freqs.length) return '';
+  const freqs = airportFreqs(code);
+  if(!freqs.length) return '';
 
   const groups = {};
-  note.freqs.forEach((f,i)=>{ (groups[f.type] = groups[f.type] || []).push(Object.assign({idx:i}, f)); });
+  freqs.forEach((f,i)=>{ (groups[f.type] = groups[f.type] || []).push(Object.assign({idx:i}, f)); });
   const optionsHtml = FREQ_TYPES.filter(t=>groups[t]).map(t=>`
       <optgroup label="${t}">
-        ${groups[t].map(f=>`<option value="${f.idx}">${f.label} · ${f.mhz}</option>`).join('')}
+        ${groups[t].map(f=>`<option value="${f.idx}">${f.label} · ${f.mhz}${f.secours?' (S)':''}</option>`).join('')}
       </optgroup>
     `).join('') + `<option value="autre">Autre (saisie libre)…</option>`;
 
@@ -4094,7 +4582,7 @@ function flashFreqMsg(el, text){
 // contient : renderLegsInputs pour le tableau du log, onRbmPetalClick pour la bulle carte).
 function wireFreqPicker(root){
   root.querySelectorAll('.freq-picker').forEach(picker=>{
-    const note = AD_NOTES[picker.dataset.code];
+    const freqs = airportFreqs(picker.dataset.code);
     const select = picker.querySelector('.freq-picker-select');
     const custom = picker.querySelector('.freq-picker-custom');
     const legSelect = picker.querySelector('.freq-picker-leg');
@@ -4113,8 +4601,7 @@ function wireFreqPicker(root){
         if(!v){ custom.focus(); return; }
         formatted = `AUTRE ${v}`;
       } else {
-        const f = note.freqs[Number(select.value)];
-        formatted = `${f.type} ${f.mhz}`;
+        formatted = formatFreq(freqs[Number(select.value)]);
       }
 
       if(legSelect){
@@ -4141,21 +4628,28 @@ function wireFreqPicker(root){
 // de l'onglet 1 et reconstruit entièrement les étapes à partir des points tracés (cap et distance
 // recalculés par géométrie, altitude et fréquence reprises quand connues). Le vent reste à saisir
 // manuellement pour chaque étape — la route tracée ne connaît pas la météo du jour.
-document.getElementById('btnExportRoute').addEventListener('click', ()=>{
-  if(routePoints.length < 2){
-    alert('Trace au moins deux points avant d\'exporter.');
-    return;
-  }
-  if(legs.length > 0 && !confirm('Ça va remplacer les étapes actuelles du Log de navigation par les points de cette route. Continuer ?')){
-    return;
-  }
-
+// Construit les étapes du log depuis la route tracée : carte "Départ" (point 0) puis une étape par
+// segment. Le vent, l'altitude et une fréquence retouchée à la main sont repris de l'ancienne étape
+// qui portait le même point (sinon ils seraient perdus à chaque point ajouté sur la carte).
+function buildLegsFromRoute(){
+  const old = legs.slice();
+  const keep = pt=>old.find(l=>l.point && l.point===pt);
   const dep = routePoints[0];
   const arr = routePoints[routePoints.length-1];
   document.getElementById('t_dep').value = dep.type==='airport' ? dep.code : (dep.name || 'Départ');
   document.getElementById('t_arr').value = arr.type==='airport' ? arr.code : (arr.name || '');
 
-  legs = [];
+  // Carte "Départ" en tête (même convention que Préparation, cf. ensureDepArrInLog) : sans elle, la
+  // première étape exportée était prise pour le départ (badge de position) et sautée du tableau.
+  legId++;
+  legs = [{
+    id: legId,
+    point: dep.type==='airport' ? dep.code : (dep.name || 'Départ'),
+    rv: '', dist: '', wdir: '', wspd: '',
+    alt: dep.altFt!==undefined ? String(dep.altFt) : '',
+    freq: dep.type==='airport' ? allFrequenciesText(dep.code) : ''
+  }];
+  legs[0].freqAuto = legs[0].freq;
   lastRealWind = null;
   for(let i=1; i<routePoints.length; i++){
     const prev = routePoints[i-1], p = routePoints[i];
@@ -4163,18 +4657,63 @@ document.getElementById('btnExportRoute').addEventListener('click', ()=>{
     legId++;
     legs.push({
       id: legId,
-      point: p.name || (p.type==='airport' ? p.code : `Point ${i+1}`),
+      point: p.type==='airport' ? p.code : (p.name || `Point ${i+1}`),
       rv: Math.round(p.forcedCourse!==undefined ? p.forcedCourse : gc.bearing),
       dist: Math.round(gc.dist*10)/10,
       wdir: '', wspd: '',
       alt: p.altFt!==undefined ? String(p.altFt) : '',
-      freq: p.type==='airport' ? primaryFrequency(p.code) : ''
+      freq: p.type==='airport' ? allFrequenciesText(p.code) : ''
     });
+    legs[legs.length-1].freqAuto = legs[legs.length-1].freq;
   }
+  legs.forEach(l=>{
+    const o = keep(l.point);
+    if(!o) return;
+    l.wdir = o.wdir; l.wspd = o.wspd;
+    if(o.alt) l.alt = o.alt;
+    if(o.freq && o.freq !== o.freqAuto){ l.freq = o.freq; l.freqAuto = ''; }
+  });
+}
+
+// Synchro automatique carte -> log : quand un point est ajouté/déplacé/retiré sur la carte, le log
+// suit, mais SEULEMENT s'il est vide ou s'il a lui-même été produit par la carte et pas retouché
+// depuis (point/cap/distance — cf. legsRouteSignature). Des étapes saisies à la main ne sont jamais
+// écrasées : il reste alors le bouton "Exporter le tracé vers le log de nav", qui demande confirmation.
+let legsRouteSignature = null;
+let isAutoSyncingLegs = false;
+// Vide = aucune saisie de l'utilisateur ; une fréquence posée automatiquement (freqAuto) ne compte pas.
+function legsBlankOrFromRoute(){
+  const blank = legs.every(l=>isLegBlank(Object.assign({}, l, { freq: l.freq===l.freqAuto ? '' : l.freq })));
+  return blank || legsSignature() === legsRouteSignature;
+}
+function legsSignature(){ return JSON.stringify(legs.map(l=>[l.point, String(l.rv), String(l.dist)])); }
+function autoSyncLegsFromRoute(){
+  if(isAutoSyncingLegs || routePoints.length < 2) return;
+  if(!legsBlankOrFromRoute()) return;
+  isAutoSyncingLegs = true;
+  buildLegsFromRoute();
+  renderLegsInputs();
+  recompute();
+  legsRouteSignature = legsSignature();
+  isAutoSyncingLegs = false;
+}
+
+document.getElementById('btnExportRoute').addEventListener('click', ()=>{
+  if(routePoints.length < 2){
+    alert('Trace au moins deux points avant d\'exporter.');
+    return;
+  }
+  if(!legsBlankOrFromRoute() && !confirm('Ça va remplacer les étapes actuelles du Log de navigation par les points de cette route. Continuer ?')){
+    return;
+  }
+  isAutoSyncingLegs = true;
+  buildLegsFromRoute();
   renderLegsInputs();
   document.getElementById('t_dep').dispatchEvent(new Event('input'));
   document.getElementById('t_arr').dispatchEvent(new Event('input'));
   recompute();
+  legsRouteSignature = legsSignature();
+  isAutoSyncingLegs = false;
   switchTab(2);
 });
 
@@ -5035,6 +5574,8 @@ function wireTerrainField(inputId, hintId, linksId, listId){
     syncRouteFromPrep(); // no-op pour t_deg1/t_deg2 (ne lit que t_dep/t_arr) — cf. section carte
     syncRoutePointsFromPrepStops(); // idem : no-op pour t_deg1/t_deg2, et tant que dep/arr manquent
     renderDegagementCards();
+    autoFillLegFreqs(); // cartes Départ / Aéroport arrivée : suivent t_dep / t_arr
+    patchLegFreqInputs();
   }
 
   input.addEventListener('input', ()=>{
@@ -6046,15 +6587,12 @@ function collectRecapFrequencies(){
   ['t_dep','t_arr','t_deg1','t_deg2'].forEach(id=>{
     const code = document.getElementById(id).value.trim().toUpperCase();
     if(!code) return;
-    const note = AD_NOTES[code];
-    if(note && note.freqs && note.freqs.length){
-      note.freqs.forEach(f=>{
-        const key = code+'|'+f.mhz;
-        if(seen.has(key)) return;
-        seen.add(key);
-        items.push({ where: code, label: f.label, mhz: f.mhz });
-      });
-    }
+    airportFreqs(code).forEach(f=>{
+      const key = code+'|'+f.mhz;
+      if(seen.has(key)) return;
+      seen.add(key);
+      items.push({ where: code, label: f.label, mhz: f.mhz });
+    });
   });
   legs.forEach(l=>{
     if(!l.freq) return;
@@ -6350,6 +6888,17 @@ document.getElementById('btnRecapPrint').addEventListener('click', ()=>{
 // l'appli ne connaît pas l'altitude de sécurité ni les radiales. Une case modifiée à la main (aeroEdits,
 // session uniquement) prend le pas sur la valeur calculée jusqu'à "Effacer mes modifications".
 let aeroEdits = {};
+// Observations/notes saisies sur les points de la carte (bulle "Observations" et liste sous la carte,
+// routePoints[].notes) : pré-remplissent la zone OBSERVATIONS de la feuille, une ligne par point.
+function routeNotesText(){
+  if(aeroBlank) return '';
+  return routePoints.map((p,i)=>{
+    const n = (p.notes||'').trim();
+    if(!n) return '';
+    const who = p.type==='airport' ? p.code : (p.name || `Point ${i+1}`);
+    return `${who} : ${n}`;
+  }).filter(Boolean).join('\n');
+}
 let aeroRowsOverride = null; // nombre de lignes imposé par les boutons +/− (null = suit les étapes du log)
 let aeroBlank = false;       // true : feuille vierge, aucune valeur du log n'est pré-remplie
 let aeroLastN = 3;           // nombre de lignes actuellement affichées (point de départ des boutons +/−)
@@ -6395,7 +6944,7 @@ function aeroLogHtml(){
   cell(721,164,802,283,'ctr','<span class="al-l b">Radio<br>Nav</span><span class="al-l" style="font-size:.8cqw;">Fréq. et radial</span>');
   cell(802,164,1538,Ybot,'obs',
     '<div style="text-align:center;font-size:1.2cqw;"><u>C/L Point Tournant :</u><br>1-TOP 2-Cap 3-Altitude 4-Estimées 5-Radio 6-RadioNav 7-MED <span style="font-size:1cqw;">(Moteur, Essence, Directionnel)</span></div>'
-    +`<div class="al-ed" contenteditable="true" spellcheck="false" data-k="obs" style="position:absolute;left:.6cqw;right:.6cqw;top:4.5cqw;bottom:.6cqw;">${esc(aeroEdits.obs||'')}</div>`);
+    +`<div class="al-ed" contenteditable="true" spellcheck="false" data-k="obs" style="position:absolute;left:.6cqw;right:.6cqw;top:4.5cqw;bottom:.6cqw;">${esc(aeroEdits.obs!==undefined ? aeroEdits.obs : routeNotesText())}</div>`);
   cell(633,283,721,Ybot,'',''); cell(721,283,802,Ybot,'','');
 
   // Colonne gauche : N étapes
