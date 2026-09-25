@@ -508,6 +508,7 @@ table.recap-table td.recap-split-cell .rs-plan{
 .al-c.col .al-ed{flex:1;}
 .al-ed:focus{background:#fff8d6;}
 .al-c.num .al-ed{text-align:center; width:100%; white-space:nowrap; font-size:1cqw;}
+.al-c.nb .al-ed{white-space:normal; word-break:break-all; font-size:.85cqw;}
 .al-c.red .al-ed{color:#c00;}
 .al-c.obs{display:block;}
 
@@ -516,7 +517,7 @@ table.recap-table td.recap-split-cell .rs-plan{
   body{background:#fff;color:#111;padding:0;font-family:'IBM Plex Mono',monospace;font-size:10px;}
   .no-print{display:none!important;}
   .shell{display:block;}
-  .main{padding:0; margin-left:0;}
+  .main{padding:0!important; margin-left:0!important;} /* !important : la règle mobile (max-width:900px) s'applique aussi en impression et ajoutait 84px de marge basse */
   .panel{border:none;}
   .panel-head{display:none;}
   .panel-body{padding:0;}
@@ -552,7 +553,11 @@ table.recap-table td.recap-split-cell .rs-plan{
   .recap-page-break{border-top:none; margin-top:0; padding-top:0; break-before:page; page-break-before:always;}
 
   /* Feuille aéroclub dans le Récap : tient sur une A4 paysage (largeur calculée en JS, --alw) */
-  .recap-page .al-wrap{padding:0; width:var(--alw,262mm); break-inside:avoid; page-break-inside:avoid;}
+  body.print-recap .print-title{display:none!important;}
+  body.print-recap #tabPanel8 > .panel{margin-top:0!important;}
+  .recap-page .al-page1{height:193mm; margin-bottom:0; display:flex; align-items:center; justify-content:center; break-inside:avoid; page-break-inside:avoid;}
+  .recap-page .al-wrap{padding:0; margin:0 auto; width:var(--alw,262mm); break-inside:avoid; page-break-inside:avoid;}
+  .recap-page .al-c.nb .al-ed{white-space:normal; word-break:break-all; font-size:.85cqw;}
   .recap-page .al-top,.recap-page .al-foot{font-size:8px; margin:1mm 0;}
   .al-ed:focus{background:none;}
 }
@@ -1753,6 +1758,10 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
         <button type="button" class="btn-print" id="btnRecapPrint"><i class="ph-bold ph-printer"></i> Imprimer</button>
         <button type="button" class="btn-ghost" id="btnRecapSave"><i class="ph-bold ph-floppy-disk"></i> Enregistrer</button>
         <span class="recap-toolbar-sep"></span>
+        <button type="button" class="btn-recap-toggle" id="btnAeroLess" title="Retirer une ligne"><i class="ph-bold ph-minus"></i></button>
+        <span id="aeroRowsLabel" style="font-size:12px;color:var(--ink-dim);min-width:64px;text-align:center;"></span>
+        <button type="button" class="btn-recap-toggle" id="btnAeroMore" title="Ajouter une ligne"><i class="ph-bold ph-plus"></i> Ligne</button>
+        <button type="button" class="btn-recap-toggle" id="btnAeroBlank"><i class="ph-bold ph-file"></i> Feuille vierge</button>
         <button type="button" class="btn-recap-toggle" id="btnAeroReset"><i class="ph-bold ph-arrow-counter-clockwise"></i> Effacer mes modifications</button>
       </div>
       <p class="recap-hint">Page 1 : la feuille du log (clique dans une case pour la modifier). Page 2, si coché ci-dessous : résumé, fréquences, PNR, carburant, M&amp;C, météo, NOTAM, checklist.</p>
@@ -6119,7 +6128,7 @@ function renderRecapFrequencies(){
 }
 
 function renderRecapNavTable(){
-  return `<div class="recap-section" style="grid-template-columns:1fr;"><div>${aeroLogHtml()}</div></div>`;
+  return `<div class="recap-section al-page1" style="grid-template-columns:1fr;"><div style="width:100%;">${aeroLogHtml()}</div></div>`;
 }
 
 function renderRecapWb(){
@@ -6312,6 +6321,10 @@ function renderRecap(){
   if(!document.getElementById('rc_b_navtable').checked) html += `<div class="recap-section" style="grid-template-columns:1fr;"><div class="recap-notes-col" style="min-height:120px;border-left:none;padding-left:0;"></div></div>`;
 
   box.innerHTML = html;
+  document.getElementById('aeroRowsLabel').textContent = aeroLastN + ' ligne' + (aeroLastN>1?'s':'') + (aeroRowsOverride!==null ? '' : ' (auto)');
+  document.getElementById('btnAeroBlank').innerHTML = aeroBlank
+    ? '<i class="ph-bold ph-file-arrow-down"></i> Remettre les valeurs du log'
+    : '<i class="ph-bold ph-file"></i> Feuille vierge';
 }
 
 document.getElementById('btnRecapSave').addEventListener('click', saveCurrentFlightLog);
@@ -6323,7 +6336,9 @@ document.querySelectorAll('#tabPanel8 input[type="checkbox"], #tabPanel8 select'
 document.getElementById('btnRecapPrint').addEventListener('click', ()=>{
   renderRecap();
   document.getElementById('printPageSize').textContent = '@page{ size:A4 landscape; margin:8mm; }';
+  document.body.classList.add('print-recap');
   window.print();
+  document.body.classList.remove('print-recap');
   awardGalons(5, 'Récap imprimé');
 });
 
@@ -6335,16 +6350,20 @@ document.getElementById('btnRecapPrint').addEventListener('click', ()=>{
 // l'appli ne connaît pas l'altitude de sécurité ni les radiales. Une case modifiée à la main (aeroEdits,
 // session uniquement) prend le pas sur la valeur calculée jusqu'à "Effacer mes modifications".
 let aeroEdits = {};
+let aeroRowsOverride = null; // nombre de lignes imposé par les boutons +/− (null = suit les étapes du log)
+let aeroBlank = false;       // true : feuille vierge, aucune valeur du log n'est pré-remplie
+let aeroLastN = 3;           // nombre de lignes actuellement affichées (point de départ des boutons +/−)
 function aeroLogHtml(){
-  const rows = lastNavRows || [];
-  const tot = lastNavTotals || {};
+  const rows = aeroBlank ? [] : (lastNavRows || []);
+  const tot = aeroBlank ? {} : (lastNavTotals || {});
   const val = id=>document.getElementById(id).value;
   const variation = Number(val('f_var'))||0;
   const conso = Number(val('f_conso'))||0;
   const hm = m=>{ m=Math.round(m); return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); };
   const hhmm = m=>{ m=((Math.round(m)%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
   const esc = t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-  const N = Math.max(rows.length, 3);
+  const N = aeroRowsOverride!==null ? aeroRowsOverride : Math.max(rows.length, 3);
+  aeroLastN = N;
   const lh = 60.8;
   const Le = 363 + N*lh;          // bas des lignes d'étape (colonne gauche)
   const Ce = 333 + (N+1)*lh;      // bas des lignes de position (colonne centrale)
@@ -6357,9 +6376,9 @@ function aeroLogHtml(){
   const ed = (k,v)=>`<div class="al-ed" contenteditable="true" spellcheck="false" data-k="${k}">${esc(aeroEdits[k]!==undefined?aeroEdits[k]:v)}</div>`;
   const lab = t=>`<span class="al-l">${t}</span>`;
 
-  const dep = val('t_dep'), arr = val('t_arr');
-  const dateFr = val('f_date') ? val('f_date').split('-').reverse().join('/') : '';
-  const avion = [val('f_immat'), val('f_type')].filter(Boolean).join(' ');
+  const dep = aeroBlank ? '' : val('t_dep'), arr = aeroBlank ? '' : val('t_arr');
+  const dateFr = (!aeroBlank && val('f_date')) ? val('f_date').split('-').reverse().join('/') : '';
+  const avion = aeroBlank ? '' : [val('f_immat'), val('f_type')].filter(Boolean).join(' ');
 
   // En-tête
   cell(40,51,313,164,'col', lab('Météo terrain de départ :')+ed('meteo',''));
@@ -6395,7 +6414,7 @@ function aeroLogHtml(){
   cell(40,Le,196,Le+56,'', lab('Total :'));
   cell(196,Le,242,Le+56,'num', ed('totd',tot.cumDist ? Math.round(tot.cumDist*10)/10 : ''));
   cell(242,Le,313,Le+56,'num', ed('tott',tot.cumTime ? Math.round(tot.cumTime) : ''));
-  cell(40,Le+56,313,Le+114,'red col', '<span class="al-l b" style="font-size:1.02cqw;">Réserve additionnelle à l’atterrissage :</span><span class="al-sub">= /H. Fin de vol/ – /H. Atterrissage/</span>'+ed('res',''));
+  cell(40,Le+56,313,Le+114,'red col', '<span class="al-l b" style="font-size:.9cqw;">Réserve additionnelle à l’atterrissage :</span><span class="al-sub">= /H. Fin de vol/ – /H. Atterrissage/</span>'+ed('res',''));
   cell(40,Le+114,313,Ybot,'red col', '<span class="al-l b" style="font-size:1.15cqw;">Heure du briefing arrivée :</span><span class="al-sub">= /H. Atterrissage/ – 10 à 15min</span>'+ed('brief',''));
 
   // Colonne centrale : N+1 positions
@@ -6415,13 +6434,13 @@ function aeroLogHtml(){
   const auto = (tot.fuelOnboard!=='' && tot.fuelOnboard!=null && conso>0) ? hm(Number(tot.fuelOnboard)/conso*60) : '';
   cell(313,Ce,435,Ce+48,'', lab('Autonomie'));
   cell(435,Ce,633,Ce+48,'', ed('auto',auto));
-  cell(313,Ce+48,435,Ce+94,'', lab('Heure d’arrêt du moteur'));
+  cell(313,Ce+48,435,Ce+94,'', '<span class="al-l" style="font-size:.95cqw;">Heure d’arrêt du moteur</span>');
   cell(435,Ce+48,633,Ce+94,'', ed('arret',''));
   cell(313,Ce+94,460,Ybot,'red ctr','<span class="al-l b" style="font-size:1.15cqw;">Heure de<br>FIN DE VOL</span>');
   cell(460,Ce+94,633,Ybot,'red col','<span class="al-sub">= /H. Arrêt moteur/ – /Réserve finale/</span>'+ed('fin',''));
 
-  // Largeur d'impression : la feuille doit tenir sur une A4 paysage (marges 8 mm → 281×194 mm, moins les légendes)
-  const printW = Math.min(262, 181*W/H).toFixed(1);
+  // Largeur d'impression : la feuille remplit la zone imprimable d'une A4 paysage (marges 8 mm → 281×194 mm), moins ~8 mm de légendes haut/bas
+  const printW = Math.min(281, 184*W/H).toFixed(1);
   return `<div class="al-wrap" style="--alw:${printW}mm;">
       <div class="al-top">Log de navigation VFR</div>
       <div class="al-sheet" style="aspect-ratio:${W}/${H};">${html}</div>
@@ -6432,7 +6451,11 @@ document.getElementById('recapPreview').addEventListener('input', e=>{
   const k = e.target.dataset && e.target.dataset.k;
   if(k) aeroEdits[k] = e.target.innerText.replace(/\n$/,'');
 });
-document.getElementById('btnAeroReset').addEventListener('click', ()=>{ aeroEdits = {}; renderRecap(); });
+const aeroSetRows = d=>{ aeroRowsOverride = Math.min(30, Math.max(1, (aeroRowsOverride!==null ? aeroRowsOverride : aeroLastN)+d)); renderRecap(); };
+document.getElementById('btnAeroMore').addEventListener('click', ()=>aeroSetRows(1));
+document.getElementById('btnAeroLess').addEventListener('click', ()=>aeroSetRows(-1));
+document.getElementById('btnAeroBlank').addEventListener('click', ()=>{ aeroBlank = !aeroBlank; renderRecap(); });
+document.getElementById('btnAeroReset').addEventListener('click', ()=>{ aeroEdits = {}; aeroRowsOverride = null; aeroBlank = false; renderRecap(); });
 
 function computeWB(){
   const sel = document.getElementById('wb_aircraft');
