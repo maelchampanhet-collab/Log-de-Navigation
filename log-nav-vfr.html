@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Log de navigation VFR</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Appli installable (PWA) : icône écran d'accueil, plein écran, hors ligne -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B1520">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Log VFR">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <!-- Taille de page d'impression pilotée en JS (voir btnPrint / btnRecapPrint) : le log de nav
@@ -30,6 +39,13 @@
   --grass:#3FAE7A;
   --rule:#2A4256;
   --rule-soft:#1E3348;
+  /* Zones de l'encoche / barre de geste (iPhone). Toujours passer par ces variables,
+     jamais par env() directement : le test d'encoche les surcharge pour simuler un iPhone
+     (voir .claude/skills/mobile-encoche/). */
+  --sat:env(safe-area-inset-top, 0px);
+  --sar:env(safe-area-inset-right, 0px);
+  --sab:env(safe-area-inset-bottom, 0px);
+  --sal:env(safe-area-inset-left, 0px);
 }
 
 *{box-sizing:border-box;}
@@ -645,7 +661,7 @@ table.recap-table td.recap-split-cell .rs-plan{
 
 /* ---- tableau de bord : galons gagnés, notification passagère ---- */
 .galons-toast{
-  position:fixed; left:50%; top:18px; transform:translate(-50%,-14px); z-index:200;
+  position:fixed; left:50%; top:calc(var(--sat) + 18px); transform:translate(-50%,-14px); z-index:200;
   background:var(--navy-panel-3); color:var(--ink); border:1px solid var(--rule);
   padding:9px 16px; border-radius:999px; font-size:12.5px; font-weight:600;
   display:flex; align-items:center; gap:8px; box-shadow:0 10px 30px rgba(0,0,0,.4);
@@ -1165,6 +1181,80 @@ table.navtable tr.realwind-row td{
   border-bottom:1px solid var(--cyan);
 }
 table.navtable tr.realwind-row td:first-child{font-weight:600;}
+
+/* ---- Venu de la version PWA (GitHub), adapté aux barres de cette interface (rail + mobile-tabbar) ---- */
+#routeMap{height:520px;}
+/* Leaflet empile ses calques jusqu'à z-index 1000 : on les confine dans la carte
+   pour qu'ils ne passent jamais au-dessus des barres de l'appli */
+.leaflet-container{position:relative; z-index:0; isolation:isolate;}
+
+/* Encoche / Dynamic Island / barre de geste (appli installée, viewport-fit=cover +
+   black-translucent : la page s'affiche aussi sous la barre d'état). Toujours var(--sat)…,
+   jamais env() directement (cf. .claude/skills/mobile-encoche/). Même seuil que les barres. */
+@media (max-width:900px){
+  :root{--home-gap:max(calc(var(--sab) - 16px), 2px);}
+  body{
+    padding:calc(var(--sat) + 14px) max(12px, var(--sar)) 0 max(12px, var(--sal));
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* Bande fixe derrière l'heure/la batterie : le contenu défile sous l'encoche sans se mélanger à la barre d'état */
+  body::before{
+    content:''; position:fixed; top:0; left:0; right:0; height:var(--sat);
+    background:var(--navy-deep); z-index:60;
+  }
+  .main{padding-bottom:calc(84px + var(--home-gap));}
+  .mobile-tabbar{
+    bottom:max(10px, var(--home-gap));
+    left:max(14px, calc(var(--sal) + 6px)); right:max(14px, calc(var(--sar) + 6px));
+    z-index:50;
+  }
+  .mobile-tabbar .navitem{width:auto; min-width:48px; scroll-snap-align:start;}
+  .mobile-tabbar{scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;}
+}
+
+/* Téléphone (portrait étroit, ou paysage peu haut et tactile) : saisie et lecture au doigt */
+@media (max-width:760px), (max-height:500px) and (pointer:coarse){
+  /* Formulaires : 16px minimum sinon iOS zoome à chaque saisie ; cibles tactiles 44px */
+  .field input, .field select, .leaflet-popup-content input, .leaflet-popup-content textarea, .rp-notes-list{font-size:16px;}
+  .field input, .field select{min-height:44px;}
+  .field-row{grid-template-columns:1fr;gap:0;}
+  .modal-box .field-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .add-aircraft-grid{grid-template-columns:1fr;}
+  .btn-mini, .btn-mini-del{min-height:40px; padding:8px 12px; font-size:13px;}
+  .add-leg, .leg-remove{min-height:44px; font-size:14px;}
+  .terrain-grid{grid-template-columns:1fr; gap:18px;}
+  .terrain-links a.btn-vac{padding:10px 14px;}
+  .ac-item{padding:12px 10px; font-size:14px;}
+
+  .panel{border-radius:10px; overflow:hidden;}
+  .panel-head{padding:9px 12px;}
+  .panel-body{padding:12px;}
+  .field{margin-bottom:10px;}
+  .head-aside{float:none!important; display:flex; flex-wrap:wrap; margin-top:6px; text-transform:none; letter-spacing:0;}
+
+  /* Résumés 4 colonnes -> 2 colonnes */
+  .output-summary{grid-template-columns:repeat(2,1fr);}
+  .sum-cell:nth-child(4n){border-right:1px solid var(--rule);}
+  .sum-cell:nth-child(2n){border-right:none;}
+
+  /* Table de nav : défilement horizontal au doigt, colonne "Étape" figée à gauche */
+  .table-scroll{-webkit-overflow-scrolling:touch; margin:0 -12px; padding:0 12px;}
+  table.navtable{min-width:860px; font-size:13px;}
+  table.navtable th:first-child, table.navtable td:first-child{
+    position:sticky; left:0; z-index:1; background:var(--navy-panel-2);
+    max-width:130px; overflow:hidden; text-overflow:ellipsis;
+    box-shadow:2px 0 0 var(--rule);
+  }
+
+  /* Carte : presque toute la hauteur utile (encoche, titre, barre d'onglets flottante déduits) */
+  #routeMap{height:calc(100dvh - var(--sat) - 14px - 40px - 58px - max(10px, var(--home-gap)) - 40px); min-height:320px;}
+  .leaflet-touch .leaflet-bar a{width:40px; height:40px; line-height:40px;}
+
+  .modal-overlay{align-items:flex-end; padding:0;}
+  .modal-box{max-height:calc(100dvh - var(--sat) - 8px); border-radius:16px 16px 0 0; padding:20px 16px calc(16px + var(--sab));}
+  .hangar-card .hc-actions, .savedlog-card .sc-actions{width:100%;}
+  .hangar-card .hc-actions > *, .savedlog-card .sc-actions > *{flex:1;}
+}
 </style>
 </head>
 <body>
@@ -1277,7 +1367,7 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
 
   <!-- ===== HANGAR ===== -->
   <div class="panel no-print" id="hangarPanel" style="margin-bottom:22px; display:none;">
-    <div class="panel-head"><i class="ph-bold ph-house"></i> Hangar — avions du club <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
+    <div class="panel-head"><i class="ph-bold ph-house"></i> Hangar — avions du club <span class="head-aside" style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">partagé entre les utilisateurs de cette appli</span></div>
     <div class="panel-body">
       <div id="hangarList"></div>
       <div class="add-aircraft-grid">
@@ -1314,7 +1404,7 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
 
   <!-- ===== VOLS ENREGISTRÉS ===== -->
   <div class="panel no-print" id="savedLogsPanel" style="margin-bottom:22px; display:none;">
-    <div class="panel-head"><i class="ph-bold ph-folder-open"></i> Mes vols enregistrés <span style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
+    <div class="panel-head"><i class="ph-bold ph-folder-open"></i> Mes vols enregistrés <span class="head-aside" style="float:right;font-weight:400;font-size:11px;color:var(--ink-dim);">personnel — visible seulement par toi</span></div>
     <div class="panel-body">
       <div id="savedLogsList"></div>
       <div class="storage-status" id="savedLogsStatus"></div>
@@ -1643,7 +1733,7 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
   <div class="panel no-print">
     <div class="panel-head">
       <i class="ph-bold ph-compass"></i> Construction de la route
-      <span style="float:right;font-weight:400;font-size:11px;display:flex;gap:12px;">
+      <span class="head-aside" style="float:right;font-weight:400;font-size:11px;display:flex;gap:12px;">
         <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="oaci" checked style="width:auto;"> OACI-VFR</label>
         <label style="cursor:pointer;display:flex;align-items:center;gap:4px;"><input type="radio" name="baseLayer" value="scan25" style="width:auto;"> Plan IGN détaillé (non aéro.)</label>
       </span>
@@ -1657,7 +1747,7 @@ table.navtable tr.realwind-row td:first-child{font-weight:600;}
           <input type="text" class="rms-input" id="routeMapSearchInput" placeholder="Rechercher une ville ou un aérodrome pour recentrer...">
           <div class="rms-list" id="routeMapSearchList"></div>
         </div>
-        <div id="routeMap" style="height:520px;"></div>
+        <div id="routeMap"></div>
         <div class="route-compass">
           <div class="rc-face">
             <div class="rc-n">N</div>
@@ -5803,14 +5893,27 @@ document.getElementById('btnResetM').addEventListener('keydown', e=>{ if(e.key==
 // Hangar = partagé (shared:true) : la flotte est commune à qui utilise cette appli.
 // Profil pilote + vols enregistrés = personnels (shared:false), propres à chaque utilisateur.
 
+// Hors de l'environnement qui fournit window.storage (appli installée sur téléphone, navigateur),
+// repli sur le localStorage de l'appareil : tout est alors local, y compris le hangar.
+const HAS_WINDOW_STORAGE = !!(window.storage && window.storage.get);
+function localKey(key, shared){ return 'logvfr:' + (shared ? 'shared:' : 'perso:') + key; }
+
 async function storageGetSafe(key, shared){
   try{
+    if(!HAS_WINDOW_STORAGE){
+      const v = localStorage.getItem(localKey(key, shared));
+      return v ? JSON.parse(v) : null;
+    }
     const r = await window.storage.get(key, shared);
     return r ? JSON.parse(r.value) : null;
   }catch(e){ return null; }
 }
 async function storageSetSafe(key, value, shared){
   try{
+    if(!HAS_WINDOW_STORAGE){
+      localStorage.setItem(localKey(key, shared), JSON.stringify(value));
+      return true;
+    }
     await window.storage.set(key, JSON.stringify(value), shared);
     return true;
   }catch(e){ return false; }
@@ -6192,6 +6295,11 @@ document.getElementById('btnSavedLogsM').addEventListener('click', toggleSavedLo
   document.getElementById(id).addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(); } });
 });
 
+// Hangar local à l'appareil quand il n'y a pas de stockage partagé : ne pas afficher "partagé"
+if(!HAS_WINDOW_STORAGE){
+  document.querySelector('#hangarPanel .head-aside').textContent = 'enregistré sur cet appareil';
+}
+
 // ==================== ONGLETS ====================
 const TAB_LABELS = {0:'Tableau de bord',1:'Préparation',2:'Log de navigation',3:'Masse & carburant',4:'METAR',5:'Simulation de route',6:'NOTAM',7:'Checklist',8:'Récap',9:'TEMSI',10:'WINTEM',11:'TAF',12:'SIGMET'};
 const TAB_DISCOVERY = {1:'prep',2:'log',3:'wb',4:'metar',5:'route',6:'notam',7:'checklist',8:'recap',9:'temsi',10:'wintem',11:'taf',12:'sigmet'};
@@ -6201,10 +6309,15 @@ function switchTab(n){
   }
   document.querySelectorAll('.navitem[data-tab]').forEach(item=>{
     item.classList.toggle('active', Number(item.dataset.tab) === n);
+    // barre d'onglets mobile défilante : l'onglet actif reste visible
+    if(Number(item.dataset.tab) === n && item.closest('.mobile-tabbar')){
+      item.scrollIntoView({ block:'nearest', inline:'nearest' });
+    }
   });
   const mtl = document.getElementById('mobileTopbarLabel');
   if(mtl && TAB_LABELS[n]) mtl.textContent = TAB_LABELS[n];
   if(TAB_DISCOVERY[n]) moduleDiscovered(TAB_DISCOVERY[n]);
+  window.scrollTo(0, 0);
 
   if(n===0){ renderDashboard(); renderProfileHero(); }
   if(n===3) populateWbAircraftSelect();
@@ -7344,6 +7457,12 @@ updateTabValidation();
 loadHangar();
 loadSavedLogsFromStorage();
 initOnboarding();
+
+
+// Appli installable : le service worker n'est actif que servi en http(s), pas en file://
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ Treize modules composent l'appli, un par onglet (certains partagent un onglet), 
 | 12 | Checklist par avion (phases de vol, navigation libre, mobile-first) | `tabPanel7` | OK (contenu saisi par le club, cf. ci-dessous) |
 | 13 | Récap A4 paysage imprimable : feuille « log de nav format aéroclub » (gabarit papier Good Pilot, pré-remplie et éditable, lignes dynamiques) + blocs optionnels en page 2 | `tabPanel8` | OK |
 
-Fonctions transverses (hors onglets) également en place : hangar partagé, vols enregistrés (personnels), onboarding, impression/PDF.
+Fonctions transverses (hors onglets) également en place : hangar partagé, vols enregistrés (personnels), onboarding, impression/PDF, **appli mobile installable (PWA)** avec mise en page téléphone dédiée.
 
 **Reste à faire / limites connues :**
 - **Synchro Préparation ↔ carte : seuls `routePoints[0]`/dernier point d'identité `type:'airport'` sont liés à t_dep/t_arr.** Un point `free` (posé à la main, sans code OACI) n'écrase jamais et n'est jamais écrasé par ces champs — corrigé suite à un bug signalé ("les deux onglets ne se raccordent pas"). Si un jour un point intermédiaire doit aussi pouvoir représenter le départ/l'arrivée (actuellement toujours index 0 / dernier), revoir `syncRouteFromPrep`/`syncPrepFromRoute`.
@@ -48,19 +48,26 @@ Pas de build, pas de package.json, pas de linter ni de suite de tests — `log-n
   ```
   python3 -m http.server 8000
   ```
-  puis ouvrir `http://localhost:8000/log-nav-vfr.html`.
+  puis ouvrir `http://localhost:8000/log-nav-vfr.html`. Le service worker (PWA) ne s'active qu'en http(s), jamais en `file://`.
+- **Tester la version mobile** : skill projet `mobile-encoche` (`.claude/skills/mobile-encoche/`) — règles de mise en page téléphone et script `test-encoche.js` qui simule l'encoche / Dynamic Island / barre de geste (iPhone portrait et paysage) et signale les éléments mal placés. À lancer après toute modification visible sur mobile.
 - **Vérifier la syntaxe JS** après une édition (aucun tooling dédié dans le repo) : extraire le contenu du tag `<script>` applicatif (celui qui suit le `<script src="...leaflet...">`) dans un fichier `.js` et lancer `node --check` dessus.
 - **Tester une fonctionnalité** : il n'y a pas de suite de tests — vérifier manuellement dans un navigateur (via le serveur local ci-dessus) en interagissant réellement avec l'UI concernée.
 
 ## Structure du projet
 
-Le projet tient (pour l'instant) dans un seul fichier : **`log-nav-vfr.html`** (5088 lignes). Il n'y a pas d'autre code applicatif — pas besoin d'aller chercher ailleurs.
+L'appli tient dans un seul fichier : **`log-nav-vfr.html`**. Il n'y a pas d'autre code applicatif — pas besoin d'aller chercher ailleurs. Autour, uniquement les fichiers de l'appli installable (PWA, venus d'une session GitHub puis fusionnés) :
+
+- `manifest.webmanifest` — nom, icônes, couleurs, `display: standalone`, `start_url` = `log-nav-vfr.html`
+- `sw.js` — service worker : appli en réseau d'abord (mises à jour), CDN (Leaflet, Phosphor, polices) en cache, tuiles IGN déjà vues en cache (1500 max) pour la carte hors ligne ; **AVWX / aviationweather jamais mis en cache** (pas de météo périmée). Changer `VERSION` à chaque mise à jour du HTML.
+- `icons/` — `icon.svg` (source, reprend le logo boussole de la barre latérale) et PNG 180 (iOS), 192, 512 (Android, aussi en `maskable`)
+
+L'installation exige un hébergement HTTPS (ex. GitHub Pages) : sur iPhone Safari → Partager → « Sur l'écran d'accueil » ; sur Android Chrome → « Installer l'application ».
 
 (`coords-terrains-france.json` est l'archive de la source des coordonnées GPS — données déjà intégrées dans l'objet `COORDS` du HTML, l'appli ne lit jamais ce fichier.)
 
-- **Lignes 1–942** : `<head>` — un petit `<style id="printPageSize">` dédié à la taille de page d'impression (cf. Conventions de code), puis le `<style>` principal (tout le CSS — palette "cockpit" sombre, polices Titillium Web / IBM Plex Sans / IBM Plex Mono ; icônes via Phosphor Icons chargé en CDN, `<i class="ph-bold ph-...">`, jamais d'emoji comme icône)
+- **Lignes 1–942** : `<head>` (méta PWA/iOS : `viewport-fit=cover`, `black-translucent`, manifest, apple-touch-icon) — un petit `<style id="printPageSize">` dédié à la taille de page d'impression (cf. Conventions de code), puis le `<style>` principal (tout le CSS — palette "cockpit" sombre, polices Titillium Web / IBM Plex Sans / IBM Plex Mono ; icônes via Phosphor Icons chargé en CDN, `<i class="ph-bold ph-...">`, jamais d'emoji comme icône)
 - **Lignes 944–1518** : corps HTML (markup)
-  - Barre latérale de navigation (`sidebar`, ~948–970) : logo, liste des onglets, boutons Hangar/Mes vols/Réinitialiser
+  - Navigation : rail flottant `nav-rail` (bureau, se déplie au survol) + `mobile-tabbar` (≤ 900 px : barre d'icônes flottante en bas, défilante, avec Hangar/Mes vols/Réinitialiser en fin de barre, `btnHangarM`…) + `mobile-topbar` (titre de l'onglet, `mobileTopbarLabel`). **Il n'y a ni `.sidebar` ni `.main-top` / `appbarTitle` / `data-proxy`** : la version PWA de GitHub les utilisait, elle a été fusionnée en gardant cette interface-ci (13 onglets). Encoche/barre de geste gérées dans le bloc `@media (max-width:900px)` « Venu de la version PWA » (variables `--sat/--sab/--sal/--sar`, `--home-gap`, bande `body::before`), réglages tactiles dans `@media (max-width:760px), (max-height:500px) and (pointer:coarse)` — cf. skill `mobile-encoche`.
   - Modale d'onboarding (~987–1015)
   - Panneau Hangar (~1016–1052)
   - Panneau Vols enregistrés (~1053–1060)
@@ -92,11 +99,11 @@ Le projet tient (pour l'instant) dans un seul fichier : **`log-nav-vfr.html`** (
 - **Météo le long de la route** (3316–3476) : `parseMetarConditions` (tokenizer METAR : vent/rafales, visibilité, CAVOK, plafond BKN/OVC/VV, phénomènes) et `classifyConditions` (seuils simplifiés → vert/orange/rouge, avec `reasons`) ; `fetchMetarForRoutePoint` réutilise le même repli que `searchNearbyMetar` (code direct → coordonnées AVWX → `NEAREST_METAR`), un point par `routePoints[i]` (pas une ligne droite dép/arr) — également appelée directement par la bulle METAR du menu contextuel ; `renderWxRoute`/`initWxMap`/`renderWxMarkers`/`renderWxList` peuplent une carte Leaflet dédiée (`wxMap`, réutilise `BASE_LAYERS.oaci`/`tileUrlFor`) et la liste en dessous, synchronisées par survol via `highlightWx` ; déclenché par le bouton "Charger / rafraîchir" et automatiquement à l'arrivée sur l'onglet si `wxRouteStale` (mis à `true` par toute mutation de `routePoints`)
 - **NOTAM (saisie manuelle)** (3477–3741) : `newNotamPoint` (3516)/`initNotamMap`/`renderNotamMarkers`/`renderNotamPointsList` — un point posé au clic sur `notamMap` (carte dédiée, indépendante de `prepMap` et `wxMap`), édité via bulle Leaflet (zone, altitude min/max + unité, période de validité en texte libre, texte NOTAM collé depuis SOFIA), synchronisé avec la liste en dessous par survol (`highlightNotam`, même mécanique que `highlightWx`). Aucun fetch réseau : purement local à la session, pas persisté dans les vols enregistrés (comme `routePoints`).
 - `updateAdNote`, `wireTerrainField` (3742–3903) — alertes AD, autocomplete terrain (onglet Préparation)
-- **Stockage persistant** (3904–4272) : `SEED_AIRCRAFT.checklist` (3883) transcrit la check-list officielle ACHC de F-GMXH (source : achc.fr, version 1/1 mars 2025, fournie par l'utilisateur — jamais inventée) ; `loadHangar` (4040) applique une migration ponctuelle si F-GMXH existe déjà dans le hangar partagé sans `checklist` (complète sans toucher au reste de la fiche). : `storageGetSafe` / `storageSetSafe` passent par `window.storage.get/set(key, shared)`.
+- **Stockage persistant** (3904–4272) : `SEED_AIRCRAFT.checklist` (3883) transcrit la check-list officielle ACHC de F-GMXH (source : achc.fr, version 1/1 mars 2025, fournie par l'utilisateur — jamais inventée) ; `loadHangar` (4040) applique une migration ponctuelle si F-GMXH existe déjà dans le hangar partagé sans `checklist` (complète sans toucher au reste de la fiche). : `storageGetSafe` / `storageSetSafe` passent par `window.storage.get/set(key, shared)`. Si `window.storage` n'existe pas (`HAS_WINDOW_STORAGE` faux : appli installée, navigateur), repli sur `localStorage` avec des clés `logvfr:shared:*` / `logvfr:perso:*` — tout est alors local à l'appareil, hangar compris (le libellé du hangar passe à « enregistré sur cet appareil »).
   - `shared:true` → Hangar (flotte commune à tous les utilisateurs de l'appli)
   - `shared:false` → profil pilote + vols enregistrés (personnels)
   - `renderHangar`, `loadHangar`, `gatherFormState`, `applyFormState`, `renderSavedLogs`, `loadSavedLogsFromStorage`
-- **Onglets** (4273–4357) : `switchTab` (0 à 8, navigation par barre latérale, pas de menu déroulant)
+- **Onglets** : `switchTab` (0 à 12, rail de navigation / barre d'onglets mobile, pas de menu déroulant ; remonte en haut de page et garde l'onglet actif visible dans la barre mobile défilante)
 - **Tableau de bord** (4358–4451) : `renderDashboard`, `fuelGaugeSvg` (jauge carburant SVG), `wbEnvelopeSvg` (enveloppe masse/centrage réelle, pas illustrative) — relit `lastNavTotals`/`lastWbStatus`/`lastFuelPlan` (globaux alimentés par `recompute`/`computeWB`/`computeFuelPlan`), ne recalcule jamais rien lui-même ; `updateTabValidation`
 - `populateWbAircraftSelect`, `populateFlightAircraftSelect` (4452) — remplissent les `<select>` avion des onglets 3 et 1 depuis `fleet`
 - **Checklist** (4476–4637) : `CHECKLIST_PHASES` (6 phases fixes : avant vol, décollage, tour de piste, croisière, préparation atterrissage, arrêt moteur) ; `populateChecklistAircraftSelect`/`renderChecklistTab`/`renderChecklistPhaseNav`/`renderChecklistPhaseBody`/`saveChecklistPhase` — le contenu (points de contrôle) est stocké par phase dans `fleet[].checklist[phaseId]` (une chaîne, une ligne = un item), **jamais pré-rempli par Claude** (aucune vraie procédure/vitesse inventée, encore plus strict que la règle `AD_NOTES` puisque c'est directement une checklist de sécurité) — édité via un `<textarea>` par phase, enregistré dans le Hangar partagé (`storageSetSafe('hangar-fleet', ...)`). L'état des cases cochées (`clChecked`) n'est en revanche jamais persisté : remis à zéro au changement d'avion et par "Réinitialiser les cases", ce n'est pas un enregistrement de vol. Navigation par phase libre (pas d'ordre imposé) via `clPhaseNav`, avec badge `X/Y` par phase. CSS dédié mobile-first (`.cl-*` : gros boutons ≥48px de haut, police ≥15px, cases à cocher 26px) pensé pour un téléphone en cabine.
@@ -109,6 +116,7 @@ Le projet tient (pour l'instant) dans un seul fichier : **`log-nav-vfr.html`** (
   - **Retiré** : le mode « Simplifier » (`recapSimplified`, `RECAP_DEFAULTS`), le bouton « Tout réafficher » et les cases de choix des colonnes `rc_f_*` — l'ancien tableau A5 portrait n'existe plus dans le Récap (l'ancien tableau détaillé reste, lui, dans l'onglet Log de navigation, `navBody`). Pas de zone de notes sous la feuille quand elle est cochée (la colonne Observations en tient lieu).
 - **Masse & centrage / carburant** (4910–4986) : `computeWB`, `computeFuelPlan` — `computeWB` est déclenché par les champs de l'onglet 3 ET par `f_fuel` (onglet 1, "Carburant emporté"), qui l'alimente par défaut
 - `initOnboarding` (5044–5086) — le bouton "Commencer" préremplit aussi le terrain de départ (`t_dep`) si un "terrain de rattachement" a été saisi
+- Enregistrement du service worker `sw.js` (fin du script), seulement en http(s)
 
 ## Services externes utilisés
 
